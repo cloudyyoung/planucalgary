@@ -1,3 +1,4 @@
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
   env: { browser: true, es2020: true },
@@ -7,6 +8,7 @@ module.exports = {
     'plugin:react-hooks/recommended',
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
+    "plugin:tailwindcss/recommended",
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
@@ -16,5 +18,11 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+  },
+  settings: {
+    tailwindcss: {
+      callees: ["twMerge", "createTheme"],
+      classRegex: "^(class(Name)|theme)?$",
+    },
   },
 }
