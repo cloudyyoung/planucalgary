@@ -4,6 +4,8 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import type { CustomFlowbiteTheme } from "flowbite-react";
+import { Flowbite } from "flowbite-react";
 
 import './index.css'
 
@@ -16,8 +18,23 @@ const router = createBrowserRouter([
   },
 ]);
 
+const theme: CustomFlowbiteTheme = {
+  button: {
+    "color": {
+      "info": "bg-primary text-white",
+    },
+    "pill": {
+      "off": "rounded-md",
+      "on": "rounded-full"
+    },
+  },
+};
+
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Flowbite theme={{ theme: theme }}>
+      <RouterProvider router={router} />
+    </Flowbite>
   </React.StrictMode>,
 )
