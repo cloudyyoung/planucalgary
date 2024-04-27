@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Button } from "flowbite-react";
-import './App.css'
 
-function App() {
+const Home = () => {
   const [count, setCount] = useState(0)
 
   return (
@@ -12,4 +11,4 @@ function App() {
   )
 }
 
-export default App
+export default Home
