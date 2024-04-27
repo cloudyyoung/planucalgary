@@ -7,7 +7,7 @@ import {
 
 import './index.css'
 
-import Home from './pages/home/Home'
+import Home from 'pages/home/Home'
 
 const router = createBrowserRouter([
   {

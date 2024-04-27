@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Button } from "flowbite-react";
+
+import Button from 'components/button/Button'
 
 const Home = () => {
   const [count, setCount] = useState(0)

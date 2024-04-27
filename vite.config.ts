@@ -6,4 +6,12 @@ import postcss from '@vituum/vite-plugin-postcss'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), postcss()],
+  resolve: {
+    alias: {
+      src: "/src",
+      components: "/src/components",
+      pages: "/src/pages",
+      assets: "/src/assets",
+    },
+  },
 })
