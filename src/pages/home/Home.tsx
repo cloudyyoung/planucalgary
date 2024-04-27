@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import Button from 'components/button/Button'
+import { Button } from '@components'
 
 const Home = () => {
   const [count, setCount] = useState(0)
@@ -13,3 +13,4 @@ const Home = () => {
 }
 
 export default Home
+export { Home }
