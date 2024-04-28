@@ -7,5 +7,9 @@
 
 
 body {
-  @apply bg-surface
+  @apply bg-surface overflow-x-hidden
+}
+
+#root {
+  @apply h-screen w-screen
 }
