@@ -31,7 +31,7 @@ const Home = () => {
       <Disclosure as="nav" className=" bg-surface">
         {({ open }) => (
           <>
-            <div className="mx-auto max-w-7xl px-4">
+            <div className="mx-auto px-4 md:px-6">
               <div className="flex h-16 items-center justify-between">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -66,7 +66,7 @@ const Home = () => {
                     {/* Profile dropdown */}
                     <Menu as="div" className="relative ml-3">
                       <div>
-                        <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                        <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-primary-40 text-sm focus:ring-white">
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
                           <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
@@ -171,12 +171,12 @@ const Home = () => {
       </Disclosure>
 
       <header className="bg-surface">
-        <div className="mx-auto max-w-7xl px-4 py-6">
+        <div className="mx-auto px-4 md:px-6 py-6">
           <h1 className="text-3xl font-medium text-primary-30 font-serif">Dashboard</h1>
         </div>
       </header>
 
-      <main className='mx-auto max-w-7xl px-4 py-6'>
+      <main className='mx-auto px-4 md:px-6 py-6'>
         <Button variant="filled" onClick={() => setCount((count) => count + 1)}>count is {count}</Button>
       </main>
     </>
