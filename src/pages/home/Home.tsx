@@ -11,11 +11,11 @@ const user = {
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-  { name: 'Reports', href: '#', current: false },
+  { name: 'Terms', href: '#', current: true },
+  // { name: 'Team', href: '#', current: false },
+  // { name: 'Projects', href: '#', current: false },
+  // { name: 'Calendar', href: '#', current: false },
+  // { name: 'Reports', href: '#', current: false },
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -46,6 +46,7 @@ const Home = () => {
                       {navigation.map((item) => (
                         <Button
                           variant={item.current ? 'filled' : 'text'}
+                          size="xs"
                           key={item.name}
                           href={item.href}
                           aria-current={item.current ? 'page' : undefined}
@@ -171,12 +172,12 @@ const Home = () => {
       </Disclosure>
 
       <header className="bg-surface">
-        <div className="mx-auto px-4 md:px-6 py-6">
-          <h1 className="text-3xl font-medium text-primary-30 font-serif">Dashboard</h1>
+        <div className="mx-auto px-4 md:px-6 py-4">
+          <h1 className="text-3xl font-medium text-primary-30 font-serif">Terms</h1>
         </div>
       </header>
 
-      <main className='mx-auto px-4 md:px-6 py-6'>
+      <main className='mx-auto px-4 md:px-6 py-4'>
         <Button variant="filled" onClick={() => setCount((count) => count + 1)}>count is {count}</Button>
       </main>
     </>
