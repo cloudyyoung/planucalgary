@@ -13,6 +13,8 @@ export default defineConfig({
       "@components": "/src/components/index",
       pages: "/src/pages",
       "@pages": "/src/pages/index",
+      utils: "/src/utils",
+      "@utils": "/src/utils/index",
       assets: "/src/assets",
     },
   },

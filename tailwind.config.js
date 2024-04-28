@@ -169,6 +169,14 @@ export default {
           "100": "#FFFFFF"
         }
       },
+      opacity: {
+        '8': '0.08',
+        '12': '0.12',
+        '16': '0.16',
+
+        'hover-state-layer': '0.08',
+        'focus-state-layer': '0.10',
+      }
     },
   },
   plugins: [
