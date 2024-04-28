@@ -172,7 +172,7 @@ const Home = () => {
 
       <header className="bg-surface">
         <div className="mx-auto max-w-7xl px-4 py-6">
-          <h1 className="text-3xl font-medium text-primary-5">Dashboard</h1>
+          <h1 className="text-3xl font-medium text-primary-30 font-serif">Dashboard</h1>
         </div>
       </header>
 

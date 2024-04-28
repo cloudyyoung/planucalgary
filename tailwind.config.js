@@ -9,7 +9,7 @@ export default {
   theme: {
     fontFamily: {
       sans: ['General Sans', 'sans-serif'],
-      serif: ['Merriweather', 'serif'],
+      serif: ['Sharpe PERSONAL', 'serif'],
     },
     extend: {
       colors: {
