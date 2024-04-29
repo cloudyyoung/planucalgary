@@ -9,10 +9,14 @@ import { Flowbite } from "flowbite-react";
 import './index.css'
 
 import { Navbar } from '@components';
-import { Terms } from '@pages'
+import { Programs, Terms } from '@pages'
 import theme from './theme'
 
 const router = createBrowserRouter([
+  {
+    path: "/programs",
+    element: <Programs />,
+  },
   {
     path: "/terms",
     element: <Terms />,
