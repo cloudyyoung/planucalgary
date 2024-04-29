@@ -3,9 +3,7 @@ const Terms = () => {
   return (
     <>
       <header className="bg-surface">
-        <div className="mx-auto px-4 md:px-6 py-4">
-          <h1 className="text-3xl font-medium text-primary-30 font-serif">Terms</h1>
-        </div>
+        <h1 className="px-4 md:px-6 py-2 title">Terms</h1>
       </header>
 
       <main className='px-4 md:px-6 py-4 flex flex-row flex-nowrap flex-1 h-full gap-3 overflow-x-auto'>

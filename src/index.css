@@ -12,3 +12,7 @@ body {
 #root {
   @apply h-screen w-screen
 }
+
+.title {
+  @apply text-3xl font-medium text-primary-30 font-serif
+}

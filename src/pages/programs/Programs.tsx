@@ -2,9 +2,9 @@
 const Programs = () => {
   return (
     <>
-      <div>
-        <div className="font-serif">Programs</div>
-      </div>
+      <header className="bg-surface">
+        <h1 className="px-4 md:px-6 py-2 title">Programs</h1>
+      </header>
     </>
   )
 }
