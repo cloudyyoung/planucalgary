@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, UserIcon } from '@heroicons/react/24/outline'
+import { NavLink } from 'react-router-dom'
 import { Button } from '@components'
 import { classNames } from '@utils'
 
@@ -41,15 +42,17 @@ const Navbar = () => {
                   <div className="hidden md:block">
                     <div className="ml-8 flex items-baseline">
                       {navigation.map((item) => (
-                        <Button
-                          variant={item.current ? 'filled' : 'text'}
-                          size="sm"
-                          key={item.name}
-                          href={item.href}
-                          aria-current={item.current ? 'page' : undefined}
-                        >
-                          {item.name}
-                        </Button>
+                        <NavLink key={item.name} to={item.href}>
+                          {({ isActive }) => (
+                            <Button
+                              variant={isActive ? 'filled' : 'text'}
+                              size="sm"
+                              aria-current={isActive ? 'page' : undefined}
+                            >
+                              {item.name}
+                            </Button>
+                          )}
+                        </NavLink>
                       ))}
                     </div>
                   </div>

@@ -8,26 +8,24 @@ import { Flowbite } from "flowbite-react";
 
 import './index.css'
 
-import { Navbar } from '@components';
-import { Programs, Terms } from '@pages'
+import { App, Programs, Terms } from '@pages'
 import theme from './theme'
 
 const router = createBrowserRouter([
   {
-    path: "/programs",
-    element: <Programs />,
-  },
-  {
-    path: "/terms",
-    element: <Terms />,
-  },
+    path: "/",
+    element: <App />,
+    children: [
+      { path: "/terms", element: <Terms /> },
+      { path: "/programs", element: <Programs /> },
+    ],
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Flowbite theme={{ theme: theme }}>
       <div className='flex flex-col h-screen w-screen'>
-        <Navbar />
         <RouterProvider router={router} />
       </div>
     </Flowbite>
