@@ -41,7 +41,7 @@ const Navbar = () => {
                         <NavLink key={item.name} to={item.href}>
                           {({ isActive }) => (
                             <Button
-                              variant={isActive ? 'filled' : 'text'}
+                              variant={isActive ? 'tonal' : 'text'}
                               size="sm"
                               aria-current={isActive ? 'page' : undefined}
                             >
@@ -55,7 +55,7 @@ const Navbar = () => {
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-4 flex items-center md:ml-6">
-                    <Button variant='tonal' priority='secondary' size="xs">
+                    <Button variant='text' priority='secondary' size="xs">
                       <span className="sr-only">View notifications</span>
                       <BellIcon className="h-5 w-5" aria-hidden="true" />
                     </Button>
@@ -64,7 +64,7 @@ const Navbar = () => {
                     <Menu as="div" className="relative ml-1">
                       <div>
                         <Menu.Button>
-                          <Button variant='filled' priority='secondary' size="xs">
+                          <Button variant='tonal' priority='secondary' size="xs">
                             <span className="absolute -inset-1.5" />
                             <span className="sr-only">Open user menu</span>
                             <UserIcon className="h-5 w-5" aria-hidden="true" />

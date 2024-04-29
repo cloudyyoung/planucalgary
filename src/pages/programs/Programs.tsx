@@ -10,11 +10,11 @@ const Programs = () => {
 
       <main className="px-app py-4 flex flex-row gap-4 flex-1">
         <div className="flex flex-col w-72 gap-1">
-          <Program displayName="Bachelor of Science (BSc) in Actuarial Science - Honours" degreeDesignationCode="BSC-H" />
-          <Program displayName="Bachelor of Science (BSc) in Biomechanics" degreeDesignationCode="BSC" />
-          <Program displayName="Minor: Software Engineering" degreeDesignationCode={null} />
-          <Program displayName="Minor: Data Science" degreeDesignationCode={null} />
-          <Program displayName="Embedded Certificate: Creative Writing" degreeDesignationCode={null} />
+          <Program displayName="Bachelor of Science (BSc) in Actuarial Science - Honours" type="ACP" isSelected />
+          <Program displayName="Bachelor of Science (BSc) in Biomechanics" type="ACP" />
+          <Program displayName="Minor: Software Engineering" type="MIN" />
+          <Program displayName="Minor: Data Science" type="MIN" />
+          <Program displayName="Embedded Certificate: Creative Writing" type="EMC" />
         </div>
         <div className="bg-surface rounded-xl p-6 flex-1">
           <div className="font-serif">Bachelor of Science (BSc) in Biomechanics</div>
@@ -26,16 +26,21 @@ const Programs = () => {
 
 interface ProgramProps {
   displayName: string
-  degreeDesignationCode: string | null
+  type: string // ACP | MIN | EMC
+  isSelected?: boolean
 }
 
-const Program = ({ displayName: name, degreeDesignationCode: degree_designation_code }: ProgramProps) => {
+const Program = ({
+  displayName: name,
+  type: type,
+  isSelected: is_selected = false
+}: ProgramProps) => {
   const iconClassNames = "w-5 mr-3 flex-none"
 
   return (
-    <Button variant="text" className="justify-start text-left">
+    <Button variant={is_selected ? "tonal" : "text"} className="justify-start text-left">
       {
-        degree_designation_code ? (
+        type === "ACP" ? (
           <AcademicCapIcon className={iconClassNames} />
         ) : (
           <ArrowRightCircleIcon className={iconClassNames} />
