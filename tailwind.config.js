@@ -8,8 +8,8 @@ export default {
   ],
   theme: {
     fontFamily: {
-      sans: ['General Sans', 'sans-serif'],
-      serif: ['Sharpe PERSONAL', 'serif'],
+      sans: ['Switzer', 'sans-serif'],
+      serif: ['Gambarino', 'serif'],
     },
     extend: {
       colors: {

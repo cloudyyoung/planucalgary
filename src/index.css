@@ -1,5 +1,4 @@
-@import url('https://api.fontshare.com/v2/css?f[]=general-sans@200,201,300,301,400,401,500,501,600,601,700,701&display=swap');
-@import url('https://fonts.cdnfonts.com/css/sharpe-personal');
+@import url('https://api.fontshare.com/v2/css?f[]=switzer@100,101,200,201,300,301,400,401,500,501,600,601,700,701,800,801,900,901&f[]=gambarino@400&display=swap');
 
 @tailwind base;
 @tailwind components;
