@@ -27,6 +27,38 @@ const theme: CustomFlowbiteTheme = {
       "on": "rounded-full after:rounded-full"
     },
   },
+
+  accordion: {
+    "root": {
+      "base": "border-outline-variant",
+      "flush": {
+        "off": "rounded-2xl border overflow-hidden",
+        "on": "border-b"
+      }
+    },
+    "content": {
+      "base": "p-5 first:rounded-t-2xl last:rounded-b-2xl"
+    },
+    "title": {
+      "arrow": {
+        "base": "h-6 w-6 shrink-0",
+        "open": {
+          "off": "",
+          "on": "rotate-180"
+        }
+      },
+      "base": "flex w-full items-center justify-between p-5 text-left font-medium text-on-surface first:rounded-t-2xl last:rounded-b-2xl transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow]",
+      "flush": {
+        "off": "hover:bg-surface-container",
+        "on": "bg-transparent"
+      },
+      "heading": "",
+      "open": {
+        "off": "",
+        "on": "bg-surface-container-low text-primary"
+      }
+    }
+  }
 };
 
 export default theme;
