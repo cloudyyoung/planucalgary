@@ -10,12 +10,8 @@ const user = {
   email: 'tom@example.com',
 }
 const navigation = [
-  { name: 'Programs', href: '/programs', current: false },
-  { name: 'Terms', href: '/terms', current: true },
-  // { name: 'Team', href: '#', current: false },
-  // { name: 'Projects', href: '#', current: false },
-  // { name: 'Calendar', href: '#', current: false },
-  // { name: 'Reports', href: '#', current: false },
+  { name: 'Programs', href: '/programs' },
+  { name: 'Terms', href: '/terms' },
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -120,18 +116,20 @@ const Navbar = () => {
             <Disclosure.Panel className="md:hidden">
               <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
                 {navigation.map((item) => (
-                  <Disclosure.Button
-                    key={item.name}
-                    as="a"
-                    href={item.href}
-                    className={classNames(
-                      item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                      'block rounded-md px-3 py-2 text-base font-medium'
+                  <NavLink key={item.name} to={item.href}>
+                    {({ isActive }) => (
+                      <Disclosure.Button
+                        as="a"
+                        className={classNames(
+                          isActive ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'block rounded-md px-3 py-2 text-base font-medium'
+                        )}
+                        aria-current={isActive ? 'page' : undefined}
+                      >
+                        {item.name}
+                      </Disclosure.Button>
                     )}
-                    aria-current={item.current ? 'page' : undefined}
-                  >
-                    {item.name}
-                  </Disclosure.Button>
+                  </NavLink>
                 ))}
               </div>
               <div className="border-t border-gray-700 pb-3 pt-4">
