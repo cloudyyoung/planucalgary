@@ -2,7 +2,7 @@
 const Terms = () => {
   return (
     <>
-      <header className="">
+      <header className="bg-inherit">
         <h1 className="px-app py-2 title">Terms</h1>
       </header>
 
