@@ -3,7 +3,7 @@ import { Button } from "@components"
 const Programs = () => {
   return (
     <>
-      <header className="bg-surface">
+      <header className="bg-inherit">
         <h1 className="px-app py-2 title">Programs</h1>
       </header>
 
@@ -12,7 +12,7 @@ const Programs = () => {
           <Program name="Bachelor of Science (BSc) in Actuarial Science - Honours" />
           <Program name="Bachelor of Science (BSc) in Biomechanics" />
         </div>
-        <div className="bg-white rounded-xl p-6 flex-1">
+        <div className="bg-surface rounded-xl p-6 flex-1">
           <div className="font-serif">Bachelor of Science (BSc) in Biomechanics</div>
         </div>
       </main>
@@ -26,7 +26,7 @@ interface ProgramProps {
 
 const Program = ({ name }: ProgramProps) => {
   return (
-    <Button variant="outline" className="text-left">
+    <Button variant="text" className="text-left">
       {name}
     </Button>
   )

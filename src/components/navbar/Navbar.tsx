@@ -22,7 +22,7 @@ const userNavigation = [
 const Navbar = () => {
   return (
     <>
-      <Disclosure as="nav" className="bg-surface">
+      <Disclosure as="nav" className="">
         {({ open }) => (
           <>
             <div className="mx-auto px-4 md:px-6">
