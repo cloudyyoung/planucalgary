@@ -1,8 +1,20 @@
 import { Accordion } from "flowbite-react";
 import { AcademicCapIcon, ArrowRightCircleIcon, PlusIcon } from "@heroicons/react/24/solid"
-import { Button } from "@components"
+import { Button, ButtonProps } from "@components"
+import { useEffect, useState } from "react";
 
 const Programs = () => {
+  const [enrolledPrograms, setEnrolledPrograms] = useState<CatalogProgram[]>([])
+  const [selectedProgram, setSelectedProgram] = useState<CatalogProgram | null>(null)
+
+  useEffect(() => setEnrolledPrograms([
+    { coursedog_id: "ACSCBSCH-2022-09-01", display_name: "Bachelor of Science (BSc) in Actuarial Science - Honours", type: "ACP" },
+    { coursedog_id: "BCEMBSC-2022-09-01", display_name: "Bachelor of Science (BSc) in Biochemistry", type: "ACP" },
+    { coursedog_id: "ENSF-MIN-1901-01-01", display_name: "Minor: Software Engineering", type: "MIN" },
+    { coursedog_id: "DATA-MIN-1901-01-01", display_name: "Minor: Data Science", type: "MIN" },
+    { coursedog_id: "CRWR-EMC-1901-01-01", display_name: "Embedded Certificate: Creative Writing", type: "EMC" },
+  ]), [])
+
   return (
     <>
       <main className="px-app py-4 pt-0 flex flex-row gap-4 flex-1">
@@ -12,11 +24,17 @@ const Programs = () => {
               <h1 className="title pt-2">Programs</h1>
             </header>
             <div className="flex flex-col w-72 gap-1">
-              <Program displayName="Bachelor of Science (BSc) in Actuarial Science - Honours" type="ACP" isSelected />
-              <Program displayName="Bachelor of Science (BSc) in Biomechanics" type="ACP" />
-              <Program displayName="Minor: Software Engineering" type="MIN" />
-              <Program displayName="Minor: Data Science" type="MIN" />
-              <Program displayName="Embedded Certificate: Creative Writing" type="EMC" />
+              {
+                enrolledPrograms.map((program, index) => (
+                  <EnrolledProgramButton
+                    key={index}
+                    displayName={program.display_name}
+                    programType={program.type}
+                    isSelected={program.coursedog_id === selectedProgram?.coursedog_id}
+                    onClick={() => setSelectedProgram(program)}
+                  />
+                ))
+              }
             </div>
           </div>
           <div>
@@ -47,23 +65,30 @@ const Programs = () => {
   )
 }
 
-interface ProgramProps {
-  displayName: string
-  type: string // ACP | MIN | EMC
-  isSelected?: boolean
+interface CatalogProgram {
+  coursedog_id: string
+  display_name: string
+  type: string
 }
 
-const Program = ({
-  displayName: name,
-  type: type,
-  isSelected: is_selected = false
-}: ProgramProps) => {
-  const iconClassNames = "w-5 mr-2 flex-none"
+interface EnrolledProgramButtonProps {
+  displayName: string
+  programType: string // ACP | MIN | EMC
+  isSelected?: boolean
+  onClick: ButtonProps["onClick"]
+}
 
+const EnrolledProgramButton = ({
+  displayName: name,
+  programType,
+  isSelected: is_selected = false,
+  onClick,
+}: EnrolledProgramButtonProps) => {
+  const iconClassNames = "w-5 mr-2 flex-none"
   return (
-    <Button variant={is_selected ? "tonal" : "text"} className="justify-start text-left px-0 py-2">
+    <Button variant={is_selected ? "tonal" : "text"} className="justify-start text-left px-0 py-2" onClick={onClick}>
       {
-        type === "ACP" ? (
+        programType === "ACP" ? (
           <AcademicCapIcon className={iconClassNames} />
         ) : (
           <ArrowRightCircleIcon className={iconClassNames} />
