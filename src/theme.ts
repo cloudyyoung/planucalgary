@@ -47,7 +47,7 @@ const theme: CustomFlowbiteTheme = {
           "on": "rotate-180"
         }
       },
-      "base": "flex w-full items-center justify-between p-5 text-left font-medium text-on-surface first:rounded-t-2xl last:rounded-b-2xl transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow]",
+      "base": "flex w-full items-center justify-between px-4 py-3 text-left font-medium text-on-surface first:rounded-t-2xl last:rounded-b-2xl transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow]",
       "flush": {
         "off": "hover:bg-surface-container",
         "on": "bg-transparent"
