@@ -23,14 +23,14 @@ const ProgramDetails = ({
                       <div dangerouslySetInnerHTML={{ __html: rule.description }} />
                       {rule.condition}
                       {rule.value.values.map((value: any, index: number) => (
-                        <>
+                        <div key={index}>
                           {/* <div key={index}>{value.logic}</div> */}
                           {
                             value.values.map((value: any, index: number) => (
                             <div key={index}>{value.name}</div>
                           ))
                           }
-                        </>
+                        </div>
                       ))}
                       <div dangerouslySetInnerHTML={{ __html: rule.notes }} />
                     </Accordion.Content>
