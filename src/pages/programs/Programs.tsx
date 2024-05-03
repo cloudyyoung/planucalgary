@@ -3,6 +3,8 @@ import { AcademicCapIcon, ArrowRightCircleIcon, PlusIcon } from "@heroicons/reac
 import { Button, ButtonProps } from "@components"
 import { useEffect, useState } from "react";
 import api from "src/api";
+import { CatalogProgram } from "./types";
+import ProgramDetails from "./ProgramDetails";
 
 const Programs = () => {
   const [enrolledPrograms, setEnrolledPrograms] = useState<CatalogProgram[]>([])
@@ -12,6 +14,7 @@ const Programs = () => {
   useEffect(() => setEnrolledPrograms([
     { coursedog_id: "ACSCBSCH-2022-09-01", display_name: "Bachelor of Science (BSc) in Actuarial Science - Honours", type: "ACP", requisites: [] },
     { coursedog_id: "BCEMBSC-2022-09-01", display_name: "Bachelor of Science (BSc) in Biochemistry", type: "ACP", requisites: [] },
+    { coursedog_id: "CPSCBSC-2022-09-01", display_name: "Bachelor of Science (BSc) in Computer Science", type: "ACP", requisites: [] },
     { coursedog_id: "ENSF-MIN-1901-01-01", display_name: "Minor: Software Engineering", type: "MIN", requisites: [] },
     { coursedog_id: "DATA-MIN-1901-01-01", display_name: "Minor: Data Science", type: "MIN", requisites: [] },
     { coursedog_id: "CRWR-EMC-1901-01-01", display_name: "Embedded Certificate: Creative Writing", type: "EMC", requisites: [] },
@@ -61,29 +64,17 @@ const Programs = () => {
             <div className="font-serif text-5xl py-24 text-primary">
               {selectedProgram?.display_name}
             </div>
-            <div className="py-4">
+            <div className="">
               {
-                programData && programData.requisites.map((requisite, index) => (
-                  <div key={index} className="py-4">
-                    <h3 className="font-bold">{requisite.name}</h3>
-                    <Accordion collapseAll>
-                      {
-                        requisite.rules.map((rule: any, index: number) => (
-                          <Accordion.Panel key={index}>
-                            <Accordion.Title>{rule.name}</Accordion.Title>
-                            <Accordion.Content>
-                              {rule.description}
-                              {rule.notes}
-                            </Accordion.Content>
-                          </Accordion.Panel>
-                        ))
-                      }
-                    </Accordion>
+                programData ? (
+                  <ProgramDetails programData={programData} />
+                ) : (
+                  <div className="text-center py-24">
+                    <div className="text-2xl text-on-surface-low">Select a program to view details</div>
                   </div>
-                ))
+                )
               }
             </div>
-
           </div>
         </div>
       </main>
@@ -91,12 +82,6 @@ const Programs = () => {
   )
 }
 
-interface CatalogProgram {
-  coursedog_id: string
-  display_name: string
-  type: string
-  requisites: any[]
-}
 
 interface EnrolledProgramButtonProps {
   displayName: string
