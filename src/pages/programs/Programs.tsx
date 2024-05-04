@@ -1,4 +1,3 @@
-import { Accordion } from "flowbite-react";
 import { AcademicCapIcon, ArrowRightCircleIcon, PlusIcon } from "@heroicons/react/24/solid"
 import { Button, ButtonProps } from "@components"
 import { useEffect, useState } from "react";
@@ -32,7 +31,7 @@ const Programs = () => {
 
   return (
     <>
-      <main className="px-app py-4 pt-0 flex flex-row gap-4 flex-1">
+      <main className="px-app py-4 pt-0 flex flex-row gap-4 flex-1 overflow-hidden">
         <div className="flex flex-col justify-between">
           <div className="flex flex-col gap-6">
             <header className="bg-inherit">
@@ -59,7 +58,7 @@ const Programs = () => {
             </Button>
           </div>
         </div>
-        <div className="bg-surface rounded-2xl px-6 flex flex-1 overflow-y-auto flex-wrap text-on-surface leading-8">
+        <div className="bg-surface rounded-3xl px-6 flex flex-1 overflow-y-auto flex-wrap text-on-surface leading-8">
           <div className="mx-auto max-w-7xl flex-1">
             <div className="font-serif text-5xl py-24 text-primary">
               {selectedProgram?.display_name}
