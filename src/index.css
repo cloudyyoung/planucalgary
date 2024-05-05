@@ -18,5 +18,5 @@ body {
 }
 
 .px-app {
-  @apply px-4 md:px-6
+  @apply px-4
 }

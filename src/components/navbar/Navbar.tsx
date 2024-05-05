@@ -25,7 +25,7 @@ const Navbar = () => {
       <Disclosure as="nav" className="">
         {({ open }) => (
           <>
-            <div className="mx-auto px-4 md:px-6">
+            <div className="mx-auto px-app">
               <div className="flex h-16 items-center justify-between">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
