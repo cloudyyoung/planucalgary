@@ -18,14 +18,16 @@ const ProgramDetails = ({
           programRequirements.rules.map((rule: any, index: number) => (
             <>
               <div className="text-lg font-semibold">{rule.name}</div>
-              {rule.credits && <div className="text-sm text-on-surface-low">Earn at least {rule.credits} credits: </div>}
+              <p>{rule.credits && <div className="text-sm text-on-surface-low">Earn at least {rule.credits} credits: </div>}</p>
+              <p>{rule.value.condition}</p>
               <Accordion>
                 {
                   rule.value.values.map((value: any, index_outer: number) => value.values.map((rule: any, index: number) => (
                     <Accordion.Panel key={`${index_outer}-${index}`}>
                       <Accordion.Title>{rule.name}</Accordion.Title>
                       <Accordion.Content>
-                        {rule.structure && rule.structure.condition}
+                        <p>ID: {rule.id}</p>
+                        <p>TYPE: {rule.type}</p>
                         {rule.structure && rule.structure.rules.map((srule: any, index: number) => (
                           <div key={index}>
                             <div>{srule.value.subject_code} {srule.value.course_number}</div>
