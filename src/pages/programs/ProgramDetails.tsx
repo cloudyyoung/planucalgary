@@ -13,10 +13,10 @@ const ProgramDetails = ({
 
   return (
     <>
-      <div className="py-4">
+      <div className="py-4 flex flex-col gap-6">
         {
           programRequirements.rules.map((rule: any, index: number) => (
-            <>
+            <div key={index}>
               <div className="text-lg font-semibold">{rule.name}</div>
               <p>{rule.credits && <div className="text-sm text-on-surface-low">Earn at least {rule.credits} credits: </div>}</p>
               <p>{rule.value.condition}</p>
@@ -39,7 +39,7 @@ const ProgramDetails = ({
                   )))
                 }
               </Accordion>
-            </>
+            </div>
           ))
         }
       </div>
