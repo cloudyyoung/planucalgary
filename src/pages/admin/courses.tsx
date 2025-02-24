@@ -1,7 +1,10 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table'
+import { Label, Modal, Radio } from 'flowbite-react';
 
 import { useCourses } from "src/hooks/useCourses"
+import { Button } from "src/components"
+import api from "src/api"
 
 const Courses = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -9,18 +12,36 @@ const Courses = () => {
     pageSize: 20,
   })
 
+  const [choices, setChoices] = useState<object[]>([])
+  const [isChoosing, setIsChoosing] = useState(false)
+
   const { courses, total } = useCourses({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
   })
 
+  const onGenerateReq = useCallback(async (course_id: string) => {
+    const response = await api.post(`/courses/${course_id}/requisites`, {}, { timeout: 99999 })
+    const data = response.data
+    setChoices(data)
+    setIsChoosing(true)
+  }, [])
+
   const table = useReactTable({
     columns: [
-      // { header: 'ID', accessorKey: 'id', size: 20, },
+      { header: 'ID', accessorKey: 'id', size: 20, },
       { header: 'Code', accessorKey: 'code', size: 40, },
       { header: 'Name', accessorKey: 'long_name' },
       { header: 'Prereq', accessorKey: 'prereq' },
-      { header: 'Prereq JSON', accessorKey: 'prereq_json' },
+      {
+        header: 'Prereq JSON', accessorKey: 'prereq_json',
+        cell: ({ cell, row }) => {
+          return <div>
+            <pre>{cell.getValue()}</pre>
+            <Button onClick={() => onGenerateReq(row.id)}>Generate</Button>
+          </div>
+        }
+      },
       { header: 'Antireq', accessorKey: 'antireq' },
       { header: 'Antireq JSON', accessorKey: 'antireq_json' },
       { header: 'Coreq', accessorKey: 'coreq' },
@@ -32,6 +53,7 @@ const Courses = () => {
     manualPagination: true,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
+    getRowId: row => row.id,
   })
 
   return (
@@ -154,6 +176,25 @@ const Courses = () => {
           </div>
         </div>
       </div>
+
+      <Modal show={isChoosing} onClose={() => setIsChoosing(false)} size='7xl'>
+        <Modal.Header>Choosing JSON</Modal.Header>
+        <Modal.Body>
+          <fieldset className="flex max-w-md flex-col gap-4">
+            <legend className="mb-4">Choose JSON</legend>
+            {choices.map((choice, index) => (
+              <div className="flex items-center gap-2">
+                <Radio key={index} name="choices" id={`radio-${index}`} value={index} />
+                <Label htmlFor={`radio-${index}`}><pre>{JSON.stringify(choice)}</pre></Label>
+              </div>
+            ))}
+          </fieldset>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setIsChoosing(false)}>Confirm</Button>
+          <Button onClick={() => setIsChoosing(false)}>Decline</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }
