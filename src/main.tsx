@@ -10,6 +10,7 @@ import './index.css'
 
 import { App, Programs, Terms } from '@pages'
 import theme from './theme'
+import Courses from './pages/admin/courses';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/terms", element: <Terms /> },
       { path: "/programs", element: <Programs /> },
+      { path: '/admin/courses', element: <Courses /> }
     ],
   }
 ]);
