@@ -1,15 +1,19 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table'
 
-import api from "src/api"
+import { useCourses } from "src/hooks/useCourses"
 
 const Courses = () => {
-  const [courses, setCourses] = useState([])
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 20,
   })
-  const [total, setTotal] = useState(0)
+
+  const { courses, total } = useCourses({
+    offset: pagination.pageIndex * pagination.pageSize,
+    limit: pagination.pageSize,
+  })
+
   const table = useReactTable({
     columns: [
       { header: 'ID', accessorKey: 'id' },
@@ -26,19 +30,6 @@ const Courses = () => {
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
   })
-
-  useEffect(() => {
-    api.get(`/courses`, {
-      params: {
-        offset: pagination.pageIndex * pagination.pageSize,
-        limit: pagination.pageSize,
-      },
-    })
-      .then(({ data }) => {
-        setCourses(data.items)
-        setTotal(data.total)
-      })
-  }, [pagination])
 
   return (
     <div className="py-4 flex flex-col gap-6">
