@@ -1,7 +1,19 @@
 import { useState } from "react"
 import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table'
+import JSONPretty from "react-json-pretty"
 
 import { useCourses } from "src/hooks/useCourses"
+
+
+
+const theme = {
+  main: 'line-height:1.3;color:#5f6d70;background:transparent;overflow:auto;',
+  error: 'line-height:1.3;color:#5f6d70;background:#ffe0e0;overflow:auto;',
+  key: 'color:#f92672;',
+  string: 'color:#fd971f;',
+  value: 'color:#a6e22e;',
+  boolean: 'color:#ac81fe;',
+}
 
 const Courses = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -20,11 +32,41 @@ const Courses = () => {
       { header: 'Code', accessorKey: 'code', size: 40, },
       { header: 'Name', accessorKey: 'long_name' },
       { header: 'Prereq', accessorKey: 'prereq' },
-      { header: 'Prereq JSON', accessorKey: 'prereq_json' },
+      {
+        header: 'Prereq JSON', accessorKey: 'prereq_json',
+        cell: ({ cell }) => {
+          const json = cell.getValue()
+          return (
+            <div className="flex flex-row items-center gap-2">
+              {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
+            </div>
+          )
+        },
+      },
       { header: 'Antireq', accessorKey: 'antireq' },
-      { header: 'Antireq JSON', accessorKey: 'antireq_json' },
+      {
+        header: 'Antireq JSON', accessorKey: 'antireq_json',
+        cell: ({ cell }) => {
+          const json = cell.getValue()
+          return (
+            <div className="flex flex-row items-center gap-2">
+              {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
+            </div>
+          )
+        },
+      },
       { header: 'Coreq', accessorKey: 'coreq' },
-      { header: 'Coreq JSON', accessorKey: 'coreq_json' },
+      {
+        header: 'Coreq JSON', accessorKey: 'coreq_json',
+        cell: ({ cell }) => {
+          const json = cell.getValue()
+          return (
+            <div className="flex flex-row items-center gap-2">
+              {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
+            </div>
+          )
+        },
+      },
     ],
     data: courses,
     rowCount: total,

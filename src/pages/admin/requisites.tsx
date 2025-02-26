@@ -51,7 +51,7 @@ const Requisites = () => {
   }
 
   const onGenerateRequisite = async (requisiteId: string) => {
-    const response = await api.post(`/requisites/${requisiteId}`, {}, { timeout: 99999 })
+    const response = await api.post(`/requisites/${requisiteId}`, {}, { timeout: 10000 })
     const data = response.data
     const choices = data.json_choices
     refetch()
@@ -191,7 +191,7 @@ const Requisites = () => {
               }}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
-              {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(pageSize => (
+              {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 500].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
                   Show {pageSize} rows
                 </option>
@@ -283,7 +283,7 @@ const Requisites = () => {
             </fieldset>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={onUpdateRequisite}>Confirm</Button>
+            <Button onClick={onUpdateRequisite} priority="primary" variant="filled">Confirm</Button>
             <Button onClick={onCloseModal}>Decline</Button>
           </Modal.Footer>
         </Modal>
