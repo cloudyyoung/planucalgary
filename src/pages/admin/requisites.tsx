@@ -51,10 +51,17 @@ const Requisites = () => {
   const onGenerateRequisite = async (requisiteId: string) => {
     const response = await api.post(`/requisites/${requisiteId}`, {}, { timeout: 99999 })
     const data = response.data
+    const choices = data.json_choices
     refetch()
 
+    // check if choices is an array
+    if (!Array.isArray(choices)) {
+      console.warn(choices)
+      return
+    }
+
     if (!data.json) {
-      onOpenModal(data.text, data.choices, requisiteId)
+      onOpenModal(data.text, choices, requisiteId)
     }
   }
 
