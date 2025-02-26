@@ -1,32 +1,113 @@
 import { useState } from "react"
 import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table'
+import { Label, Modal, Radio, Textarea } from 'flowbite-react';
+import JSONPretty from 'react-json-pretty';
+import 'react-json-pretty/themes/monikai.css';
 
-import { useCourses } from "src/hooks/useCourses"
+import { useRequisites } from "src/hooks/useRequisites";
+import { Button } from "src/components"
+import api from "src/api";
 
-const Courses = () => {
+const theme = {
+  main: 'line-height:1.3;color:#5f6d70;background:transparent;overflow:auto;',
+  error: 'line-height:1.3;color:#5f6d70;background:#ffe0e0;overflow:auto;',
+  key: 'color:#f92672;',
+  string: 'color:#fd971f;',
+  value: 'color:#a6e22e;',
+  boolean: 'color:#ac81fe;',
+}
+
+const Requisites = () => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 20,
   })
 
-  const { courses, total } = useCourses({
+  const [requisiteId, setRequisiteId] = useState('')
+  const [text, setText] = useState('')
+  const [choices, setChoices] = useState<object[]>([])
+  const [manualJson, setManualJson] = useState('')
+  const [chosenChoiceIndex, setChosenChoiceIndex] = useState(-1)
+  const [isChoosing, setIsChoosing] = useState(false)
+
+  const { requisites, total, refetch } = useRequisites({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
   })
 
+  const onOpenModal = (text: string, choices: object[], requisiteId: string) => {
+    setRequisiteId(requisiteId)
+    setText(text)
+    setManualJson('')
+    setChoices(choices)
+    setChosenChoiceIndex(-1)
+    setIsChoosing(true)
+  }
+
+  const onCloseModal = () => {
+    setIsChoosing(false)
+  }
+
+  const onGenerateRequisite = async (requisiteId: string) => {
+    const response = await api.post(`/requisites/${requisiteId}`, {}, { timeout: 99999 })
+    const data = response.data
+    refetch()
+
+    if (!data.json) {
+      onOpenModal(data.text, data.choices, requisiteId)
+    }
+  }
+
+  const onUpdateRequisite = async () => {
+    const json = chosenChoiceIndex === -999 ? JSON.parse(manualJson) : choices[chosenChoiceIndex]
+    await api.put(`/requisites/${requisiteId}`, { json })
+    refetch()
+    onCloseModal()
+  }
+
+  const onManualJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setManualJson(e.target.value)
+    setChosenChoiceIndex(-999)
+  }
+
   const table = useReactTable({
     columns: [
       { header: 'ID', accessorKey: 'id', size: 20, },
-      { header: 'Code', accessorKey: 'code', size: 40, },
-      { header: 'Name', accessorKey: 'long_name' },
-      { header: 'Prereq', accessorKey: 'prereq' },
-      { header: 'Prereq JSON', accessorKey: 'prereq_json' },
-      { header: 'Antireq', accessorKey: 'antireq' },
-      { header: 'Antireq JSON', accessorKey: 'antireq_json' },
-      { header: 'Coreq', accessorKey: 'coreq' },
-      { header: 'Coreq JSON', accessorKey: 'coreq_json' },
+      { header: 'Type', accessorKey: 'requisite_type' },
+      { header: 'Text', accessorKey: 'text' },
+      {
+        header: 'Json', accessorKey: 'json',
+        cell: ({ cell, row }) => {
+          const id = row.id
+          const json = cell.getValue()
+          const text = row.original.text
+          const choices = row.original.json_choices
+          const onClick = () => onOpenModal(text, choices, id)
+          return (
+            <div className="flex flex-row items-center gap-2">
+              {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
+              {choices.length > 0 && <Button onClick={onClick}>Choose</Button>}
+            </div>
+          )
+        }
+      },
+      {
+        header: 'Json Choices', accessorKey: 'json_choices',
+        cell: ({ cell, row }) => {
+          const onClick = () => onGenerateRequisite(row.id)
+          return (
+            <div className="flex flex-row items-center gap-2">
+              <p>{cell.getValue<string[]>().length} choices</p>
+              <Button onClick={onClick}>Generate</Button>
+            </div>
+          )
+        },
+      },
+      { header: 'Departments', accessorKey: 'departments' },
+      { header: 'Faculties', accessorKey: 'faculties' },
+      { header: 'Program', accessorKey: 'program' },
     ],
-    data: courses,
+    data: requisites,
     rowCount: total,
     state: { pagination },
     manualPagination: true,
@@ -155,8 +236,41 @@ const Courses = () => {
           </div>
         </div>
       </div>
+
+      <Modal show={isChoosing} onClose={() => setIsChoosing(false)} size='2xl'>
+        <Modal.Header>{text}</Modal.Header>
+        <Modal.Body>
+          <fieldset className="flex flex-col gap-4">
+            {choices.map((choice, index) => (
+              <>
+                <div className="flex items-center gap-2 w-full">
+                  <Radio key={index} name="choices" id={`radio-${index}`} value={index} checked={chosenChoiceIndex === index} onChange={() => setChosenChoiceIndex(index)} />
+                  <Label htmlFor={`radio-${index}`} className="w-full">
+                    <JSONPretty theme={theme} data={JSON.stringify(choice)}></JSONPretty>
+                  </Label>
+                </div>
+                <hr className="w-full h-0.5 mx-auto bg-gray-200 border-0 rounded-sm dark:bg-gray-600"></hr>
+              </>
+            ))}
+
+            <div className="flex items-center gap-2 w-full">
+              <Radio name="choices" id="radio-manual" value="manual" checked={chosenChoiceIndex === -999} onChange={() => setChosenChoiceIndex(-999)} />
+              <Label htmlFor="radio-manual" className="w-full">
+                <div className="grid grid-flow-col cols-2 gap-2">
+                  <Textarea placeholder="Enter manual json" className="col-span-1" rows={6} value={manualJson} onChange={onManualJsonChange} />
+                  <JSONPretty theme={theme} data={manualJson} className="col-span-1"></JSONPretty>
+                </div>
+              </Label>
+            </div>
+          </fieldset>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={onUpdateRequisite}>Confirm</Button>
+          <Button onClick={onCloseModal}>Decline</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }
 
-export default Courses
+export default Requisites
