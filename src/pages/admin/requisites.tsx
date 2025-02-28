@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table'
-import { Label, Modal, Radio, Select, Textarea } from 'flowbite-react';
+import { Badge, Label, Modal, Radio, Select, Textarea, Table } from 'flowbite-react';
 import JSONPretty from 'react-json-pretty';
 import 'react-json-pretty/themes/monikai.css';
 
@@ -16,6 +16,9 @@ const theme = {
   value: 'color:#a6e22e;',
   boolean: 'color:#ac81fe;',
 }
+
+const MANUAL_JSON_CHOICE = -999
+const NULL_JSON_CHOICE = -998
 
 const Requisites = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -37,13 +40,23 @@ const Requisites = () => {
     type: requisiteType,
   })
 
-  const onOpenModal = (text: string, choices: object[], requisiteId: string) => {
+  const onOpenModal = (text: string, choices: object[], json: object, requisiteId: string) => {
     setRequisiteId(requisiteId)
     setText(text)
     setManualJson('')
     setChoices(choices)
     setChosenChoiceIndex(-1)
     setIsChoosing(true)
+
+    const choosenIndex = choices.findIndex(choice => JSON.stringify(choice) === JSON.stringify(json))
+    if (json === null) {
+      setChosenChoiceIndex(NULL_JSON_CHOICE)
+    } else if (choosenIndex !== -1) {
+      setChosenChoiceIndex(choosenIndex)
+    } else {
+      setChosenChoiceIndex(MANUAL_JSON_CHOICE)
+      setManualJson(JSON.stringify(json, null, 2))
+    }
   }
 
   const onCloseModal = () => {
@@ -51,9 +64,10 @@ const Requisites = () => {
   }
 
   const onGenerateRequisite = async (requisiteId: string) => {
-    const response = await api.post(`/requisites/${requisiteId}`, {}, { timeout: 10000 })
+    const response = await api.post(`/requisites/${requisiteId}`, {}, { timeout: 20000 })
     const data = response.data
     const choices = data.json_choices
+    const json = data.json
     refetch()
 
     // check if choices is an array
@@ -63,12 +77,19 @@ const Requisites = () => {
     }
 
     if (!data.json) {
-      onOpenModal(data.text, choices, requisiteId)
+      onOpenModal(data.text, choices, json, requisiteId)
     }
   }
 
   const onUpdateRequisite = async () => {
-    const json = chosenChoiceIndex === -999 ? JSON.parse(manualJson) : choices[chosenChoiceIndex]
+    let json = null
+    if (chosenChoiceIndex === MANUAL_JSON_CHOICE) {
+      json = JSON.parse(manualJson)
+    } else if (chosenChoiceIndex === NULL_JSON_CHOICE) {
+      json = null
+    } else {
+      json = choices[chosenChoiceIndex]
+    }
     await api.put(`/requisites/${requisiteId}`, { json })
     refetch()
     onCloseModal()
@@ -76,22 +97,40 @@ const Requisites = () => {
 
   const onManualJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setManualJson(e.target.value)
-    setChosenChoiceIndex(-999)
+    setChosenChoiceIndex(MANUAL_JSON_CHOICE)
   }
+
+  const choicesRender = useMemo(() => {
+    const choiceOccurences: Record<string, number> = {}
+
+    for (const choice of choices) {
+      const json = JSON.stringify(choice)
+      if (choiceOccurences[json]) {
+        choiceOccurences[json]++
+      } else {
+        choiceOccurences[json] = 1
+      }
+    }
+
+    return Object.entries(choiceOccurences).map(([json, count]) => {
+      return { json, count }
+    })
+  }, [choices])
 
   const table = useReactTable({
     columns: [
       { header: 'ID', accessorKey: 'id', size: 20, },
-      { header: 'Type', accessorKey: 'requisite_type' },
-      { header: 'Text', accessorKey: 'text' },
+      { header: 'Type', accessorKey: 'requisite_type', size: 20, },
+      { header: 'Text', accessorKey: 'text', size: 500, },
       {
         header: 'Json', accessorKey: 'json',
+        size: 500,
         cell: ({ cell, row }) => {
           const id = row.id
           const json = cell.getValue()
           const text = row.original.text
           const choices = row.original.json_choices
-          const onClick = () => onOpenModal(text, choices, id)
+          const onClick = () => onOpenModal(text, choices, json, id)
           return (
             <div className="flex flex-row items-center gap-2">
               {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
@@ -102,6 +141,7 @@ const Requisites = () => {
       },
       {
         header: 'Json Choices', accessorKey: 'json_choices',
+        size: 100,
         cell: ({ cell, row }) => {
           const onClick = () => onGenerateRequisite(row.id)
           return (
@@ -112,9 +152,9 @@ const Requisites = () => {
           )
         },
       },
-      { header: 'Departments', accessorKey: 'departments' },
-      { header: 'Faculties', accessorKey: 'faculties' },
-      { header: 'Program', accessorKey: 'program' },
+      { header: 'Departments', accessorKey: 'departments', size: 40, },
+      { header: 'Faculties', accessorKey: 'faculties', size: 40, },
+      { header: 'Program', accessorKey: 'program', size: 40, },
     ],
     data: requisites,
     rowCount: total,
@@ -136,34 +176,30 @@ const Requisites = () => {
         </Select>
       </div>
       <div className="overflow-x-auto rounded-lg m-4">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th key={header.id} className="px-3 py-4" style={{ width: header.getSize() }}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </th>
-                ))}
-              </tr>
+        <Table>
+          <Table.Head>
+            {table.getFlatHeaders().map(header => (
+              <Table.HeadCell key={header.id} className="px-3 py-4" style={{ width: header.getSize() }}>
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+              </Table.HeadCell>
             ))}
-          </thead>
-          <tbody>
+          </Table.Head>
+          <Table.Body className="divide-y">
             {table.getRowModel().rows.map(row => (
-              <tr key={row.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+              <Table.Row key={row.id}>
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-3 py-1" style={{ width: cell.column.getSize() }}>
+                  <Table.Cell key={cell.id} className="px-3 py-1" style={{ width: cell.column.getSize() }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                  </Table.Cell>
                 ))}
-              </tr>
+              </Table.Row>
             ))}
-          </tbody>
+          </Table.Body>
           <tfoot>
             {table.getFooterGroups().map(footerGroup => (
               <tr key={footerGroup.id}>
@@ -180,7 +216,7 @@ const Requisites = () => {
               </tr>
             ))}
           </tfoot>
-        </table>
+        </Table>
 
         <div className="flex items-center bg-white dark:bg-gray-800 px-3 py-4 justify-between text-sm">
           <div>
@@ -259,24 +295,41 @@ const Requisites = () => {
           <Modal.Header>{text}</Modal.Header>
           <Modal.Body>
             <fieldset className="flex flex-col gap-4">
-              {choices.map((choice, index) => (
-                <>
-                  <div className="flex items-center gap-2 w-full">
-                    <Radio key={index} name="choices" id={`radio-${index}`} value={index} checked={chosenChoiceIndex === index} onChange={() => setChosenChoiceIndex(index)} />
-                    <Label htmlFor={`radio-${index}`} className="w-full">
-                      <JSONPretty theme={theme} data={JSON.stringify(choice)}></JSONPretty>
-                    </Label>
-                  </div>
-                  <hr className="w-full h-0.5 mx-auto bg-gray-200 border-0 rounded-sm dark:bg-gray-600"></hr>
-                </>
-              ))}
+              {
+                choicesRender.map(({ json, count }, index) => (
+                  <>
+                    <div className="flex items-center gap-2 w-full">
+                      <Radio key={index} name="choices" id={`radio-${index}`} value={index} checked={chosenChoiceIndex === index} onChange={() => setChosenChoiceIndex(index)} />
+                      <Label htmlFor={`radio-${index}`} className="w-full">
+                        <div className="flex flex-row justify-between items-center">
+                          <JSONPretty theme={theme} data={json} />
+                          <Badge size="sm" href="#">x{count}</Badge>
+                        </div>
+                      </Label>
+                    </div>
+                    <hr className="w-full h-0.5 mx-auto bg-gray-200 border-0 rounded-sm dark:bg-gray-600"></hr>
+                  </>
+                ))
+              }
 
               <div className="flex items-center gap-2 w-full">
-                <Radio name="choices" id="radio-manual" value="manual" checked={chosenChoiceIndex === -999} onChange={() => setChosenChoiceIndex(-999)} />
+                <Radio name="choices" id="radio-manual" value="null" checked={chosenChoiceIndex === NULL_JSON_CHOICE} onChange={() => setChosenChoiceIndex(NULL_JSON_CHOICE)} />
+                <Label htmlFor="radio-manual" className="w-full">
+                  <div className="flex flex-row justify-between items-center">
+                    <JSONPretty theme={theme} data="null" />
+                    <Badge size="sm" href="#">Remove JSON</Badge>
+                  </div>
+                </Label>
+              </div>
+
+              <hr className="w-full h-0.5 mx-auto bg-gray-200 border-0 rounded-sm dark:bg-gray-600"></hr>
+
+              <div className="flex items-center gap-2 w-full">
+                <Radio name="choices" id="radio-manual" value="manual" checked={chosenChoiceIndex === MANUAL_JSON_CHOICE} onChange={() => setChosenChoiceIndex(MANUAL_JSON_CHOICE)} />
                 <Label htmlFor="radio-manual" className="w-full">
                   <div className="grid grid-flow-col cols-2 gap-2">
                     <Textarea placeholder="Enter manual json" className="col-span-1" rows={6} value={manualJson} onChange={onManualJsonChange} />
-                    <JSONPretty theme={theme} data={manualJson} className="col-span-1"></JSONPretty>
+                    <JSONPretty theme={theme} data={manualJson} className="col-span-1" />
                   </div>
                 </Label>
               </div>
@@ -287,7 +340,7 @@ const Requisites = () => {
             <Button onClick={onCloseModal}>Decline</Button>
           </Modal.Footer>
         </Modal>
-      </div>
+      </div >
     </>
   )
 }
