@@ -175,9 +175,9 @@ const Requisites = () => {
           <option value="ANTIREQ">ANTIREQ</option>
         </Select>
       </div>
-      <div className="overflow-x-auto rounded-lg m-4">
-        <Table>
-          <Table.Head>
+      <div className="overflow-x-auto rounded-lg m-4 relative">
+        <Table className="rounded-none">
+          <Table.Head className="sticky top-0 z-10">
             {table.getFlatHeaders().map(header => (
               <Table.HeadCell key={header.id} className="px-3 py-4" style={{ width: header.getSize() }}>
                 {header.isPlaceholder
@@ -200,25 +200,9 @@ const Requisites = () => {
               </Table.Row>
             ))}
           </Table.Body>
-          <tfoot>
-            {table.getFooterGroups().map(footerGroup => (
-              <tr key={footerGroup.id}>
-                {footerGroup.headers.map(header => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.footer,
-                        header.getContext()
-                      )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </tfoot>
         </Table>
 
-        <div className="flex items-center bg-white dark:bg-gray-800 px-3 py-4 justify-between text-sm">
+        <div className="w-full flex items-center bg-white dark:bg-gray-800 px-3 py-4 justify-between sticky bottom-0">
           <div>
             <select
               value={table.getState().pagination.pageSize}
