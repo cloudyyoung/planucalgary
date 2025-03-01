@@ -48,7 +48,7 @@ const Requisites = () => {
     setChosenChoiceIndex(-1)
     setIsChoosing(true)
 
-    const choosenIndex = choices.findIndex(choice => JSON.stringify(choice) === JSON.stringify(json))
+    const choosenIndex = choicesCounted.findIndex(choice => choice.json === JSON.stringify(json))
     if (json === null) {
       setChosenChoiceIndex(NULL_JSON_CHOICE)
     } else if (choosenIndex !== -1) {
@@ -88,7 +88,7 @@ const Requisites = () => {
     } else if (chosenChoiceIndex === NULL_JSON_CHOICE) {
       json = null
     } else {
-      json = choices[chosenChoiceIndex]
+      json = JSON.parse(choicesCounted[chosenChoiceIndex].json)
     }
     await api.put(`/requisites/${requisiteId}`, { json })
     refetch()
@@ -100,7 +100,7 @@ const Requisites = () => {
     setChosenChoiceIndex(MANUAL_JSON_CHOICE)
   }
 
-  const choicesRender = useMemo(() => {
+  const choicesCounted = useMemo(() => {
     const choiceOccurences: Record<string, number> = {}
 
     for (const choice of choices) {
@@ -111,10 +111,9 @@ const Requisites = () => {
         choiceOccurences[json] = 1
       }
     }
-
-    return Object.entries(choiceOccurences).map(([json, count]) => {
-      return { json, count }
-    })
+    return Object.entries(choiceOccurences)
+      .map(([json, count]) => ({ json, count }))
+      .sort((a, b) => b.count - a.count)
   }, [choices])
 
   const table = useReactTable({
@@ -122,6 +121,21 @@ const Requisites = () => {
       { header: 'ID', accessorKey: 'id', size: 20, },
       { header: 'Type', accessorKey: 'requisite_type', size: 20, },
       { header: 'Text', accessorKey: 'text', size: 500, },
+      {
+        header: "Json Validity", accessorKey: 'json_valid',
+        size: 10,
+        cell: ({ cell, row }) => {
+          const isValid = cell.getValue()
+
+          if (row.original.json === null) return
+
+          return (
+            <div className="flex items-center gap-2">
+              <Badge size="sm" color={isValid ? "green" : "red"}>{isValid ? 'Valid' : 'Invalid'}</Badge>
+            </div>
+          )
+        },
+      },
       {
         header: 'Json', accessorKey: 'json',
         size: 500,
@@ -134,7 +148,7 @@ const Requisites = () => {
           return (
             <div className="flex flex-row items-center gap-2">
               {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
-              {choices.length > 0 && <Button onClick={onClick}>Choose</Button>}
+              <Button onClick={onClick}>Choose</Button>
             </div>
           )
         }
@@ -280,7 +294,7 @@ const Requisites = () => {
           <Modal.Body>
             <fieldset className="flex flex-col gap-4">
               {
-                choicesRender.map(({ json, count }, index) => (
+                choicesCounted.map(({ json, count }, index) => (
                   <>
                     <div className="flex items-center gap-2 w-full">
                       <Radio key={index} name="choices" id={`radio-${index}`} value={index} checked={chosenChoiceIndex === index} onChange={() => setChosenChoiceIndex(index)} />
