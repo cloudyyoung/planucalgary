@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table'
 import { Badge, Label, Modal, Radio, Select, Textarea, Table } from 'flowbite-react';
 import JSONPretty from 'react-json-pretty';
@@ -29,6 +29,7 @@ const Requisites = () => {
   const [requisiteId, setRequisiteId] = useState('')
   const [requisiteType, setRequisiteType] = useState<"PREREQ" | "COREQ" | "ANTIREQ">()
   const [text, setText] = useState('')
+  const [json, setJson] = useState<object | null>(null)
   const [choices, setChoices] = useState<object[]>([])
   const [manualJson, setManualJson] = useState('')
   const [chosenChoiceIndex, setChosenChoiceIndex] = useState(-1)
@@ -43,20 +44,11 @@ const Requisites = () => {
   const onOpenModal = (text: string, choices: object[], json: object, requisiteId: string) => {
     setRequisiteId(requisiteId)
     setText(text)
+    setJson(json)
     setManualJson('')
     setChoices(choices)
     setChosenChoiceIndex(-1)
     setIsChoosing(true)
-
-    const choosenIndex = choicesCounted.findIndex(choice => choice.json === JSON.stringify(json))
-    if (json === null) {
-      setChosenChoiceIndex(NULL_JSON_CHOICE)
-    } else if (choosenIndex !== -1) {
-      setChosenChoiceIndex(choosenIndex)
-    } else {
-      setChosenChoiceIndex(MANUAL_JSON_CHOICE)
-      setManualJson(JSON.stringify(json, null, 2))
-    }
   }
 
   const onCloseModal = () => {
@@ -115,6 +107,18 @@ const Requisites = () => {
       .map(([json, count]) => ({ json, count }))
       .sort((a, b) => b.count - a.count)
   }, [choices])
+
+  useEffect(() => {
+    const choosenIndex = choicesCounted.findIndex(choice => choice.json === JSON.stringify(json))
+    if (json === null) {
+      setChosenChoiceIndex(NULL_JSON_CHOICE)
+    } else if (choosenIndex !== -1) {
+      setChosenChoiceIndex(choosenIndex)
+    } else {
+      setChosenChoiceIndex(MANUAL_JSON_CHOICE)
+      setManualJson(JSON.stringify(json, null, 2))
+    }
+  }, [choices, choicesCounted, json])
 
   const table = useReactTable({
     columns: [
