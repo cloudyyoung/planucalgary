@@ -189,7 +189,6 @@ const Requisites = () => {
       },
       { header: 'Departments', accessorKey: 'departments', size: 40, },
       { header: 'Faculties', accessorKey: 'faculties', size: 40, },
-      { header: 'Program', accessorKey: 'program', size: 40, },
     ],
     data: requisites,
     rowCount: total,
