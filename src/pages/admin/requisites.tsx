@@ -142,7 +142,7 @@ const Requisites = () => {
       },
       {
         header: 'Json', accessorKey: 'json',
-        size: 500,
+        size: 300,
         cell: ({ cell, row }) => {
           const id = row.id
           const json = cell.getValue()
@@ -153,6 +153,23 @@ const Requisites = () => {
             <div className="flex flex-row items-center gap-2">
               {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
               <Button onClick={onClick}>Choose</Button>
+            </div>
+          )
+        }
+      },
+      {
+        header: 'Json Errors', accessorKey: 'json_errors', size: 200,
+        cell: ({ cell }) => {
+          const errors = cell.getValue<any[]>()
+          if (errors.length === 0) return null
+          return (
+            <div className="flex flex-col gap-1">
+              {errors.map((error, index) => (
+                <Badge key={index} size="sm" color="red">
+                  <div>{error.message}</div>
+                  <JSONPretty theme={theme} data={JSON.stringify(error.value)} />
+                </Badge>
+              ))}
             </div>
           )
         }
