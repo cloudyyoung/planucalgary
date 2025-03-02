@@ -150,7 +150,7 @@ const Requisites = () => {
           const choices = row.original.json_choices
           const onClick = () => onOpenModal(text, choices, json, id)
           return (
-            <div className="flex flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-2 font-bold">
               {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
               <Button onClick={onClick}>Choose</Button>
             </div>
