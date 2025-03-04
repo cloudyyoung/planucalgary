@@ -124,18 +124,22 @@ const Requisites = () => {
     columns: [
       { header: 'ID', accessorKey: 'id', size: 20, },
       { header: 'Type', accessorKey: 'requisite_type', size: 20, },
-      { header: 'Text', accessorKey: 'text', size: 500, },
+      {
+        header: 'Text', accessorKey: 'text', size: 500,
+        cell: ({ cell }) => <div className="font-bold">{cell.getValue()}</div>
+      },
       {
         header: "Json Validity", accessorKey: 'json_valid',
         size: 10,
         cell: ({ cell, row }) => {
-          const isValid = cell.getValue()
-
           if (row.original.json === null) return
+          const isValid = cell.getValue()
+          const hasWarning = row.original.json_warnings.length > 0
 
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-start gap-2">
               <Badge size="sm" color={isValid ? "green" : "red"}>{isValid ? 'Valid' : 'Invalid'}</Badge>
+              {hasWarning && <Badge size="sm" color="yellow">Warning</Badge>}
             </div>
           )
         },
@@ -166,6 +170,23 @@ const Requisites = () => {
             <div className="flex flex-col gap-1">
               {errors.map((error, index) => (
                 <Badge key={index} size="sm" color="red">
+                  <div>{error.message}</div>
+                  <JSONPretty theme={theme} data={JSON.stringify(error.value)} />
+                </Badge>
+              ))}
+            </div>
+          )
+        }
+      },
+      {
+        header: 'Json Warnings', accessorKey: 'json_warnings', size: 140,
+        cell: ({ cell }) => {
+          const errors = cell.getValue<any[]>()
+          if (errors.length === 0) return null
+          return (
+            <div className="flex flex-col gap-1">
+              {errors.map((error, index) => (
+                <Badge key={index} size="sm" color="yellow">
                   <div>{error.message}</div>
                   <JSONPretty theme={theme} data={JSON.stringify(error.value)} />
                 </Badge>
