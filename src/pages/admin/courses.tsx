@@ -34,6 +34,7 @@ const Courses = () => {
       { header: 'ID', accessorKey: 'id', size: 20, },
       { header: 'Code', accessorKey: 'code', size: 40, },
       { header: 'Name', accessorKey: 'long_name' },
+      { header: 'Active', accessorKey: 'is_active' },
       { header: 'Prereq', accessorKey: 'prereq' },
       {
         header: 'Prereq JSON', accessorKey: 'prereq_json',
