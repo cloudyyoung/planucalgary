@@ -59,17 +59,11 @@ const Requisites = () => {
     const response = await api.post(`/requisites/${requisiteId}`, {}, { timeout: 20000 })
     const data = response.data
     const choices = data.json_choices
-    const json = data.json
     refetch()
 
     // check if choices is an array
     if (!Array.isArray(choices)) {
-      console.warn(choices)
       return
-    }
-
-    if (!data.json) {
-      onOpenModal(data.text, choices, json, requisiteId)
     }
   }
 
@@ -156,7 +150,7 @@ const Requisites = () => {
           return (
             <div className="flex flex-row items-center gap-2 font-bold">
               {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
-              <Button onClick={onClick}>Choose</Button>
+              <Button onClick={onClick} priority="primary" variant={(json === null && choices.length > 0) ? "tonal" : "text"}>Choose</Button>
             </div>
           )
         }
@@ -200,10 +194,11 @@ const Requisites = () => {
         size: 100,
         cell: ({ cell, row }) => {
           const onClick = () => onGenerateRequisite(row.id)
+          const choices = cell.getValue<object[]>()
           return (
             <div className="flex flex-row items-center gap-2">
-              <p>{cell.getValue<string[]>().length} choices</p>
-              <Button onClick={onClick}>Generate</Button>
+              <p>{choices.length} choices</p>
+              <Button onClick={onClick} variant={choices.length <= 0 ? "tonal" : "text"}>Generate</Button>
             </div>
           )
         },
