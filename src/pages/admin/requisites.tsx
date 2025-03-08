@@ -223,6 +223,8 @@ const Requisites = () => {
           <option value="PREREQ">PREREQ</option>
           <option value="COREQ">COREQ</option>
           <option value="ANTIREQ">ANTIREQ</option>
+          <option value="COURSE_SET">COURSE_SET</option>
+          <option value="REQUISITE_SET">REQUISITE_SET</option>
         </Select>
       </div>
       <div className="overflow-x-auto rounded-lg m-4 relative">
