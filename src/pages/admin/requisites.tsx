@@ -327,7 +327,7 @@ const Requisites = () => {
           </div>
         </div>
 
-        <Modal show={isChoosing} onClose={() => setIsChoosing(false)} size='2xl'>
+        <Modal show={isChoosing} onClose={() => setIsChoosing(false)} size='4xl'>
           <Modal.Header>{text}</Modal.Header>
           <Modal.Body>
             <fieldset className="flex flex-col gap-4">
@@ -363,7 +363,7 @@ const Requisites = () => {
               <div className="flex items-center gap-2 w-full">
                 <Radio name="choices" id="radio-manual" value="manual" checked={chosenChoiceIndex === MANUAL_JSON_CHOICE} onChange={() => setChosenChoiceIndex(MANUAL_JSON_CHOICE)} />
                 <Label htmlFor="radio-manual" className="w-full">
-                  <div className="grid grid-flow-col cols-2 gap-2">
+                  <div className="grid grid-flow-col grid-cols-2 gap-2">
                     <Textarea placeholder="Enter manual json" className="col-span-1" rows={6} value={manualJson} onChange={onManualJsonChange} />
                     <JSONPretty theme={theme} data={manualJson} className="col-span-1" />
                   </div>
