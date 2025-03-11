@@ -8,8 +8,9 @@ export default {
   ],
   theme: {
     fontFamily: {
-      sans: ['Switzer', 'sans-serif'],
-      serif: ['Gambarino', 'serif'],
+      sans: ['Overpass', 'sans-serif'],
+      serif: ['Overpass', 'serif'],
+      mono: ['Overpass Mono', 'monospace'],
     },
     extend: {
       colors: {
