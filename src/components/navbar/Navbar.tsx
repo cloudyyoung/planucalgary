@@ -10,7 +10,8 @@ const user = {
   email: 'tom@example.com',
 }
 const navigation = [
-  { name: 'Programs', href: '/programs' },
+  { name: 'Courses', href: '/courses' },
+  // { name: 'Programs', href: '/programs' },
   { name: 'Terms', href: '/terms' },
 ]
 const userNavigation = [
@@ -31,12 +32,12 @@ const Navbar = () => {
                   <div className="flex-shrink-0">
                     <img
                       className="h-8 w-8"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=green&shade=800"
-                      alt="Your Company"
+                      src="/public/logo.svg"
+                      alt="Plan Ucalgary"
                     />
                   </div>
                   <div className="hidden md:block">
-                    <div className="ml-8 flex items-baseline">
+                    <div className="ml-4 flex items-baseline">
                       {navigation.map((item) => (
                         <NavLink key={item.name} to={item.href}>
                           {({ isActive }) => (
