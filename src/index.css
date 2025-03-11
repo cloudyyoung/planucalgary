@@ -14,7 +14,7 @@ body {
 }
 
 .title {
-  @apply text-3xl font-medium text-primary-30 font-serif
+  @apply text-4xl font-bold text-primary-30
 }
 
 .px-app {
