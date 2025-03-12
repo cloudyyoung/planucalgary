@@ -2,7 +2,7 @@ import type { CustomFlowbiteTheme } from "flowbite-react";
 
 const theme: CustomFlowbiteTheme = {
   button: {
-    "base": "group relative flex items-stretch justify-center py-1 px-2 text-center font-medium transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow] border border-transparent z-0 focus:z-10 focus:outline-none after:content-[''] after:absolute after:top-0 after:left-0 after:w-full after:h-full after:-z-10 after:transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow]",
+    "base": "group relative flex items-stretch justify-center py-1 px-2 text-center font-medium transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow] border border-transparent z-0 focus:z-10 focus:outline-none after:content-[''] after:pointer-events-none after:absolute after:top-0 after:left-0 after:w-full after:h-full after:-z-10 after:transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow]",
     "color": {
       // Primary
       "filled-primary": "bg-primary text-on-primary hover:after:bg-on-primary/hover-state-layer focus:after:bg-on-primary/focus-state-layer disabled:bg-on-surface/12 disabled:text-on-surface/38",
