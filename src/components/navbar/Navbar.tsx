@@ -2,8 +2,8 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, UserIcon } from '@heroicons/react/24/solid'
 import { NavLink } from 'react-router-dom'
+import clsx from 'clsx'
 import { Button } from '@components'
-import { classNames } from '@utils'
 
 const user = {
   name: 'Tom Cook',
@@ -121,7 +121,7 @@ const Navbar = () => {
                     {({ isActive }) => (
                       <Disclosure.Button
                         as="a"
-                        className={classNames(
+                        className={clsx(
                           isActive ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                           'block rounded-md px-3 py-2 text-base font-medium'
                         )}
