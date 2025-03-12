@@ -3,7 +3,7 @@ const Terms = () => {
   return (
     <>
       <header className="bg-inherit">
-        <h1 className="px-app py-2 title">Terms</h1>
+        <h1 className="px-app title">Terms</h1>
       </header>
 
       <main className='px-app py-4 flex flex-row flex-nowrap flex-1 h-full gap-3 overflow-x-auto'>

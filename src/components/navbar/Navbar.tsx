@@ -26,13 +26,13 @@ const Navbar = () => {
       <Disclosure as="nav" className="">
         {({ open }) => (
           <>
-            <div className="mx-auto px-app">
+            <div className="mx-auto px-app mb-2">
               <div className="flex h-16 items-center justify-between">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <img
                       className="h-8 w-8"
-                      src="/public/logo.svg"
+                      src="/logo.svg"
                       alt="Plan Ucalgary"
                     />
                   </div>
