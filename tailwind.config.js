@@ -69,7 +69,7 @@ export default {
         '38': '0.38',
 
         'hover-state-layer': '0.08',
-        'focus-state-layer': '0.10',
+        'focus-state-layer': '0.12',
       }
     },
   },

@@ -90,7 +90,7 @@ const Courses = () => {
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <th key={header.id} className="px-3 py-4" style={{ width: header.getSize() }}>
+                  <th key={header.id} className="px-3 py-4" type={{ width: header.getSize() }}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -106,7 +106,7 @@ const Courses = () => {
             {table.getRowModel().rows.map(row => (
               <tr key={row.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-3 py-1" style={{ width: cell.column.getSize() }}>
+                  <td key={cell.id} className="px-3 py-1" type={{ width: cell.column.getSize() }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

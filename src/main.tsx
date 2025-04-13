@@ -9,7 +9,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import './index.css'
 
-import { App, Programs, Terms, Courses, AdminCourses, AdminRequisites } from '@pages'
+import { App, Programs, Terms, Courses, AdminCourses, AdminRequisites, ButtonsPrototype } from '@pages'
 import { queryClient } from './api';
 import theme from './theme'
 
@@ -23,6 +23,7 @@ const router = createBrowserRouter([
       { path: "/courses", element: <Courses /> },
       { path: '/admin/courses', element: <AdminCourses /> },
       { path: '/admin/requisites', element: <AdminRequisites /> },
+      { path: '/prototypes/buttons', element: <ButtonsPrototype /> }
     ],
   }
 ]);

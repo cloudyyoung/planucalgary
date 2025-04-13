@@ -42,8 +42,7 @@ const Navbar = () => {
                         <NavLink key={item.name} to={item.href}>
                           {({ isActive }) => (
                             <Button
-                              variant={isActive ? 'tonal' : 'text'}
-                              size="sm"
+                              appearance={isActive ? 'tonal' : 'text'}
                               aria-current={isActive ? 'page' : undefined}
                             >
                               {item.name}
@@ -56,7 +55,7 @@ const Navbar = () => {
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-4 flex items-center md:ml-6">
-                    <Button variant='text' priority='secondary' size="xs">
+                    <Button appearance='text'>
                       <span className="sr-only">View notifications</span>
                       <BellIcon className="h-5 w-5" aria-hidden="true" />
                     </Button>
@@ -65,7 +64,7 @@ const Navbar = () => {
                     <Menu as="div" className="relative ml-1">
                       <div>
                         <Menu.Button>
-                          <Button variant='tonal' priority='secondary' size="xs">
+                          <Button appearance='tonal'>
                             <span className="absolute -inset-1.5" />
                             <span className="sr-only">Open user menu</span>
                             <UserIcon className="h-5 w-5" aria-hidden="true" />
@@ -100,7 +99,7 @@ const Navbar = () => {
                 <div className="-mr-2 flex md:hidden">
                   {/* Mobile menu button */}
                   <Disclosure.Button>
-                    <Button variant='tonal' priority='secondary' size="xs">
+                    <Button appearance='tonal'>
                       <span className="absolute -inset-0.5" />
                       <span className="sr-only">Open main menu</span>
                       {open ? (
@@ -140,7 +139,7 @@ const Navbar = () => {
                     <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
                   </div>
                   <button
-                    type="button"
+                    design="button"
                     className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                   >
                     <span className="absolute -inset-1.5" />

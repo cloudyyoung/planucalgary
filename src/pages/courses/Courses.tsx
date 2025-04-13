@@ -4,7 +4,6 @@ import { List, TextInput } from "flowbite-react"
 import { useCourses } from "src/hooks/useCourses"
 import { Button } from "src/components"
 import { PlusIcon } from "@heroicons/react/24/solid"
-import { FilterChip } from "src/components/button/FilterChip"
 
 export const Courses = () => {
   const [keywords, setKeywords] = useState('')
@@ -34,7 +33,7 @@ export const Courses = () => {
             {courses.map((course: any) => (
               <List.Item key={course.id} className="text-on-surface p-4 cursor-pointer relative after:content-[''] after:pointer-events-none after:absolute after:top-0 after:bottom-0 after:left-0 after:right-0 after:bg-none after:transition-colors hover:after:bg-on-surface/8">
                 <div className="flex flex-row gap-4">
-                  <div><Button variant="tonal" priority="secondary">
+                  <div><Button appearance="tonal">
                     <PlusIcon className="w-5 h-5" />
                   </Button></div>
                   <div className="flex flex-col gap-0.5">

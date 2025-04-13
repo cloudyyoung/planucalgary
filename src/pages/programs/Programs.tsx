@@ -52,7 +52,7 @@ const Programs = () => {
             </div>
           </div>
           <div>
-            <Button variant="filled">
+            <Button appearance="filled">
               <PlusIcon className="w-5 mr-2 flex-none" />
               Add program
             </Button>
@@ -97,7 +97,7 @@ const EnrolledProgramButton = ({
 }: EnrolledProgramButtonProps) => {
   const iconClassNames = "w-5 mr-2 flex-none"
   return (
-    <Button variant={is_selected ? "tonal" : "text"} className="justify-start text-left px-0 py-2" onClick={onClick}>
+    <Button appearance={is_selected ? "tonal" : "text"} className="justify-start text-left px-0 py-2" onClick={onClick}>
       {
         programType === "ACP" ? (
           <AcademicCapIcon className={iconClassNames} />

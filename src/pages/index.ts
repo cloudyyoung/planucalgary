@@ -5,3 +5,5 @@ export { Courses } from './courses/Courses'
 
 export { default as AdminCourses } from './admin/courses'
 export { default as AdminRequisites } from './admin/requisites'
+
+export { default as ButtonsPrototype } from './prototype/Buttons'

@@ -150,7 +150,7 @@ const Requisites = () => {
           return (
             <div className="flex flex-row items-center gap-2 font-bold">
               {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
-              <Button onClick={onClick} priority="primary" variant={(json === null && choices.length > 0) ? "tonal" : "text"}>Choose</Button>
+              <Button onClick={onClick} appearance={(json === null && choices.length > 0) ? "tonal" : "text"}>Choose</Button>
             </div>
           )
         }
@@ -198,7 +198,7 @@ const Requisites = () => {
           return (
             <div className="flex flex-row items-center gap-2">
               <p>{choices.length} choices</p>
-              <Button onClick={onClick} variant={choices.length <= 0 ? "tonal" : "text"}>Generate</Button>
+              <Button onClick={onClick} appearance={choices.length <= 0 ? "tonal" : "text"}>Generate</Button>
             </div>
           )
         },
@@ -231,7 +231,7 @@ const Requisites = () => {
         <Table className="rounded-none">
           <Table.Head className="sticky top-0 z-10">
             {table.getFlatHeaders().map(header => (
-              <Table.HeadCell key={header.id} className="px-3 py-4" style={{ width: header.getSize() }}>
+              <Table.HeadCell key={header.id} className="px-3 py-4" type={{ width: header.getSize() }}>
                 {header.isPlaceholder
                   ? null
                   : flexRender(
@@ -245,7 +245,7 @@ const Requisites = () => {
             {table.getRowModel().rows.map(row => (
               <Table.Row key={row.id}>
                 {row.getVisibleCells().map(cell => (
-                  <Table.Cell key={cell.id} className="px-3 py-1" style={{ width: cell.column.getSize() }}>
+                  <Table.Cell key={cell.id} className="px-3 py-1" type={{ width: cell.column.getSize() }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Table.Cell>
                 ))}
@@ -372,8 +372,8 @@ const Requisites = () => {
             </fieldset>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={onUpdateRequisite} priority="primary" variant="filled">Confirm</Button>
-            <Button onClick={onCloseModal}>Decline</Button>
+            <Button onClick={onUpdateRequisite} appearance="filled">Confirm</Button>
+            <Button onClick={onCloseModal} appearance="text">Decline</Button>
           </Modal.Footer>
         </Modal>
       </div >
