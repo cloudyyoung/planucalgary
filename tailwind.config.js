@@ -17,6 +17,30 @@ const replaceCamelCaseRecursively = (obj) => {
   return obj;
 };
 
+// Populate palettes with default values
+const populatePalettes = (schemes, palettes) => {
+  const newScheme = {}
+
+  for (const [schemaName, scheme] of Object.entries(schemes)) {
+    newScheme[schemaName] = {};
+
+    for (const [tokenName, tokenValue] of Object.entries(scheme)) {
+      if (palettes[tokenName]) {
+        const palette = palettes[tokenName];
+        newScheme[schemaName][tokenName] = {
+          ...palette,
+          DEFAULT: tokenValue,
+        };
+      } else {
+        newScheme[schemaName][tokenName] = tokenValue;
+      }
+    }
+  }
+
+  return newScheme;
+}
+
+
 // Read from material-theme.json
 const fs = require('fs');
 const path = require('path');
@@ -24,6 +48,7 @@ const json_path = path.join(__dirname, 'material-theme.json');
 const theme = JSON.parse(fs.readFileSync(json_path, 'utf8'));
 const schemes = replaceCamelCaseRecursively(theme.schemes);
 const palettes = replaceCamelCaseRecursively(theme.palettes)
+const themes = populatePalettes(schemes, palettes)
 
 export default {
   content: [
@@ -37,7 +62,6 @@ export default {
       mono: ['overpass-mono', 'monospace'],
     },
     extend: {
-      colors: palettes,
       opacity: {
         '8': '0.08',
         '12': '0.12',
@@ -51,7 +75,7 @@ export default {
   },
   plugins: [
     flowbite.plugin(),
-    createThemes(schemes)
+    createThemes(themes)
   ],
 }
 
