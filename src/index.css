@@ -1,5 +1,4 @@
-@import url('webfonts/overpass-webfont/overpass.css');
-@import url('webfonts/overpass-mono-webfont/overpass-mono.css');
+@import url('https://fonts.googleapis.com/css2?family=Overpass+Mono:wght@300..700&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
 @tailwind base;
