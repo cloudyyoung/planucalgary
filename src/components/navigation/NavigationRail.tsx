@@ -15,7 +15,7 @@ export interface NavigationRailProps {
 const NavigationRail = ({ alignment = "top" }: NavigationRailProps) => {
   const navigate = useNavigate()
   const routes = [
-    { label: "Courses", icon: "import_contacts", path: "/courses" },
+    { label: "Courses", icon: "book", path: "/courses" },
     { label: "Terms", icon: "calendar_today", path: "/terms" },
   ]
 
@@ -64,7 +64,10 @@ const NavigationRailButton = ({ icon, label, active = false, className, ...args 
       <span className={clsx(
         baseCommon,
         stateLayerCommon,
-        "material-symbols-outlined [font-variation-settings:'wght'_400, 'opsz'_24] h-8 w-14 mx-3 duration-100",
+        "material-symbols-outlined [font-variation-settings:'FILL'_0,'wght'_400,'opsz'_24] h-8 w-14 mx-3 duration-100",
+        active
+          ? "[font-variation-settings:'FILL'_1,'wght'_400,'opsz'_24] group-hover:[font-variation-settings:'FILL'_1,'wght'_600,'opsz'_24] group-active:[font-variation-settings:'FILL'_1,'wght'_300,'opsz'_24]"
+          : "[font-variation-settings:'FILL'_0,'wght'_400,'opsz'_24] group-hover:[font-variation-settings:'FILL'_0,'wght'_600,'opsz'_24] group-active:[font-variation-settings:'FILL'_0,'wght'_300,'opsz'_24]",
         active ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant",
         active ? "group-hover:text-on-secondary-container group-hover:after:bg-on-surface/8" : "group-hover:text-on-surface group-hover:after:bg-on-surface/8",
         active ? "group-active:text-on-secondary-container group-active:after:bg-on-surface/12" : "group-active:text-on-surface group-active:after:bg-on-surface/12",
