@@ -17,25 +17,25 @@ const Button = ({ appearance = "text", className, ...args }: ButtonProps) => {
   const lookup: Record<ButtonAppearance, HTMLAttributes<HTMLElement>["className"]> = {
     filled: clsx(
       "bg-primary text-on-primary hover:shadow-md active:shadow-none disabled:bg-on-surface/12",
-      "after:bg-on-primary/0 hover:after:bg-on-primary/8 focus:after:bg-on-primary/12",
+      "after:bg-on-primary/0 hover:after:bg-on-primary/8 active:after:bg-on-primary/12",
     ),
     outlined: clsx(
       "text-primary border border-outline",
-      "hover:after:bg-primary/8 focus:after:bg-primary/12",
+      "hover:after:bg-primary/8 active:after:bg-primary/12",
       "disabled:border-on-surface/12",
     ),
     text: clsx(
       "text-primary px-3",
-      "hover:after:bg-primary/8 focus:after:bg-primary/12",
+      "hover:after:bg-primary/8 active:after:bg-primary/12",
     ),
     elevated: clsx(
       "bg-surface-container-low text-primary shadow-md",
-      "hover:after:bg-primary/8 focus:after:bg-primary/12 active:shadow",
+      "hover:after:bg-primary/8 active:after:bg-primary/12 active:shadow",
       "disabled:bg-on-surface/12 disabled:after:bg-transparent disabled:shadow-none",
     ),
     tonal: clsx(
       "bg-secondary-container text-on-secondary-container hover:shadow active:shadow-none",
-      "after:bg-transparent hover:after:bg-on-secondary-container/8 focus:after:bg-on-secondary-container/12",
+      "after:bg-transparent hover:after:bg-on-secondary-container/8 active:after:bg-on-secondary-container/12",
       "disabled:bg-on-surface/12 disabled:after:bg-transparent",
     ),
   }
