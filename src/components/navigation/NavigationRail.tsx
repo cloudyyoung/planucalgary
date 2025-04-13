@@ -64,7 +64,7 @@ const NavigationRailButton = ({ icon, label, active = false, className, ...args 
       <span className={clsx(
         baseCommon,
         stateLayerCommon,
-        "material-symbols-outlined text-[24px] h-8 w-14 mx-3",
+        "material-symbols-outlined [font-variation-settings:'wght'_400, 'opsz'_24] h-8 w-14 mx-3 duration-100",
         active ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant",
         active ? "group-hover:text-on-secondary-container group-hover:after:bg-on-surface/8" : "group-hover:text-on-surface group-hover:after:bg-on-surface/8",
         active ? "group-active:text-on-secondary-container group-active:after:bg-on-surface/12" : "group-active:text-on-surface group-active:after:bg-on-surface/12",
@@ -72,7 +72,8 @@ const NavigationRailButton = ({ icon, label, active = false, className, ...args 
         {icon}
       </span>
       <span className={clsx(
-        "text-xs group-hover:[font-variation-settings:'wght'_700] group-active:[font-variation-settings:'wght'_300] duration-100",
+        "text-xs duration-100",
+        "group-hover:[font-variation-settings:'wght'_700] group-active:[font-variation-settings:'wght'_300]",
         active ? "font-bold text-on-surface" : "font-500 text-on-surface-variant",
         active ? "group-hover:text-on-surface" : "group-hover:text-on-surface",
         active ? "group-active:text-on-surface" : "group-active:text-on-surface",
