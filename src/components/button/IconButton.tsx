@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes, HTMLAttributes } from "react"
 import clsx from "clsx"
 import { twMerge } from "tailwind-merge"
 
-import { baseCommon, outline, disabledCommon, stateLayerCommon } from "./Button"
+import { baseCommon, outlineCommon, disabledCommon, stateLayerCommon } from "./Button"
 
 export type IconButtonAppearance = "filled" | "outlined" | "standard" | "tonal"
 
@@ -37,7 +37,7 @@ const IconButton = ({ appearance, className, children, onClick, ...args }: IconB
 
   const classNames = twMerge(clsx(
     baseCommon,
-    outline,
+    outlineCommon,
     disabledCommon,
     stateLayerCommon,
 

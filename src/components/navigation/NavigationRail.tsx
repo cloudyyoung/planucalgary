@@ -2,7 +2,7 @@ import clsx from "clsx"
 import { ButtonHTMLAttributes } from "react"
 import { twMerge } from "tailwind-merge"
 
-import { baseCommon, stateLayerCommon } from "../button/Button"
+import { baseCommon, outlineCommon, stateLayerCommon } from "../button/Button"
 
 
 export type NavigationRailAlignment = "top" | "middle" | "bottom"
@@ -13,7 +13,7 @@ export interface NavigationRailProps {
 
 const NavigationRail = ({ alignment = "top" }: NavigationRailProps) => {
   return (
-    <div className="w-20 bg-surface-container-low">
+    <div className="min-w-20 px-0.5 bg-surface-container-low">
       <div className={twMerge(clsx(
         "py-11 flex flex-col gap-3 items-center h-full",
         alignment === "top" && "justify-start",
@@ -35,13 +35,16 @@ interface NavigationRailButtonProps extends Omit<ButtonHTMLAttributes<HTMLButton
   active?: boolean
 }
 
-const NavigationRailButton = ({ icon, label, active = false, ...args }: NavigationRailButtonProps) => {
+const NavigationRailButton = ({ icon, label, active = false, className, ...args }: NavigationRailButtonProps) => {
   return (
     <button
-      className={clsx(
+      className={twMerge(clsx(
         baseCommon,
-        "flex flex-col items-center justify-center gap-1 text-center w-full min-h-14",
-      )}
+        outlineCommon,
+        "flex flex-col items-center justify-center gap-1 text-center w-full min-h-14 rounded-2xl py-0.5",
+        "focus-visible:outline-offset-0",
+        className
+      ))}
       {...args}
     >
       <span className={clsx(

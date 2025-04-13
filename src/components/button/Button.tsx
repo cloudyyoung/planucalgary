@@ -13,7 +13,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const baseCommon = "rounded-full after:rounded-full group relative flex items-center justify-center text-center font-medium transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow] outline-none z-0"
 export const stateLayerCommon = "after:pointer-events-none after:absolute after:top-0 after:left-0 after:w-full after:h-full after:z-[-1] after:transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow]"
 export const disabledCommon = "disabled:pointer-events-none disabled:text-on-surface/38"
-export const outline = "focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary focus-visible:outline-offset-2"
+export const outlineCommon = "focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary focus-visible:outline-offset-2"
 
 
 const Button = ({ appearance = "text", className, icon, children, ...args }: ButtonProps) => {
@@ -45,7 +45,7 @@ const Button = ({ appearance = "text", className, icon, children, ...args }: But
 
   const classNames: HTMLAttributes<HTMLElement>["className"] = twMerge(clsx(
     baseCommon,
-    outline,
+    outlineCommon,
     disabledCommon,
     stateLayerCommon,
     "text-sm px-4 h-10",
