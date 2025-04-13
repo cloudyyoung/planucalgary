@@ -1,6 +1,33 @@
 import clsx from "clsx"
-import { baseCommon, stateLayerCommon } from "../button/Button"
 import { ButtonHTMLAttributes } from "react"
+import { twMerge } from "tailwind-merge"
+
+import { baseCommon, stateLayerCommon } from "../button/Button"
+
+
+export type NavigationRailAlignment = "top" | "middle" | "bottom"
+
+export interface NavigationRailProps {
+  alignment?: NavigationRailAlignment
+}
+
+const NavigationRail = ({ alignment = "top" }: NavigationRailProps) => {
+  return (
+    <div className="w-20 bg-surface-container-low">
+      <div className={twMerge(clsx(
+        "py-11 flex flex-col gap-3 items-center h-full",
+        alignment === "top" && "justify-start",
+        alignment === "middle" && "justify-center",
+        alignment === "bottom" && "justify-end",
+      ))}>
+        <NavigationRailButton icon="search" label="Search" active />
+        <NavigationRailButton icon="search" label="Search" />
+      </div>
+    </div>
+  )
+}
+
+
 
 interface NavigationRailButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled"> {
   icon: string
@@ -8,7 +35,7 @@ interface NavigationRailButtonProps extends Omit<ButtonHTMLAttributes<HTMLButton
   active?: boolean
 }
 
-const NavigationRailButton = ({ icon, label, active, ...args }: NavigationRailButtonProps) => {
+const NavigationRailButton = ({ icon, label, active = false, ...args }: NavigationRailButtonProps) => {
   return (
     <button
       className={clsx(
@@ -39,16 +66,5 @@ const NavigationRailButton = ({ icon, label, active, ...args }: NavigationRailBu
   )
 }
 
-const NavigationRail = () => {
-  return (
-    <div className="w-20 bg-surface">
-      <div className=" py-8 flex flex-col gap-3">
-        <NavigationRailButton icon="search" label="Search" active />
-        <NavigationRailButton icon="search" label="Search" />
-      </div>
-    </div>
-  )
-}
-
+export { NavigationRail, NavigationRailButton }
 export default NavigationRail
-export { NavigationRail }

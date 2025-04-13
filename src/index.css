@@ -8,7 +8,7 @@
 
 
 body {
-  @apply bg-surface-container overflow-x-hidden align-baseline light
+  @apply bg-surface overflow-x-hidden align-baseline light
 }
 
 #root {
