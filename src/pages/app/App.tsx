@@ -1,11 +1,15 @@
-import { Navbar } from '@components'
+import { NavigationRail } from '@components'
 import { Outlet } from 'react-router-dom'
 
 const App = () => {
   return (
     <>
-      <Navbar />
-      <Outlet />
+      <div className='flex flex-row h-full'>
+        <NavigationRail />
+        <div className='overflow-auto'>
+          <Outlet />
+        </div>
+      </div>
     </>
   )
 }
