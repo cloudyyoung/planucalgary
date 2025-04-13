@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const flowbite = require("flowbite-react/tailwind");
+const { createThemes } = require('tw-colors');
 
 // Replace camelCase keys with dashed keys
 const replaceCamelCaseRecursively = (obj) => {
@@ -36,10 +37,7 @@ export default {
       mono: ['overpass-mono', 'monospace'],
     },
     extend: {
-      colors: {
-        ...schemes.light,
-        ...palettes,
-      },
+      colors: palettes,
       opacity: {
         '8': '0.08',
         '12': '0.12',
@@ -53,6 +51,7 @@ export default {
   },
   plugins: [
     flowbite.plugin(),
+    createThemes(schemes)
   ],
 }
 
