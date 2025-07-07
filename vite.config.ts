@@ -9,14 +9,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": "/src",
-      src: "/src",
-      components: "/src/components",
       "@components": "/src/components/index",
-      pages: "/src/pages",
       "@pages": "/src/pages/index",
-      utils: "/src/utils",
       "@utils": "/src/utils/index",
-      assets: "/src/assets",
     },
   },
 })

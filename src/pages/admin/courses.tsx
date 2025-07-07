@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table'
 import JSONPretty from "react-json-pretty"
 
-import { useCourses } from "src/hooks/useCourses"
+import { useCourses } from "@/hooks/useCourses"
 import { TextInput } from "flowbite-react"
 
 

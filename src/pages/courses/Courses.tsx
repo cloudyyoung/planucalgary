@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { List, TextInput } from "flowbite-react"
 
-import { useCourses } from "src/hooks/useCourses"
-import { Button } from "src/components"
+import { useCourses } from "@/hooks/useCourses"
+import { Button } from "@/components"
 import { PlusIcon } from "@heroicons/react/24/solid"
 
 export const Courses = () => {

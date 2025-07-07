@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import api from "src/api"
+import api from "@/api"
 
 export interface UseRequisitesOptions {
   offset?: number

@@ -4,9 +4,9 @@ import { Badge, Label, Modal, Radio, Select, Textarea, Table } from 'flowbite-re
 import JSONPretty from 'react-json-pretty';
 import 'react-json-pretty/themes/monikai.css';
 
-import { useRequisites } from "src/hooks/useRequisites";
-import { Button } from "src/components"
-import api from "src/api";
+import { useRequisites } from "@/hooks/useRequisites";
+import { Button } from "@/components"
+import api from "@/api";
 
 const theme = {
   main: 'line-height:1.3;color:#5f6d70;background:transparent;overflow:auto;',
@@ -150,7 +150,7 @@ const Requisites = () => {
           return (
             <div className="flex flex-row items-center gap-2 font-bold">
               {json && <JSONPretty theme={theme} data={JSON.stringify(json)}></JSONPretty>}
-              <Button onClick={onClick} appearance={(json === null && choices.length > 0) ? "tonal" : "text"}>Choose</Button>
+              <Button onClick={onClick}>Choose</Button>
             </div>
           )
         }
@@ -198,7 +198,7 @@ const Requisites = () => {
           return (
             <div className="flex flex-row items-center gap-2">
               <p>{choices.length} choices</p>
-              <Button onClick={onClick} appearance={choices.length <= 0 ? "tonal" : "text"}>Generate</Button>
+              <Button onClick={onClick}>Generate</Button>
             </div>
           )
         },
@@ -372,8 +372,8 @@ const Requisites = () => {
             </fieldset>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={onUpdateRequisite} appearance="filled">Confirm</Button>
-            <Button onClick={onCloseModal} appearance="text">Decline</Button>
+            <Button onClick={onUpdateRequisite}>Confirm</Button>
+            <Button onClick={onCloseModal}>Decline</Button>
           </Modal.Footer>
         </Modal>
       </div >
