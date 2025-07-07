@@ -29,7 +29,7 @@ export const Courses = () => {
             {courses.map((course: any) => (
               <List.Item key={course.id} className="text-on-surface p-4 cursor-pointer relative after:content-[''] after:pointer-events-none after:absolute after:top-0 after:bottom-0 after:left-0 after:right-0 after:bg-none after:transition-colors hover:after:bg-on-surface/8">
                 <div className="flex flex-row gap-4">
-                  <div><Button appearance="tonal">
+                  <div><Button>
                     <PlusIcon className="w-5 h-5" />
                   </Button></div>
                   <div className="flex flex-col gap-0.5">

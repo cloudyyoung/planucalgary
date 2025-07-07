@@ -1,5 +1,5 @@
 import { AcademicCapIcon, ArrowRightCircleIcon, PlusIcon } from "@heroicons/react/24/solid"
-import { Button, ButtonProps } from "@components"
+import { Button } from "@components"
 import { useEffect, useState } from "react";
 import api from "src/api";
 import { CatalogProgram } from "./types";
@@ -52,7 +52,7 @@ const Programs = () => {
             </div>
           </div>
           <div>
-            <Button appearance="filled">
+            <Button>
               <PlusIcon className="w-5 mr-2 flex-none" />
               Add program
             </Button>
@@ -86,7 +86,7 @@ interface EnrolledProgramButtonProps {
   displayName: string
   programType: string // ACP | MIN | EMC
   isSelected?: boolean
-  onClick: ButtonProps["onClick"]
+  onClick: React.MouseEventHandler<HTMLButtonElement>
 }
 
 const EnrolledProgramButton = ({
@@ -97,7 +97,7 @@ const EnrolledProgramButton = ({
 }: EnrolledProgramButtonProps) => {
   const iconClassNames = "w-5 mr-2 flex-none"
   return (
-    <Button appearance={is_selected ? "tonal" : "text"} className="justify-start text-left px-0 py-2" onClick={onClick}>
+    <Button className="justify-start text-left px-0 py-2" onClick={onClick}>
       {
         programType === "ACP" ? (
           <AcademicCapIcon className={iconClassNames} />
