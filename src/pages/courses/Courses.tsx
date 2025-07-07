@@ -14,7 +14,7 @@ export const Courses = () => {
 
   return (
     <>
-      <main className='px-app py-4 flex flex-col flex-nowrap flex-1 h-full gap-3 overflow-x-auto'>
+      <main className='px-4 py-4'>
         <Input className="w-full" placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
 
         {/*

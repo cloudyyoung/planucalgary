@@ -3,11 +3,7 @@ import { Outlet } from 'react-router-dom'
 const App = () => {
   return (
     <>
-      <div className='flex flex-row h-full'>
-        <div className='overflow-auto'>
-          <Outlet />
-        </div>
-      </div>
+      <Outlet />
     </>
   )
 }
