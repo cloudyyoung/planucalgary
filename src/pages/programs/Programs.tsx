@@ -1,5 +1,5 @@
 import { AcademicCapIcon, ArrowRightCircleIcon, PlusIcon } from "@heroicons/react/24/solid"
-import { Button } from "@components"
+import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react";
 import api from "@/api";
 import { CatalogProgram } from "./types";

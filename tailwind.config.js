@@ -40,15 +40,6 @@ const populatePalettes = (schemes, palettes) => {
 }
 
 
-// Read from material-theme.json
-const fs = require('fs');
-const path = require('path');
-const json_path = path.join(__dirname, 'material-theme.json');
-const theme = JSON.parse(fs.readFileSync(json_path, 'utf8'));
-const schemes = replaceCamelCaseRecursively(theme.schemes);
-const palettes = replaceCamelCaseRecursively(theme.palettes)
-const themes = populatePalettes(schemes, palettes)
-
 export default {
     darkMode: ["class"],
     content: [
@@ -70,14 +61,6 @@ export default {
   		]
   	},
   	extend: {
-  		opacity: {
-  			'8': '0.08',
-  			'12': '0.12',
-  			'16': '0.16',
-  			'38': '0.38',
-  			'hover-state-layer': '0.08',
-  			'focus-state-layer': '0.12'
-  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -150,7 +133,6 @@ export default {
   	}
   },
   plugins: [
-    createThemes(themes),
       require("tailwindcss-animate")
 ],
 }

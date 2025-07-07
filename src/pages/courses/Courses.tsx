@@ -1,7 +1,8 @@
 import { useState } from "react"
 
 import { useCourses } from "@/hooks/useCourses"
-import { Button } from "@/components"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { PlusIcon } from "@heroicons/react/24/solid"
 
 export const Courses = () => {
@@ -14,7 +15,7 @@ export const Courses = () => {
   return (
     <>
       <main className='px-app py-4 flex flex-col flex-nowrap flex-1 h-full gap-3 overflow-x-auto'>
-        <input placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
+        <Input className="w-full" placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
 
         {/*
         <div className="flex flex-row gap-1">
@@ -23,7 +24,7 @@ export const Courses = () => {
           <FilterChip>Archived</FilterChip>
         </div> */}
 
-        <div className="">
+        {/* <div className="">
           <div>
             {courses.map((course: any) => (
               <div key={course.id} className="text-on-surface p-4 cursor-pointer relative after:content-[''] after:pointer-events-none after:absolute after:top-0 after:bottom-0 after:left-0 after:right-0 after:bg-none after:transition-colors hover:after:bg-on-surface/8">
@@ -46,7 +47,7 @@ export const Courses = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </main>
     </>
   )

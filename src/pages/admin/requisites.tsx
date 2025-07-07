@@ -4,7 +4,7 @@ import JSONPretty from 'react-json-pretty';
 import 'react-json-pretty/themes/monikai.css';
 
 import { useRequisites } from "@/hooks/useRequisites";
-import { Button } from "@/components"
+import { Button } from "@/components/ui/button"
 import api from "@/api";
 
 const theme = {
