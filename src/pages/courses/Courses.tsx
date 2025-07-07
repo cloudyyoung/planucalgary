@@ -1,9 +1,15 @@
 import { useState } from "react"
+import { PlusIcon } from "@heroicons/react/24/solid"
 
 import { useCourses } from "@/hooks/useCourses"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { PlusIcon } from "@heroicons/react/24/solid"
+import { Badge } from "@/components/ui/badge"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 export const Courses = () => {
   const [keywords, setKeywords] = useState('')
@@ -14,7 +20,7 @@ export const Courses = () => {
 
   return (
     <>
-      <main className='px-4 py-4'>
+      <main className='px-4 py-4 space-y-2'>
         <Input className="w-full" placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
 
         {/*
@@ -24,30 +30,32 @@ export const Courses = () => {
           <FilterChip>Archived</FilterChip>
         </div> */}
 
-        {/* <div className="">
-          <div>
+        <div className="">
+          <div className="flex flex-col w-full divide-y">
             {courses.map((course: any) => (
-              <div key={course.id} className="text-on-surface p-4 cursor-pointer relative after:content-[''] after:pointer-events-none after:absolute after:top-0 after:bottom-0 after:left-0 after:right-0 after:bg-none after:transition-colors hover:after:bg-on-surface/8">
-                <div className="flex flex-row gap-4">
-                  <div><Button>
-                    <PlusIcon className="w-5 h-5" />
-                  </Button></div>
-                  <div className="flex flex-col gap-0.5">
-                    <div className="flex flex-row items-center gap-2">
-                      <div className="font-bold font-mono text-sm text-secondary flex flex-row gap-0.5 border border-outline-variant rounded-md px-1.5 pt-0.5 w-fit">
+              <HoverCard>
+                <HoverCardTrigger>
+                  <Button variant="link" key={course.id} value={course.id} className="px-0 h-12">
+                    <Button variant="secondary" className="h-6 flex flex-row mr-4">
+                      <PlusIcon className="w-5 h-5" />
+                    </Button>
+                    <div className="flex flex-row items-center w-full gap-2">
+                      <Badge variant="outline" className="font-bold font-mono rounded-md px-1.5 pt-0.5 w-fit">
                         <span>{course.subject_code}</span>
                         <span>{course.course_number}</span>
-                      </div>
+                      </Badge>
+
                       <div className="font-bold pt-0.5">{course.long_name}</div>
                     </div>
-                    <div className="text-sm text-on-surface-variant">{course.description}</div>
-                  </div>
-                </div>
-
-              </div>
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  <p className="text-sm">{course.description}</p>
+                </HoverCardContent>
+              </HoverCard>
             ))}
           </div>
-        </div> */}
+        </div>
       </main>
     </>
   )
