@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@tanstack/react-table'
-import { Badge, Label, Modal, Radio, Select, Textarea, Table } from 'flowbite-react';
 import JSONPretty from 'react-json-pretty';
 import 'react-json-pretty/themes/monikai.css';
 

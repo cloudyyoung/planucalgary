@@ -1,5 +1,5 @@
 import { CatalogProgram } from './types'
-import { Accordion } from 'flowbite-react'
+import { Accordion, AccordionContent } from "@/components/ui/accordion"
 
 interface ProgramDetailsProps {
   programData: CatalogProgram
@@ -20,12 +20,12 @@ const ProgramDetails = ({
               <div className="text-lg font-semibold">{rule.name}</div>
               <p>{rule.credits && <div className="text-sm text-on-surface-low">Earn at least {rule.credits} credits: </div>}</p>
               <p>{rule.value.condition}</p>
-              <Accordion>
+              <Accordion type="multiple">
                 {
                   rule.value.values.map((value: any, index_outer: number) => value.values.map((rule: any, index: number) => (
-                    <Accordion.Panel key={`${index_outer}-${index}`}>
-                      <Accordion.Title>{rule.name}</Accordion.Title>
-                      <Accordion.Content>
+                    <AccordionContent key={`${index_outer}-${index}`}>
+                      <div>{rule.name}</div>
+                      <div>
                         <p>ID: {rule.id}</p>
                         <p>TYPE: {rule.type}</p>
                         {rule.structure && rule.structure.rules.map((srule: any, index: number) => (
@@ -34,8 +34,8 @@ const ProgramDetails = ({
                             <div>{srule.value.long_name}</div>
                           </div>
                         ))}
-                      </Accordion.Content>
-                    </Accordion.Panel>
+                      </div>
+                    </AccordionContent>
                   )))
                 }
               </Accordion>

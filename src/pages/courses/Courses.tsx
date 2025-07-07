@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { List, TextInput } from "flowbite-react"
 
 import { useCourses } from "@/hooks/useCourses"
 import { Button } from "@/components"
@@ -15,7 +14,7 @@ export const Courses = () => {
   return (
     <>
       <main className='px-app py-4 flex flex-col flex-nowrap flex-1 h-full gap-3 overflow-x-auto'>
-        <TextInput sizing="lg" placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
+        <input placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
 
         {/*
         <div className="flex flex-row gap-1">
@@ -25,9 +24,9 @@ export const Courses = () => {
         </div> */}
 
         <div className="">
-          <List unstyled>
+          <div>
             {courses.map((course: any) => (
-              <List.Item key={course.id} className="text-on-surface p-4 cursor-pointer relative after:content-[''] after:pointer-events-none after:absolute after:top-0 after:bottom-0 after:left-0 after:right-0 after:bg-none after:transition-colors hover:after:bg-on-surface/8">
+              <div key={course.id} className="text-on-surface p-4 cursor-pointer relative after:content-[''] after:pointer-events-none after:absolute after:top-0 after:bottom-0 after:left-0 after:right-0 after:bg-none after:transition-colors hover:after:bg-on-surface/8">
                 <div className="flex flex-row gap-4">
                   <div><Button>
                     <PlusIcon className="w-5 h-5" />
@@ -44,9 +43,9 @@ export const Courses = () => {
                   </div>
                 </div>
 
-              </List.Item>
+              </div>
             ))}
-          </List>
+          </div>
         </div>
       </main>
     </>

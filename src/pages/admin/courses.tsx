@@ -3,7 +3,6 @@ import { useReactTable, getCoreRowModel, flexRender, PaginationState } from '@ta
 import JSONPretty from "react-json-pretty"
 
 import { useCourses } from "@/hooks/useCourses"
-import { TextInput } from "flowbite-react"
 
 
 
@@ -83,7 +82,7 @@ const Courses = () => {
 
   return (
     <>
-      <TextInput className="mx-4" placeholder="Keywords..." value={keywords} onChange={(e) => setKeywords(e.target.value)} />
+      <input className="mx-4" placeholder="Keywords..." value={keywords} onChange={(e) => setKeywords(e.target.value)} />
       <div className="overflow-x-auto rounded-lg m-4">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

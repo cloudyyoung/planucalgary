@@ -1,5 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-const flowbite = require("flowbite-react/tailwind");
 const { createThemes } = require('tw-colors');
 
 // Replace camelCase keys with dashed keys
@@ -54,7 +53,6 @@ export default {
     darkMode: ["class"],
     content: [
     "./src/**/*.{html,js,jsx,tsx,ts}",
-    flowbite.content(),
   ],
   theme: {
   	fontFamily: {
@@ -126,11 +124,32 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
+  		},
+  		keyframes: {
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
+  				}
+  			}
+  		},
+  		animation: {
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
   		}
   	}
   },
   plugins: [
-    flowbite.plugin(),
     createThemes(themes),
       require("tailwindcss-animate")
 ],
