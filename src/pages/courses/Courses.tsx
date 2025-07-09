@@ -21,7 +21,9 @@ export const Courses = () => {
   return (
     <>
       <main className='px-4 py-4 space-y-2'>
-        <Input className="w-full" placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
+        <div className="sticky top-0 pt-2 z-20 bg-white rounded-b-md">
+          <Input className="w-full h-11" placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
+        </div>
 
         {/*
         <div className="flex flex-row gap-1">
@@ -35,22 +37,28 @@ export const Courses = () => {
             {courses.map((course: any) => (
               <HoverCard>
                 <HoverCardTrigger>
-                  <Button variant="link" key={course.id} value={course.id} className="px-0 h-12">
+                  <Button variant="link" key={course.id} value={course.id} className="flex flex-row px-0 h-12 justify-start items-center w-full">
                     <Button variant="secondary" className="h-6 flex flex-row mr-4">
                       <PlusIcon className="w-5 h-5" />
                     </Button>
-                    <div className="flex flex-row items-center w-full gap-2">
-                      <Badge variant="outline" className="font-bold font-mono rounded-md px-1.5 pt-0.5 w-fit">
-                        <span>{course.subject_code}</span>
-                        <span>{course.course_number}</span>
-                      </Badge>
-
-                      <div className="font-bold pt-0.5">{course.long_name}</div>
-                    </div>
+                    <Badge variant="outline" className="font-bold font-mono rounded-md">
+                      <span>{course.subject_code}</span>
+                      <span>{course.course_number}</span>
+                    </Badge>
+                    <p className="font-bold pt-0.5 truncate">{course.long_name}</p>
                   </Button>
                 </HoverCardTrigger>
-                <HoverCardContent>
-                  <p className="text-sm">{course.description}</p>
+                <HoverCardContent className="l-0 w-[80vw] md:w-[30rem]" align="start" alignOffset={80}>
+                  <div className="space-y-1">
+                    <Badge variant="default" className="font-bold font-mono rounded-md">
+                      <span>{course.subject_code}</span>
+                      <span>{course.course_number}</span>
+                    </Badge>
+                    <h4 className="text-sm font-semibold">{course.long_name}</h4>
+                    <div className="text-muted-foreground text-xs">
+                      {course.description}
+                    </div>
+                  </div>
                 </HoverCardContent>
               </HoverCard>
             ))}
