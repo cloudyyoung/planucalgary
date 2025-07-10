@@ -14,7 +14,7 @@ import {
 export const Courses = () => {
   const [keywords, setKeywords] = useState('')
 
-  const { courses, total } = useCourses({
+  const { data } = useCourses({
     keywords,
   })
 
@@ -39,7 +39,7 @@ export const Courses = () => {
 
         <div className="">
           <div className="flex flex-col w-full divide-y">
-            {courses.map((course: any) => (
+            {data?.items.map((course: any) => (
               <HoverCard>
                 <HoverCardTrigger>
                   <Button variant="link" key={course.id} value={course.id} className="flex flex-row px-0 h-12 justify-start items-center w-full">

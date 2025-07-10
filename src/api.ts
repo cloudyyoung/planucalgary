@@ -14,3 +14,11 @@ export const api = axios.create({
 export const queryClient = new QueryClient();
 
 export default api;
+
+export type ApiPaginatedResponse<T> = {
+  items: T[];
+  total: number;
+  from: number;
+  to: number;
+  has_more: boolean;
+};
