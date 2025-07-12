@@ -11,6 +11,7 @@ import './index.css'
 import { queryClient } from './api';
 import { App } from '@/pages/app/App'
 import { Courses } from '@/pages/courses/Courses';
+import { AdminCourses } from './pages/admin/AdminCourses';
 
 
 const router = createBrowserRouter([
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "/courses", element: <Courses /> },
+      { path: "/admin/courses", element: <AdminCourses /> },
     ],
   }
 ]);
