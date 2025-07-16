@@ -21,8 +21,8 @@ export type Course = {
   antireq_json: {}
   coreq: string
   coreq_json: {}
-  prerequisites: string
-  prerequisites_json: {}
+  prereq: string
+  prereq_json: {}
 
   is_active: boolean
   is_multi_term: boolean

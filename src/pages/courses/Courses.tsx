@@ -1,21 +1,29 @@
 import { useState } from "react"
-import { ArrowLeftIcon, PlusIcon } from "@heroicons/react/24/solid"
+import { ArrowLeftIcon, PlusIcon, ArrowRightIcon, RepeatIcon, CircleSlash2Icon, SquareStackIcon, Archive } from "lucide-react"
 
 import { Course, useCourses } from "@/hooks/useCourses"
 import { Button, ButtonProps } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { Badge, BadgeProps } from "@/components/ui/badge"
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ArrowRightIcon } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export const Courses = () => {
   const [keywords, setKeywords] = useState('')
   const [pagination, setPagination] = useState({ offset: 0, limit: 100 })
+  const [showCourseDetails, setShowCourseDetails] = useState(false)
+  const [courseDetails, setCourseDetails] = useState<Course | null>(null)
 
   const { data, isLoading } = useCourses({
     keywords,
@@ -55,18 +63,19 @@ export const Courses = () => {
           {data?.items.map((course: any) => (
             <HoverCard>
               <HoverCardTrigger>
-                <CourseRowButton course={course} />
+                <CourseRowButton
+                  course={course}
+                  onClick={() => {
+                    setCourseDetails(course)
+                    setShowCourseDetails(true)
+                  }}
+                />
               </HoverCardTrigger>
               <HoverCardContent className="l-0 w-[80vw] md:w-[30rem]" align="start" alignOffset={80}>
                 <div className="space-y-1">
-                  <Badge variant="default" className="font-bold font-mono rounded-md gap-1">
-                    <span>{course.subject_code}</span>
-                    <span>{course.course_number}</span>
-                  </Badge>
+                  <CourseCodeBadge course={course} variant="default" />
                   <h4 className="text-sm font-semibold">{course.long_name}</h4>
-                  <div className="text-muted-foreground text-xs">
-                    {course.description}
-                  </div>
+                  <div className="text-muted-foreground text-xs">{course.description}</div>
                 </div>
               </HoverCardContent>
             </HoverCard>
@@ -84,6 +93,35 @@ export const Courses = () => {
           </div>
         </div>
       </main>
+
+      <Dialog open={showCourseDetails} onOpenChange={setShowCourseDetails}>
+        {
+          courseDetails && (
+            <DialogContent className="max-w-4xl">
+              <DialogHeader className="mt-6 space-y-4">
+                <DialogTitle>
+                  <CourseCodeBadge course={courseDetails} variant="default" />
+                  <h1 className="mt-2">{courseDetails.long_name}</h1>
+                </DialogTitle>
+                <DialogDescription>
+                  {courseDetails.description}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-row gap-2 my-1">
+                {!courseDetails.is_active && <Badge variant="secondary"><Archive className="w-3 h-3" /> Archived</Badge>}
+                {courseDetails.is_repeatable && <Badge variant="secondary"><RepeatIcon className="w-3 h-3" /> Repeatable</Badge>}
+                {courseDetails.is_no_gpa && <Badge variant="secondary"><CircleSlash2Icon className="w-3 h-3" /> No GPA</Badge>}
+                {courseDetails.is_multi_term && <Badge variant="secondary"><SquareStackIcon className="w-3 h-3" /> Multiple terms</Badge>}
+              </div>
+              <div>
+                <p>{courseDetails.prereq}</p>
+                <p>{courseDetails.antireq}</p>
+                <p>{courseDetails.coreq}</p>
+              </div>
+            </DialogContent>
+          )
+        }
+      </Dialog>
     </>
   )
 }
@@ -94,26 +132,31 @@ const FilterChip = ({ children, ...props }: ButtonProps) => {
   )
 }
 
-const CourseRowButton = ({ course }: { course?: Course }) => {
+const CourseRowButton = ({ course, onClick }: { course?: Course, onClick?: ButtonProps["onClick"] }) => {
   return (
-    <Button variant="link" className="flex flex-row px-0 h-12 justify-start items-center w-full">
+    <Button variant="link" className="flex flex-row px-0 h-12 justify-start items-center w-full" onClick={onClick}>
       {
         course
           ? <Button variant="secondary" className="h-6 flex flex-row mr-4"><PlusIcon className="w-5 h-5" /> </Button>
           : <Skeleton className="w-12 h-6 mr-4" />
       }
-
       {
         course
           ? <>
-            <Badge variant="outline" className="font-bold font-mono rounded-md gap-1">
-              <span>{course.subject_code}</span>
-              <span>{course.course_number}</span>
-            </Badge>
+            <CourseCodeBadge course={course} variant="outline" />
             <p className="font-bold pt-0.5 truncate">{course.long_name}</p>
           </>
           : <Skeleton className="w-full h-6" />
       }
     </Button>
+  )
+}
+
+const CourseCodeBadge = ({ course, variant }: { course: Course, variant: BadgeProps["variant"] }) => {
+  return (
+    <Badge variant={variant} className="font-bold font-mono rounded-full gap-0.5">
+      <span>{course.subject_code}</span>
+      <span>{course.course_number}</span>
+    </Badge>
   )
 }
