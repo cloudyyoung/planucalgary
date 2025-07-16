@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { PlusIcon } from "@heroicons/react/24/solid"
 
-import { useCourses } from "@/hooks/useCourses"
+import { Course, useCourses } from "@/hooks/useCourses"
 import { Button, ButtonProps } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -10,11 +10,12 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const Courses = () => {
   const [keywords, setKeywords] = useState('')
 
-  const { data } = useCourses({
+  const { data, isLoading } = useCourses({
     keywords,
   })
 
@@ -39,19 +40,16 @@ export const Courses = () => {
 
         <div className="">
           <div className="flex flex-col w-full divide-y">
+            {isLoading && (
+              <>
+                {Array.from({ length: 10 }).map((_, index) => <CourseRowButton key={index} />)}
+                <div className="pointer-events-none -mt-48 w-full h-48 z-30 bg-gradient-to-t from-white to-transparent border-none"></div>
+              </>
+            )}
             {data?.items.map((course: any) => (
               <HoverCard>
                 <HoverCardTrigger>
-                  <Button variant="link" key={course.id} value={course.id} className="flex flex-row px-0 h-12 justify-start items-center w-full">
-                    <Button variant="secondary" className="h-6 flex flex-row mr-4">
-                      <PlusIcon className="w-5 h-5" />
-                    </Button>
-                    <Badge variant="outline" className="font-bold font-mono rounded-md gap-1">
-                      <span>{course.subject_code}</span>
-                      <span>{course.course_number}</span>
-                    </Badge>
-                    <p className="font-bold pt-0.5 truncate">{course.long_name}</p>
-                  </Button>
+                  <CourseRowButton course={course} />
                 </HoverCardTrigger>
                 <HoverCardContent className="l-0 w-[80vw] md:w-[30rem]" align="start" alignOffset={80}>
                   <div className="space-y-1">
@@ -77,5 +75,29 @@ export const Courses = () => {
 const FilterChip = ({ children, ...props }: ButtonProps) => {
   return (
     <Button className="rounded-full text-xs h-6" variant="secondary" {...props}>{children}</Button>
+  )
+}
+
+const CourseRowButton = ({ course }: { course?: Course }) => {
+  return (
+    <Button variant="link" className="flex flex-row px-0 h-12 justify-start items-center w-full">
+      {
+        course
+          ? <Button variant="secondary" className="h-6 flex flex-row mr-4"><PlusIcon className="w-5 h-5" /> </Button>
+          : <Skeleton className="w-12 h-6 mr-4" />
+      }
+
+      {
+        course
+          ? <>
+            <Badge variant="outline" className="font-bold font-mono rounded-md gap-1">
+              <span>{course.subject_code}</span>
+              <span>{course.course_number}</span>
+            </Badge>
+            <p className="font-bold pt-0.5 truncate">{course.long_name}</p>
+          </>
+          : <Skeleton className="w-full h-6" />
+      }
+    </Button>
   )
 }
