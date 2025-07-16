@@ -29,7 +29,7 @@ export const Courses = () => {
   return (
     <>
       <main className='px-4 py-2 space-y-2'>
-        <div className="sticky top-0 py-4 z-20 bg-white">
+        <div className="sticky top-0 py-4 bg-white">
           <Input className="w-full h-11" placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
 
           <div className="flex flex-row gap-1 mt-2">
