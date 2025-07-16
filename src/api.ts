@@ -18,7 +18,7 @@ export default api;
 export type ApiPaginatedResponse<T> = {
   items: T[];
   total: number;
-  from: number;
-  to: number;
+  offset: number;
+  limit: number;
   has_more: boolean;
 };
