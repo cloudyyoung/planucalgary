@@ -7,7 +7,6 @@ import {
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import './index.css'
-import '@xyflow/react/dist/style.css';
 
 import { queryClient } from './api';
 import { App } from '@/pages/app/App'

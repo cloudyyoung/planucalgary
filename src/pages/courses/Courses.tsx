@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { ArrowLeftIcon, PlusIcon, ArrowRightIcon, RepeatIcon, CircleSlash2Icon, SquareStackIcon, Archive } from "lucide-react"
-import { ReactFlow } from '@xyflow/react';
+
 import { Course, useCourses } from "@/hooks/useCourses"
 import { Button, ButtonProps } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { getRequisitesFlow } from "@/lib/requisites-graph";
 
 export const Courses = () => {
   const [keywords, setKeywords] = useState('')
@@ -34,10 +33,6 @@ export const Courses = () => {
 
   const prevPage = () => setPagination((prev) => ({ ...prev, offset: prev.offset - prev.limit }))
   const nextPage = () => setPagination((prev) => ({ ...prev, offset: prev.offset + prev.limit }))
-
-  const [nodes, edges] = useMemo(() => {
-    return getRequisitesFlow(courseDetails?.prereq_json)
-  }, [courseDetails])
 
   return (
     <>
@@ -66,7 +61,7 @@ export const Courses = () => {
             </>
           )}
           {data?.items.map((course: any) => (
-            <HoverCard key={course.id}>
+            <HoverCard>
               <HoverCardTrigger>
                 <CourseRowButton
                   course={course}
@@ -119,11 +114,7 @@ export const Courses = () => {
                 {courseDetails.is_multi_term && <Badge variant="secondary"><SquareStackIcon className="w-3 h-3" /> Multiple terms</Badge>}
               </div>
               <div>
-                <div className="h-[600px]">
-                  <ReactFlow nodes={nodes} edges={edges} panOnDrag={false} panOnScroll={false} zoomOnScroll={false} zoomOnPinch={false} />
-                </div>
                 <p>{courseDetails.prereq}</p>
-                <p>{JSON.stringify(courseDetails.prereq_json)}</p>
                 <p>{courseDetails.antireq}</p>
                 <p>{courseDetails.coreq}</p>
               </div>
