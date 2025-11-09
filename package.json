@@ -1,0 +1,44 @@
+{
+  "name": "planucalgary",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run clean --prefix shared && npm run build --prefix shared && concurrently \"npm run watch --prefix shared\" \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cloudyyoung/planucalgary.git"
+  },
+  "author": "Yunfan Yang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cloudyyoung/planucalgary/issues"
+  },
+  "homepage": "https://github.com/cloudyyoung/planucalgary#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "luxon": "^3.7.2",
+    "react-use": "^17.6.0"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^24.10.0",
+    "@types/socket.io": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.46.3",
+    "@typescript-eslint/parser": "^8.46.3",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "rimraf": "^6.1.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
