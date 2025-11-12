@@ -8,11 +8,14 @@
     "build": "npx tsc",
     "start": "node dist/app.js",
     "test": "jest",
-    "postinstall": "npx prisma generate --schema ./prisma/catalog/schema.prisma && npx prisma generate --schema ./prisma/planucalgary/schema.prisma",
-    "generate": "npx prisma generate --schema ./prisma/catalog/schema.prisma && npx prisma generate --schema ./prisma/planucalgary/schema.prisma",
-    "migrate": "npx prisma migrate dev --schema ./prisma/catalog/schema.prisma && npx prisma migrate dev --schema ./prisma/planucalgary/schema.prisma",
-    "deploy": "npx prisma migrate deploy --schema ./prisma/catalog/schema.prisma && npx prisma migrate deploy --schema ./prisma/planucalgary/schema.prisma",
-    "studio": "npx prisma studio --schema ./prisma/catalog/schema.prisma --port 5555 & npx prisma studio --schema ./prisma/planucalgary/schema.prisma --port 5556"
+    "postinstall": "npx prisma generate",
+    "generate": "npx prisma generate",
+    "migrate": "npx prisma migrate dev",
+    "deploy": "npx prisma migrate deploy",
+    "studio": "npx prisma studio --port 5555"
+  },
+  "prisma": {
+    "schema": "./prisma"
   },
   "repository": {
     "type": "git",
