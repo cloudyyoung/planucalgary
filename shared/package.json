@@ -11,5 +11,7 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist && rimraf node_modules && rimraf tsconfig.tsbuildinfo"
   },
-  "devDependencies": {}
+  "dependencies": {
+    "rimraf": "^6.1.0"
+  }
 }

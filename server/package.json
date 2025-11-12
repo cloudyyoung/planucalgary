@@ -3,8 +3,27 @@
   "version": "0.1.0",
   "description": "",
   "main": "app.js",
+  "scripts": {
+    "dev": "nodemon src/app.ts --ignore dist/ --ignore **.gen.ts",
+    "build": "npx tsc",
+    "start": "node dist/app.js",
+    "test": "jest",
+    "postinstall": "npx prisma generate --schema ./prisma/catalog/schema.prisma && npx prisma generate --schema ./prisma/planucalgary/schema.prisma",
+    "generate": "npx prisma generate --schema ./prisma/catalog/schema.prisma && npx prisma generate --schema ./prisma/planucalgary/schema.prisma",
+    "migrate": "npx prisma migrate dev --schema ./prisma/catalog/schema.prisma && npx prisma migrate dev --schema ./prisma/planucalgary/schema.prisma",
+    "deploy": "npx prisma migrate deploy --schema ./prisma/catalog/schema.prisma && npx prisma migrate deploy --schema ./prisma/planucalgary/schema.prisma",
+    "studio": "npx prisma studio --schema ./prisma/catalog/schema.prisma --port 5555 & npx prisma studio --schema ./prisma/planucalgary/schema.prisma --port 5556"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bahricanyesil/nodejs-starter-template.git"
+  },
+  "keywords": [],
+  "author": "Yunfan Yang",
+  "license": "MIT",
   "dependencies": {
     "@prisma/client": "^6.19.0",
+    "@prisma/extension-accelerate": "^2.0.2",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "class-transformer": "^0.5.1",
@@ -27,21 +46,6 @@
     "reflect-metadata": "^0.2.2",
     "zod": "^4.1.12"
   },
-  "scripts": {
-    "dev": "nodemon src/app.ts --ignore dist/ --ignore **.gen.ts",
-    "migrate": "prisma migrate dev",
-    "generate": "prisma generate",
-    "build": "npx tsc",
-    "start": "node dist/app.js",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bahricanyesil/nodejs-starter-template.git"
-  },
-  "keywords": [],
-  "author": "Yunfan Yang",
-  "license": "MIT",
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/compression": "^1.8.1",

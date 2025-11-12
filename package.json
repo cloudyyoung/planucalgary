@@ -9,7 +9,8 @@
     "shared"
   ],
   "scripts": {
-    "dev": "npm run clean --prefix shared && npm run build --prefix shared && npm run migrate --prefix server && npm run generate -prefix server && concurrently \"npm run watch --prefix shared\" \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+    "dev": "concurrently \"npm run watch --prefix shared\" \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "postinstall": "docker-compose up -d && npm run build --prefix shared && npm run migrate --prefix server && npm run generate --prefix server"
   },
   "repository": {
     "type": "git",
