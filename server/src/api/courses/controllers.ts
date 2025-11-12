@@ -122,7 +122,7 @@ export const createCourse = async (
 
   const course = await req.prisma.course.create({
     data: {
-      ...req.body,
+      ...(req.body as any),
       subject_code: undefined,
       subject: {
         connect: { code: req.body.subject_code },
