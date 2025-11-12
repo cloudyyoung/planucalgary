@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run watch --prefix shared\" \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
-    "postinstall": "docker-compose up -d && npm run build --prefix shared && npm run migrate --prefix server && npm run generate --prefix server"
+    "postinstall": "npm run build --prefix shared && npm run migrate --prefix server && npm run generate --prefix server"
   },
   "repository": {
     "type": "git",
