@@ -1,7 +1,10 @@
 import { NextFunction, Response, Request } from "express"
 import { PrismaClient } from "@prisma/client"
+import { PrismaPg } from '@prisma/adapter-pg'
+import { DATABASE_URL } from "../config"
 
-export const prismaClient = new PrismaClient()
+export const adapter = new PrismaPg({ connectionString: DATABASE_URL })
+export const prismaClient = new PrismaClient({ adapter })
 
 export const prisma = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
