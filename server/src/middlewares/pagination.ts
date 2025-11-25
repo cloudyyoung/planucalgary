@@ -15,7 +15,7 @@ export const pagination = () => async (req: Request, res: Response, next: NextFu
 
   const parsed = paginationSchema.safeParse(req.query)
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.errors }).end()
+    return res.status(400).json({ error: parsed.error }).end()
   }
 
   const offset = parsed.data.offset || 0
