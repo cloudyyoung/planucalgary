@@ -6,7 +6,6 @@ import morgan from "morgan"
 import helmet from "helmet"
 import { json, urlencoded } from "body-parser"
 import { expressjwt as jwt } from "express-jwt"
-import "express-async-errors"
 
 import { router as accountRouter } from "./api/accounts/routes"
 import { router as courseRouter } from "./api/courses/routes"
