@@ -3,11 +3,6 @@ generator client {
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
-generator zod {
-  provider = "prisma-zod-generator"
-  output   = "../node_modules/@prisma/zod"
-}
-
 datasource db {
   provider = "postgresql"
   schemas  = ["planucalgary", "catalog"]
