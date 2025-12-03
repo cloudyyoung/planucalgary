@@ -6,3 +6,4 @@ export * from "./enum";
 export * from "./faculty";
 export * from "./program";
 export * from "./requisite";
+export * from "./subject";

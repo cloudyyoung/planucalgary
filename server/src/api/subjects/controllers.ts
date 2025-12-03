@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { ParamsDictionary } from "express-serve-static-core"
-import { SubjectCreate, SubjectUpdate } from "../../zod"
+import { SubjectCreate, SubjectUpdate } from "@planucalgary/shared"
 
 export const listSubjects = async (req: Request, res: Response) => {
   const subjects = await req.prisma.subject.findMany()
