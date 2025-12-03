@@ -3,7 +3,7 @@ import { Router } from "express"
 import { createCourseSet, deleteCourseSet, getCourseSet, listCourseSets, updateCourseSet } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { IdInputSchema, zod } from "../../middlewares"
-import { CourseSetCreateSchema, CourseSetUpdateSchema } from "../../zod"
+import { CourseSetCreateSchema, CourseSetUpdateSchema } from "@planucalgary/shared"
 
 const router = Router()
 router.get("/", listCourseSets)
