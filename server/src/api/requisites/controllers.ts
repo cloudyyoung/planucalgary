@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-
 import { Prisma } from "@prisma/client"
-import { RequisiteList, RequisitesSync, RequisiteUpdate } from "./validators"
+import { RequisiteList, RequisitesSync, RequisiteUpdate } from "@planucalgary/shared"
+
 import { IdInput } from "../../middlewares"
 import { generatePrereq, getFineTuneJson } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
@@ -9,7 +9,7 @@ import { getValidator } from "../../jsonlogic/requisite_json"
 import { toCourses, toCourseSets, toRequisitesJson } from "./sync"
 
 export const listRequisites = async (req: Request<any, any, any, RequisiteList>, res: Response) => {
-  const { type } = req.query
+  const { requisite_type } = req.query
   const [requisites, total, validate] = await Promise.all([
     req.prisma.requisiteJson.findMany({
       select: {
@@ -22,7 +22,7 @@ export const listRequisites = async (req: Request<any, any, any, RequisiteList>,
         json_choices: true,
       },
       where: {
-        ...(type && { requisite_type: type }),
+        ...(requisite_type && { requisite_type }),
       },
       orderBy: {
         text: "asc",
@@ -32,7 +32,7 @@ export const listRequisites = async (req: Request<any, any, any, RequisiteList>,
     }),
     req.prisma.requisiteJson.count({
       where: {
-        ...(type && { requisite_type: type }),
+        ...(requisite_type && { requisite_type }),
       },
     }),
     getValidator(),
@@ -86,7 +86,7 @@ export const updateRequisite = async (req: Request<IdInput, any, RequisiteUpdate
     where: { id: req.params.id },
     data: {
       ...req.body,
-      ...(req.body.json && { json: req.body.json ?? Prisma.DbNull }),
+      json: req.body.json ?? undefined,
     },
   })
   return res.json(requisite)

@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { RequisiteListSchema, RequisitesSyncSchema } from "@planucalgary/shared"
 
 import { admin } from "../../middlewares/admin"
 import { IdInputSchema, zod } from "../../middlewares"
@@ -10,7 +11,6 @@ import {
   updateRequisite,
   getFineTuneJsons,
 } from "./controllers"
-import { RequisiteListSchema, RequisitesSyncSchema } from "./validators"
 
 const router = Router()
 router.get("/", admin(), zod({ query: RequisiteListSchema }), listRequisites)

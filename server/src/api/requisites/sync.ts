@@ -1,8 +1,8 @@
 import { Request, Response } from "express"
 import { RequisiteType, Prisma } from "@prisma/client"
 import _ from "lodash"
+import { RequisiteJsonCreate } from "@planucalgary/shared"
 
-import { RequisiteJsonCreate } from "../../zod"
 import { getValidator } from "../../jsonlogic/requisite_json"
 
 export const toRequisitesJson = async (req: Request, res: Response) => {
