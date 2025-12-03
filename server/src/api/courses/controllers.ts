@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { ParamsDictionary } from "express-serve-static-core"
 import { CourseCreateRelations, CourseUpdateRelations, CourseList } from "./validators"
-import { CourseCreate, CourseUpdate } from "@prisma/zod/schemas"
+import { CourseCreate, CourseUpdate } from "@planucalgary/shared"
 import { IdInput } from "../../middlewares"
 import { Course, Prisma } from "@prisma/client"
 

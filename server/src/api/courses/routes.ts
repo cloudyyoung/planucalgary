@@ -4,7 +4,7 @@ import { createCourse, deleteCourse, getCourse, listCourses, updateCourse } from
 import { admin } from "../../middlewares/admin"
 import { IdInputSchema, zod } from "../../middlewares"
 import { CourseCreateRelationsSchema, CourseListSchema, CourseUpdateRelationsSchema } from "./validators"
-import { CourseCreateSchema, CourseUpdateSchema } from "../../zod"
+import { CourseCreateSchema, CourseUpdateSchema } from "@planucalgary/shared"
 
 const router = Router()
 router.get("/", zod({ query: CourseListSchema }), listCourses)
