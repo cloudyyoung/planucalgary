@@ -12,6 +12,7 @@
     "clean": "rimraf dist && rimraf node_modules && rimraf tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "rimraf": "^6.1.0"
+    "rimraf": "^6.1.2",
+    "zod": "^4.1.13"
   }
 }
