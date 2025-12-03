@@ -1,5 +1,6 @@
 import * as z from 'zod'
 import { GradeNodeSchema, CareerSchema } from "./enum"
+import { CourseTopicCreateSchema } from './course-topic'
 
 export const CourseListSchema = z.object({
     keywords: z.string().optional(),
@@ -43,13 +44,7 @@ export type CourseCreate = z.infer<typeof CourseCreateSchema>
 export const CourseCreateRelationsSchema = z.object({
     departments: z.array(z.string()),
     faculties: z.array(z.string()),
-    topics: z.array(
-        z.object({
-            id: z.string().optional(),
-            name: z.string(),
-            description: z.string().optional(),
-        })
-    ),
+    topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })),
 })
 
 export type CourseCreateRelations = z.infer<typeof CourseCreateRelationsSchema>
