@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/cloudyyoung/planucalgary#readme",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.0.1",
     "dotenv": "^17.2.3",
     "luxon": "^3.7.2",
     "react-use": "^17.6.0"
