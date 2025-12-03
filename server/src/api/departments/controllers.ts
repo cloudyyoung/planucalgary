@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { ParamsDictionary } from "express-serve-static-core"
-import { DepartmentCreate, DepartmentUpdate } from "../../zod"
+import { DepartmentCreate, DepartmentUpdate } from "@planucalgary/shared"
 
 export const listDepartments = async (req: Request, res: Response) => {
   const faculties = await req.prisma.department.findMany()
