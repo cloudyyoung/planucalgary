@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon src/app.ts --ignore dist/ --ignore **.gen.ts",
+    "dev": "tsx watch -r tsconfig-paths/register src/app.ts",
     "build": "npx tsc",
     "start": "node dist/app.js",
     "test": "jest",
@@ -68,10 +68,8 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "jest": "^30.2.0",
-    "nodemon": "^3.1.11",
     "prettier": "~3.7.4",
     "prisma": "^7.0.1",
-    "ts-jest": "^29.4.6",
-    "ts-node": "^10.9.2"
+    "tsx": "^4.21.0"
   }
 }
