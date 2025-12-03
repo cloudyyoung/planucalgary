@@ -1,7 +1,6 @@
 import { Request, Response } from "express"
 import { ParamsDictionary } from "express-serve-static-core"
-import { ProgramCreateRelations, ProgramUpdateRelations, ProgramList, ProgramStartTerm } from "./validators"
-import { ProgramCreate, ProgramUpdate } from "../../zod"
+import { ProgramCreate, ProgramUpdate, ProgramCreateRelations, ProgramUpdateRelations, ProgramList, ProgramStartTerm } from "@planucalgary/shared"
 import { IdInput } from "../../middlewares"
 import { Program, Prisma } from "@prisma/client"
 

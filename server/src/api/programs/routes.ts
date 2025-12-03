@@ -3,8 +3,7 @@ import { Router } from "express"
 import { createProgram, deleteProgram, getProgram, listPrograms, updateProgram } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { IdInputSchema, zod } from "../../middlewares"
-import { ProgramCreateRelationsSchema, ProgramListSchema, ProgramStartTermSchema } from "./validators"
-import { ProgramCreateSchema, ProgramUpdateSchema } from "../../zod"
+import { ProgramCreateSchema, ProgramUpdateSchema, ProgramCreateRelationsSchema, ProgramListSchema, ProgramStartTermSchema } from "@planucalgary/shared"
 
 const router = Router()
 router.get("/", zod({ query: ProgramListSchema }), listPrograms)
