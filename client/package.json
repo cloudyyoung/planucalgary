@@ -25,13 +25,13 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "localforage": "^1.10.0",
-    "lucide-react": "^0.554.0",
+    "lucide-react": "^0.555.0",
     "match-sorter": "^8.2.0",
-    "nodemailer": "7.0.10",
+    "nodemailer": "7.0.11",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-json-pretty": "^2.2.0",
-    "react-router-dom": "^7.9.6",
+    "react-router-dom": "^7.10.0",
     "sort-by": "^1.2.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7"
@@ -39,8 +39,8 @@
   "devDependencies": {
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.48.0",
-    "@typescript-eslint/parser": "^8.48.0",
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
+    "@typescript-eslint/parser": "^8.48.1",
     "@vitejs/plugin-react-swc": "^4.2.2",
     "@vituum/vite-plugin-postcss": "^1.1.0",
     "@vituum/vite-plugin-tailwindcss": "^1.2.0",
@@ -53,6 +53,6 @@
     "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^4.1.17",
     "tw-colors": "^3.3.2",
-    "vite": "^7.2.4"
+    "vite": "^7.2.6"
   }
 }
