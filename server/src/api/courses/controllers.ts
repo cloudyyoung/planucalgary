@@ -169,6 +169,9 @@ export const updateCourse = async (
       subject: {
         connect: req.body.subject_code ? { code: req.body.subject_code } : undefined,
       },
+      prereq_json: req.body.prereq_json ? req.body.prereq_json : undefined,
+      antireq_json: req.body.antireq_json ? req.body.antireq_json : undefined,
+      coreq_json: req.body.coreq_json ? req.body.coreq_json : undefined,
       departments: {
         connect: req.body.departments ? deaprtmentCodes : undefined,
       },

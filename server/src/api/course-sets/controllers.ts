@@ -22,14 +22,21 @@ export const createCourseSet = async (req: Request<ParamsDictionary, any, Course
     return res.status(403).json({ error: "Course set already exists", existing })
   }
 
-  const fac = await req.prisma.courseSet.create({ data: req.body })
+  const fac = await req.prisma.courseSet.create({
+    data: {
+      ...req.body,
+      json: req.body.json ?? undefined,
+  } })
   return res.json(fac)
 }
 
 export const updateCourseSet = async (req: Request<ParamsDictionary, any, CourseSetUpdate>, res: Response) => {
   const fac = await req.prisma.courseSet.update({
     where: { id: req.params.id },
-    data: req.body,
+    data: {
+      ...req.body,
+      json: req.body.json ?? undefined,
+    },
   })
   return res.json(fac)
 }
