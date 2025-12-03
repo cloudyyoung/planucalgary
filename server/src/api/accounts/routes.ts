@@ -1,9 +1,9 @@
 import { Router } from "express"
+import { SignInInputSchema, SignUpInputSchema } from "@planucalgary/shared"
 
 import { signin } from "./controllers/signin"
 import { signup } from "./controllers/signup"
 import { zod } from "../../middlewares"
-import { SignInInputSchema, SignUpInputSchema } from "./validators"
 
 const router = Router()
 
