@@ -2,8 +2,8 @@ import { Response } from "express"
 import * as z from "zod"
 
 export const PaginatedRequestSchema = z.object({
-    offset: z.number().int().min(0).optional(),
-    limit: z.number().int().min(0).max(5000).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
 }).loose()
 
 export type PaginatedRequest = z.infer<typeof PaginatedRequestSchema>
