@@ -1,58 +1,109 @@
 import * as z from 'zod'
+import { type RequestHandler } from 'express';
 import { GradeNodeSchema, CareerSchema } from "./enum"
 import { CourseTopicCreateSchema } from './course-topic'
+import { PaginatedRequestSchema, PaginatedResponse } from './pagination'
+import { IdInputSchema } from './id';
 
-export const CourseListSchema = z.object({
-    keywords: z.string().optional(),
-})
+const CourseSchema = z.object({
+    id: z.string().readonly(),
+    created_at: z.date().readonly(),
+    updated_at: z.date().readonly(),
 
-export type CourseList = z.infer<typeof CourseListSchema>
-
-export const CourseCreateSchema = z.object({
     cid: z.string(),
     code: z.string(),
     course_number: z.string(),
+
     subject_code: z.string(),
+
     description: z.string().nullable(),
     name: z.string(),
     long_name: z.string(),
     notes: z.string().nullable(),
-    version: z.int(),
-    units: z.int().nullable(),
+    version: z.number(),
+    units: z.number().nullable(),
     aka: z.string().nullable(),
+
     prereq: z.string().nullable(),
     prereq_json: z.json().nullable(),
     coreq: z.string().nullable(),
     coreq_json: z.json().nullable(),
     antireq: z.string().nullable(),
     antireq_json: z.json().nullable(),
+
     is_active: z.boolean(),
     is_multi_term: z.boolean(),
-    is_nogpa: z.boolean(),
+    is_no_gpa: z.boolean(),
     is_repeatable: z.boolean(),
+
     course_group_id: z.string(),
     coursedog_id: z.string(),
+
     course_created_at: z.date(),
     course_effective_start_date: z.date(),
     course_last_updated_at: z.date(),
-    grade_mode: GradeNodeSchema,
+
     career: CareerSchema,
+    grade_mode: GradeNodeSchema,
 })
 
-export type CourseCreate = z.infer<typeof CourseCreateSchema>
 
-export const CourseCreateRelationsSchema = z.object({
+// List Courses
+export const CourseListReqQuerySchema = z.object({
+    keywords: z.string().optional(),
+}).extend(PaginatedRequestSchema.shape)
+export type CourseListReqQuery = z.infer<typeof CourseListReqQuerySchema>
+export const CourseListResBodySchema = CourseSchema.pick({
+    id: true,
+    code: true,
+    subject_code: true,
+    course_number: true,
+    description: true,
+    name: true,
+    long_name: true,
+    units: true,
+    aka: true,
+    career: true,
+    is_active: true,
+    is_multi_term: true,
+    is_no_gpa: true,
+    is_repeatable: true,
+}).array()
+export type CourseListResBody = PaginatedResponse<z.infer<typeof CourseListResBodySchema>>
+export type CourseListHandler = RequestHandler<never, CourseListResBody, never, CourseListReqQuery>
+
+
+// Get Course
+export const CourseGetReqParamsSchema = IdInputSchema
+export type CourseGetReqParams = z.infer<typeof CourseGetReqParamsSchema>
+export const CourseGetResBodySchema = CourseSchema
+export type CourseGetResBody = z.infer<typeof CourseGetResBodySchema>
+export type CourseGetHandler = RequestHandler<CourseGetReqParams, CourseGetResBody, never, never>
+
+
+// Create Course
+export const CourseCreateReqBodySchema = CourseSchema.extend({
     departments: z.array(z.string()),
     faculties: z.array(z.string()),
     topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })),
 })
+export type CourseCreateReqBody = z.infer<typeof CourseCreateReqBodySchema>
+export const CourseCreateResBodySchema = CourseSchema
+export type CourseCreateResBody = z.infer<typeof CourseCreateResBodySchema>
+export type CourseCreateHandler = RequestHandler<never, CourseCreateResBody, CourseCreateReqBody, never>
 
-export type CourseCreateRelations = z.infer<typeof CourseCreateRelationsSchema>
 
-export const CourseUpdateSchema = CourseCreateSchema.partial()
+// Update Course
+export const CourseUpdateReqParamsSchema = IdInputSchema
+export type CourseUpdateReqParams = z.infer<typeof CourseUpdateReqParamsSchema>
+export const CourseUpdateReqBodySchema = CourseCreateReqBodySchema.partial()
+export type CourseUpdateReqBody = z.infer<typeof CourseUpdateReqBodySchema>
+export const CourseUpdateResBodySchema = CourseSchema
+export type CourseUpdateResBody = z.infer<typeof CourseUpdateResBodySchema>
+export type CourseUpdateHandler = RequestHandler<CourseUpdateReqParams, CourseUpdateResBody, CourseUpdateReqBody, never>
 
-export type CourseUpdate = z.infer<typeof CourseUpdateSchema>
 
-export const CourseUpdateRelationsSchema = CourseCreateRelationsSchema.partial()
-
-export type CourseUpdateRelations = z.infer<typeof CourseUpdateRelationsSchema>
+// Delete Course
+export const CourseDeleteReqParamsSchema = IdInputSchema
+export type CourseDeleteReqParams = z.infer<typeof CourseDeleteReqParamsSchema>
+export type CourseDeleteHandler = RequestHandler<CourseDeleteReqParams, void, never, never>;

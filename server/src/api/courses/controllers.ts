@@ -1,10 +1,8 @@
-import { Request, Response } from "express"
-import { ParamsDictionary } from "express-serve-static-core"
-import { CourseCreate, CourseUpdate, CourseCreateRelations, CourseUpdateRelations, CourseList } from "@planucalgary/shared"
-import { IdInput } from "../../middlewares"
+import { CourseListHandler, CourseGetHandler, IdInput, CourseListResBodySchema, CourseGetResBodySchema, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCreateResBodySchema } from "@planucalgary/shared"
 import { Course, Prisma } from "@prisma/client"
+import { CourseAlreadyExistsError, CourseNotFoundError } from "./errors"
 
-export const listCourses = async (req: Request<any, any, any, CourseList>, res: Response) => {
+export const listCourses: CourseListHandler = async (req, res) => {
   const keywords = req.query.keywords
   const offset = req.pagination.offset
   const limit = req.pagination.limit
@@ -24,7 +22,7 @@ export const listCourses = async (req: Request<any, any, any, CourseList>, res: 
       Prisma.sql`career`,
       Prisma.sql`is_active`,
       Prisma.sql`is_multi_term`,
-      Prisma.sql`is_nogpa`,
+      Prisma.sql`is_no_gpa`,
       Prisma.sql`is_repeatable`,
     ]
 
@@ -73,12 +71,13 @@ export const listCourses = async (req: Request<any, any, any, CourseList>, res: 
     await req.prisma.$queryRaw<Course[]>(queryString),
     await req.prisma.$queryRaw<[{ count: number }]>(totalQueryString),
   ])
+  const response = CourseListResBodySchema.parse(courses)
   const total = totalResult[0].count
 
-  return res.paginate(courses, total)
+  return res.paginate(response, total)
 }
 
-export const getCourse = async (req: Request<IdInput>, res: Response) => {
+export const getCourse: CourseGetHandler = async (req, res) => {
   const course = await req.prisma.course.findUnique({
     where: { id: req.params.id },
     include: {
@@ -88,18 +87,19 @@ export const getCourse = async (req: Request<IdInput>, res: Response) => {
       topics: true,
     },
   })
-  return res.json(course)
+  if (!course) {
+    throw new CourseNotFoundError()
+  }
+  const response = CourseGetResBodySchema.parse(course)
+  return res.json(response)
 }
 
-export const createCourse = async (
-  req: Request<ParamsDictionary, any, CourseCreate & CourseCreateRelations>,
-  res: Response,
-) => {
+export const createCourse: CourseCreateHandler = async (req, res) => {
   const existing = await req.prisma.course.findFirst({
     where: { cid: req.body.cid },
   })
   if (existing) {
-    return res.status(403).json({ error: "Course with the given cid already exists", existing })
+    throw new CourseAlreadyExistsError()
   }
 
   const [departments, faculties] = await Promise.all([
@@ -137,13 +137,12 @@ export const createCourse = async (
       },
     },
   })
-  return res.json(course)
+  
+  const response = CourseCreateResBodySchema.parse(course)
+  return res.json(response)
 }
 
-export const updateCourse = async (
-  req: Request<ParamsDictionary, any, CourseUpdate & CourseUpdateRelations>,
-  res: Response,
-) => {
+export const updateCourse: CourseUpdateHandler = async (req, res) => {
   const [departments, faculties] = await Promise.all([
     req.prisma.department.findMany({
       where: { code: { in: req.body.departments } },
@@ -186,12 +185,14 @@ export const updateCourse = async (
       },
     },
   })
-  return res.json(course)
+
+  const response = CourseGetResBodySchema.parse(course)
+  return res.json(response)
 }
 
-export const deleteCourse = async (req: Request<IdInput>, res: Response) => {
-  const course = await req.prisma.course.delete({
+export const deleteCourse: CourseDeleteHandler = async (req, res) => {
+  await req.prisma.course.delete({
     where: { id: req.params.id },
   })
-  return res.json(course)
+  return res.json()
 }

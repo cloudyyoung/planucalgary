@@ -1,21 +1,21 @@
 import { Router } from "express"
+import { CourseCreateReqBodySchema, CourseListReqQuerySchema, CourseGetReqParamsSchema, CourseUpdateReqBodySchema, CourseUpdateReqParamsSchema, CourseDeleteReqParamsSchema } from "@planucalgary/shared"
 
 import { createCourse, deleteCourse, getCourse, listCourses, updateCourse } from "./controllers"
 import { admin } from "../../middlewares/admin"
-import { IdInputSchema, zod } from "../../middlewares"
-import { CourseCreateSchema, CourseUpdateSchema, CourseCreateRelationsSchema, CourseListSchema, CourseUpdateRelationsSchema } from "@planucalgary/shared"
+import { zod } from "../../middlewares"
 
 const router = Router()
-router.get("/", zod({ query: CourseListSchema }), listCourses)
-router.get("/:id", zod({ params: IdInputSchema }), getCourse)
-router.post("/", admin(), zod({ body: CourseCreateSchema.merge(CourseCreateRelationsSchema) }), createCourse)
+router.get("/", zod({ query: CourseListReqQuerySchema }), listCourses)
+router.get("/:id", zod({ params: CourseGetReqParamsSchema }), getCourse)
+router.post("/", admin(), zod({ body: CourseCreateReqBodySchema }), createCourse)
 router.put(
   "/:id",
   admin(),
-  zod({ params: IdInputSchema, body: CourseUpdateSchema.merge(CourseUpdateRelationsSchema) }),
+  zod({ params: CourseUpdateReqParamsSchema, body: CourseUpdateReqBodySchema }),
   updateCourse,
 )
-router.delete("/:id", admin(), zod({ params: IdInputSchema }), deleteCourse)
+router.delete("/:id", admin(), zod({ params: CourseDeleteReqParamsSchema }), deleteCourse)
 
 export default router
 export { router }

@@ -5,6 +5,7 @@ export * from "./course";
 export * from "./department";
 export * from "./enum";
 export * from "./faculty";
+export * from "./id";
 export * from "./pagination";
 export * from "./program";
 export * from "./requisite";
