@@ -14,21 +14,18 @@ export const zod = (options: ZodmiddlewareOptions) => {
       if (!parsed.success) {
         return res.status(400).json({ error: parsed.error }).end()
       }
-      req.params = parsed.data as any
     }
     if (options.query) {
       const parsed = options.query.safeParse(req.query)
       if (!parsed.success) {
         return res.status(400).json({ error: parsed.error }).end()
       }
-      req.query = parsed.data as any
     }
     if (options.body) {
       const parsed = options.body.safeParse(req.body)
       if (!parsed.success) {
         return res.status(400).json({ error: parsed.error }).end()
       }
-      req.body = parsed.data
     }
     next()
   }
