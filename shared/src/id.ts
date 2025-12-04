@@ -1,7 +1,7 @@
 import * as z from "zod"
 
 export const IdInputSchema = z.object({
-    id: z.string(),
+    id: z.uuid(),
 })
 
 export type IdInput = z.infer<typeof IdInputSchema>
