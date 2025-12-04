@@ -1,4 +1,3 @@
-
 enum CourseComponent {
   LAB
   LECTURE
@@ -19,16 +18,16 @@ enum Career {
 }
 
 model Course {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
-  cid       String @unique
-  code      String
+  cid           String @unique
+  code          String
   course_number String
 
   subject_code String
-  subject  Subject @relation(fields: [subject_code], references: [code])
+  subject      Subject @relation(fields: [subject_code], references: [code])
 
   description String?
   name        String
@@ -36,33 +35,33 @@ model Course {
   notes       String?
   version     Int
   units       Int?
-  aka       String?
+  aka         String?
 
-  prereq    String?
-  prereq_json Json?
-  coreq     String?
-  coreq_json Json?  
-  antireq   String?
+  prereq       String?
+  prereq_json  Json?
+  coreq        String?
+  coreq_json   Json?
+  antireq      String?
   antireq_json Json?
 
-  is_active    Boolean
+  is_active     Boolean
   is_multi_term Boolean
-  is_nogpa     Boolean
+  is_no_gpa     Boolean
   is_repeatable Boolean
 
-  components CourseComponent[]
+  components      CourseComponent[]
   course_group_id String
-  coursedog_id String
+  coursedog_id    String
 
-  course_created_at DateTime
+  course_created_at           DateTime
   course_effective_start_date DateTime
-  course_last_updated_at DateTime
+  course_last_updated_at      DateTime
 
   departments Department[]
-  faculties Faculty[]
+  faculties   Faculty[]
 
-  career    Career
-  topics CourseTopic[]
+  career     Career
+  topics     CourseTopic[]
   grade_mode GradeMode
 
   search_vector Unsupported("tsvector")? @default(dbgenerated())
@@ -73,20 +72,20 @@ model Course {
 }
 
 model CourseTopic {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
-  number      String @map("number")
-  name      String
-  long_name String
-  description String?
+  number        String  @map("number")
+  name          String
+  long_name     String
+  description   String?
   is_repeatable Boolean
-  units      Int?
-  link       String
+  units         Int?
+  link          String
 
   course_id String
-  course Course @relation(fields: [course_id], references: [id])
+  course    Course @relation(fields: [course_id], references: [id])
 
   @@unique([number, course_id], map: "course_topic_number_course_unique")
   @@map("courses_topics")
@@ -94,18 +93,18 @@ model CourseTopic {
 }
 
 model CourseSet {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
-  csid       String @unique
+  csid                String  @unique
   course_set_group_id String
-  type     String
-  name      String
-  description String?
-  json    Json?
+  type                String
+  name                String
+  description         String?
+  json                Json?
 
-  course_set_created_at DateTime
+  course_set_created_at      DateTime
   course_set_last_updated_at DateTime
 
   @@map("course_sets")
@@ -123,57 +122,56 @@ enum RequisiteType {
 }
 
 model RequisiteJson {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
   requisite_type RequisiteType
   text           String
   departments    String[]
   faculties      String[]
 
-  json_choices   Json[]
-  json           Json?
+  json_choices Json[]
+  json         Json?
 
-  @@unique ([requisite_type, text, departments, faculties], map: "requisite_components_unique")
+  @@unique([requisite_type, text, departments, faculties], map: "requisite_components_unique")
   @@map("requisites_jsons")
   @@schema("catalog")
 }
 
 model Faculty {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
-  name      String @unique
+  name         String  @unique
   display_name String
-  code      String @unique
+  code         String  @unique
   is_active    Boolean
 
   departments Department[]
-  courses Course[]
-  programs Program[]
+  courses     Course[]
+  programs    Program[]
 
   @@index([code], map: "faculty_code_unique")
-
   @@map("faculties")
   @@schema("catalog")
 }
 
 model Department {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
-  name      String @unique
+  name         String  @unique
   display_name String
-  code      String @unique
+  code         String  @unique
   is_active    Boolean
 
   faculties Faculty[]
-  courses Course[]
-  subjects Subject[]
-  programs Program[]
+  courses   Course[]
+  subjects  Subject[]
+  programs  Program[]
 
   @@map("departments")
   @@schema("catalog")
@@ -191,15 +189,15 @@ enum GradeMode {
 }
 
 model Subject {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
-  code      String @unique
-  title      String @unique
+  code  String @unique
+  title String @unique
 
   departments Department[]
-  courses Course[]
+  courses     Course[]
 
   @@unique([code, title], map: "subject_code_title_unique")
   @@unique([title], map: "subject_title_unique")
@@ -207,7 +205,6 @@ model Subject {
   @@map("subjects")
   @@schema("catalog")
 }
-
 
 enum TermName {
   WINTER
@@ -220,39 +217,39 @@ enum TermName {
 
 model Program {
   id         String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
-  pid       String @unique
-  coursedog_id String
+  pid              String @unique
+  coursedog_id     String
   program_group_id String
 
-  code      String @unique
-  name      String
-  long_name String
+  code         String @unique
+  name         String
+  long_name    String
   display_name String
 
-  type     String
+  type                    String
   degree_designation_code String?
   degree_designation_name String?
-  career   Career
-  
+  career                  Career
+
   departments Department[]
-  faculties Faculty[]
+  faculties   Faculty[]
 
   admission_info String?
-  general_info String?
+  general_info   String?
 
-  transcript_level Int?
+  transcript_level       Int?
   transcript_description String?
 
   requisites Json?
 
-  is_active Boolean
+  is_active  Boolean
   start_term Json?
 
-  program_created_at DateTime
-  program_last_updated_at DateTime
+  program_created_at           DateTime
+  program_last_updated_at      DateTime
   program_effective_start_date DateTime
 
   version Int
@@ -260,7 +257,6 @@ model Program {
   search_vector Unsupported("tsvector")? @default(dbgenerated())
 
   @@index([search_vector], type: Gin, map: "program_search_vector_gin")
-
   @@map("programs")
   @@schema("catalog")
 }
