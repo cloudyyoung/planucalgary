@@ -1,12 +1,12 @@
 import { NextFunction, Response, Request } from "express"
-import { PaginateFn, PaginationRequestSchema } from "@planucalgary/shared"
+import { PaginateFn, PaginatedRequestSchema } from "@planucalgary/shared"
 
 export const pagination = () => async (req: Request, res: Response, next: NextFunction) => {
   if (req.method !== "GET") {
     return next()
   }
 
-  const parsed = PaginationRequestSchema.safeParse(req.query)
+  const parsed = PaginatedRequestSchema.safeParse(req.query)
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error }).end()
   }

@@ -1,12 +1,12 @@
 import { Response } from "express"
 import * as z from "zod"
 
-export const PaginationRequestSchema = z.object({
+export const PaginatedRequestSchema = z.object({
     offset: z.number().int().min(0).optional(),
     limit: z.number().int().min(0).max(5000).optional(),
 }).loose()
 
-export type PaginationRequest = z.infer<typeof PaginationRequestSchema>
+export type PaginatedRequest = z.infer<typeof PaginatedRequestSchema>
 
 export interface PaginatedResponse<T> {
     total: number
