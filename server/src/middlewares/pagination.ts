@@ -1,19 +1,12 @@
 import { NextFunction, Response, Request } from "express"
-import { z } from "zod"
-
-export const paginationSchema = z
-  .object({
-    offset: z.coerce.number().int().min(0).optional(),
-    limit: z.coerce.number().int().min(0).max(500).optional(),
-  })
-  .passthrough()
+import { PaginateFn, PaginationRequestSchema } from "@planucalgary/shared"
 
 export const pagination = () => async (req: Request, res: Response, next: NextFunction) => {
   if (req.method !== "GET") {
     return next()
   }
 
-  const parsed = paginationSchema.safeParse(req.query)
+  const parsed = PaginationRequestSchema.safeParse(req.query)
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error }).end()
   }
@@ -29,7 +22,7 @@ export const pagination = () => async (req: Request, res: Response, next: NextFu
     limit,
   }
 
-  res.paginate = <T>(items: T[], total: number) => {
+  res.paginate = (items, total) => {
     const { offset, limit } = req.pagination
     const has_more = total - (offset + limit) > 0
 
@@ -54,6 +47,6 @@ declare module "express-serve-static-core" {
   }
 
   interface Response {
-    paginate: <T>(items: T[], total: number) => Response
+    paginate: PaginateFn
   }
 }
