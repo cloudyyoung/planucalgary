@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { ColumnDef, flexRender, getCoreRowModel, PaginationState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
-import { Course, useCourses } from "@/hooks/useCourses"
+import { Course } from "@planucalgary/shared"
+
+import { useCourses } from "@/hooks/useCourses"
 import {
   Table,
   TableBody,

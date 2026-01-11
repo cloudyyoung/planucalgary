@@ -46,6 +46,7 @@ const CourseSchema = z.object({
     career: CareerSchema,
     grade_mode: GradeNodeSchema,
 })
+export type Course = z.infer<typeof CourseSchema>
 
 
 // List Courses

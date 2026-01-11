@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { ArrowLeftIcon, PlusIcon, ArrowRightIcon, RepeatIcon, CircleSlash2Icon, SquareStackIcon, Archive } from "lucide-react"
+import { Course } from "@planucalgary/shared"
 
-import { Course, useCourses } from "@/hooks/useCourses"
+import { useCourses } from "@/hooks/useCourses"
 import { Button, ButtonProps } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge, BadgeProps } from "@/components/ui/badge"
