@@ -54,25 +54,9 @@ export const CourseListReqQuerySchema = z.object({
     keywords: z.string().optional(),
 }).extend(PaginatedRequestSchema.shape)
 export type CourseListReqQuery = z.infer<typeof CourseListReqQuerySchema>
-export const CourseListResBodySchema = CourseSchema.pick({
-    id: true,
-    code: true,
-    subject_code: true,
-    course_number: true,
-    description: true,
-    name: true,
-    long_name: true,
-    units: true,
-    aka: true,
-    career: true,
-    is_active: true,
-    is_multi_term: true,
-    is_no_gpa: true,
-    is_repeatable: true,
-}).array()
-export type CourseListResBody = PaginatedResponse<z.infer<typeof CourseListResBodySchema>>
+export const CourseListResBodySchema = CourseSchema.array()
+export type CourseListResBody = PaginatedResponse<z.infer<typeof CourseSchema>>
 export type CourseListHandler = RequestHandler<never, CourseListResBody, never, CourseListReqQuery>
-
 
 // Get Course
 export const CourseGetReqParamsSchema = IdInputSchema

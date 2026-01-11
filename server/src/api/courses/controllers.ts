@@ -1,4 +1,4 @@
-import { CourseListHandler, CourseGetHandler, IdInput, CourseListResBodySchema, CourseGetResBodySchema, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCreateResBodySchema } from "@planucalgary/shared"
+import { CourseListHandler, CourseGetHandler, CourseListResBodySchema, CourseGetResBodySchema, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCreateResBodySchema } from "@planucalgary/shared"
 import { Course, Prisma } from "@prisma/client"
 import { CourseAlreadyExistsError, CourseNotFoundError } from "./errors"
 
@@ -6,34 +6,41 @@ export const listCourses: CourseListHandler = async (req, res) => {
   const keywords = req.query.keywords
   const offset = req.pagination.offset
   const limit = req.pagination.limit
-  const is_admin = req.account?.is_admin === true
 
   const getSelectStatement = () => {
     const fields = [
       Prisma.sql`id`,
+      Prisma.sql`created_at`,
+      Prisma.sql`updated_at`,
+      Prisma.sql`cid`,
       Prisma.sql`code`,
-      Prisma.sql`subject_code`,
       Prisma.sql`course_number`,
+      Prisma.sql`subject_code`,
       Prisma.sql`description`,
       Prisma.sql`name`,
       Prisma.sql`long_name`,
+      Prisma.sql`notes`,
+      Prisma.sql`version`,
       Prisma.sql`units`,
       Prisma.sql`aka`,
-      Prisma.sql`career`,
+      Prisma.sql`prereq`,
+      Prisma.sql`coreq`,
+      Prisma.sql`antireq`,
+      Prisma.sql`prereq_json`,
+      Prisma.sql`coreq_json`,
+      Prisma.sql`antireq_json`,
       Prisma.sql`is_active`,
       Prisma.sql`is_multi_term`,
       Prisma.sql`is_no_gpa`,
       Prisma.sql`is_repeatable`,
+      Prisma.sql`course_group_id`,
+      Prisma.sql`coursedog_id`,
+      Prisma.sql`course_created_at`,
+      Prisma.sql`course_effective_start_date`,
+      Prisma.sql`course_last_updated_at`,
+      Prisma.sql`career`,
+      Prisma.sql`grade_mode`,
     ]
-
-    if (is_admin) {
-      fields.push(Prisma.sql`prereq`)
-      fields.push(Prisma.sql`coreq`)
-      fields.push(Prisma.sql`antireq`)
-      fields.push(Prisma.sql`prereq_json`)
-      fields.push(Prisma.sql`coreq_json`)
-      fields.push(Prisma.sql`antireq_json`)
-    }
 
     fields.push(Prisma.sql`ts_rank(search_vector, plainto_tsquery('english', ${keywords})) AS rank`)
 
@@ -137,7 +144,7 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
       },
     },
   })
-  
+
   const response = CourseCreateResBodySchema.parse(course)
   return res.json(response)
 }
