@@ -1,5 +1,4 @@
 import { flexRender, type Table as TanStackTable, type Header } from "@tanstack/react-table"
-import { useState } from "react"
 import {
     Table,
     TableBody,
@@ -15,10 +14,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown, GripVerticalIcon } from "lucide-react"
-import { cn } from "@/lib/utils";
 
 export interface TableProps<T> {
     table: TanStackTable<T>;
@@ -26,10 +23,9 @@ export interface TableProps<T> {
 
 interface TableHeaderCellProps<T> {
     header: Header<T, unknown>;
-    isResizing: boolean;
 }
 
-const TableHeaderCell = <T,>({ header, isResizing }: TableHeaderCellProps<T>) => {
+const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
     return (
         <TableHead
             key={header.id}
@@ -66,9 +62,6 @@ const TableHeaderCell = <T,>({ header, isResizing }: TableHeaderCellProps<T>) =>
                             onMouseDown={header.getResizeHandler()}
                             onTouchStart={header.getResizeHandler()}
                             className="absolute right-0 top-0 h-full w-1 select-none touch-none bg-border cursor-col-resize hover:bg-primary opacity-50 hover:opacity-100 transition-opacity"
-                            style={{
-                                userSelect: isResizing ? "none" : "auto",
-                            }}
                         >
                             <div className="bg-border z-10 flex h-4 w-3 items-center justify-center rounded-xs border">
                                 <GripVerticalIcon className="size-2.5" />
@@ -83,78 +76,58 @@ const TableHeaderCell = <T,>({ header, isResizing }: TableHeaderCellProps<T>) =>
 
 interface AdvancedTableHeaderProps<T> {
     table: TanStackTable<T>;
-    isResizing: boolean;
 }
 
-const AdvancedTableHeader = <T,>({ table, isResizing }: AdvancedTableHeaderProps<T>) => {
+const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
     return (
-        <div className="bg-background">
-            <Table
-                style={{
-                    width: table.getTotalSize(),
-                }}
-                className={cn(isResizing && "select-none")}
-            >
-                <TableHeader className="bg-gray-50">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <TableHeaderCell key={header.id} header={header} isResizing={isResizing} />
-                            ))}
-                        </TableRow>
+        <TableHeader className="bg-gray-50">
+            {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                        <TableHeaderCell key={header.id} header={header} />
                     ))}
-                </TableHeader>
-            </Table>
-        </div>
+                </TableRow>
+            ))}
+        </TableHeader>
     )
 }
 
 interface AdvancedTableBodyProps<T> {
     table: TanStackTable<T>;
-    isResizing: boolean;
 }
 
-const AdvancedTableBody = <T,>({ table, isResizing }: AdvancedTableBodyProps<T>) => {
+const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
     const columns = table.getAllColumns();
     const rows = table.getRowModel().rows;
 
     return (
-        <ScrollArea className="flex-1">
-            <Table
-                style={{
-                    width: table.getTotalSize(),
-                }}
-                className={cn(isResizing && "select-none")}
-            >
-                <TableBody>
-                    {rows?.length ? (
-                        rows.map((row) => (
-                            <TableRow
-                                key={row.id}
-                                data-state={row.getIsSelected() && "selected"}
+        <TableBody>
+            {rows?.length ? (
+                rows.map((row) => (
+                    <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                    >
+                        {row.getVisibleCells().map((cell) => (
+                            <TableCell
+                                key={cell.id}
+                                style={{
+                                    width: cell.column.getSize(),
+                                }}
                             >
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell
-                                        key={cell.id}
-                                        style={{
-                                            width: cell.column.getSize(),
-                                        }}
-                                    >
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No results.
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </ScrollArea>
+                        ))}
+                    </TableRow>
+                ))
+            ) : (
+                <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                        No results.
+                    </TableCell>
+                </TableRow>
+            )}
+        </TableBody>
     )
 }
 
@@ -201,13 +174,13 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
 }
 
 const AdvancedTable = <T,>({ table }: TableProps<T>) => {
-    const [isResizing, setIsResizing] = useState(false);
-
     return (
         <div className="h-full w-full flex flex-col">
-            <AdvancedTableHeader table={table} isResizing={isResizing} />
-            <AdvancedTableBody table={table} isResizing={isResizing} />
-            <AdvancedTablePagination table={table} />
+            <Table>
+                <AdvancedTableHeader table={table} />
+                <AdvancedTableBody table={table} />
+                <AdvancedTablePagination table={table} />
+            </Table>
         </div>
     )
 }
