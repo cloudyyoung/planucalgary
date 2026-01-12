@@ -8,8 +8,15 @@ import {
     TableRow,
     TableCaption,
 } from "@/components/ui/table"
-
-import { Button } from "./ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 export interface TableProps<T> {
     table: TanStackTable<T>;
@@ -18,6 +25,8 @@ export interface TableProps<T> {
 const AdvancedTable = <T,>({ table }: TableProps<T>) => {
     const columns = table.getAllColumns();
     const rows = table.getRowModel().rows;
+    const pageCount = table.getPageCount();
+    const currentPage = table.getState().pagination.pageIndex + 1;
 
     return (
         <Table>
@@ -63,9 +72,32 @@ const AdvancedTable = <T,>({ table }: TableProps<T>) => {
             </TableBody>
             <TableCaption className="sticky bottom-0 bg-background p-2">
                 <div className="flex flex-row items-center justify-end gap-2">
-                    <p>Page {table.getState().pagination.pageIndex + 1}/{table.getPageCount()} ({table.getRowCount()} rows)</p>
-                    <Button variant="secondary" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>Prev</Button>
-                    <Button variant="secondary" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>Next</Button>
+                    <p>Page {currentPage}/{pageCount} ({table.getRowCount()} rows)</p>
+                    <Select
+                        value={String(currentPage)}
+                        onValueChange={(value) => table.setPageIndex(Number(value) - 1)}
+                        disabled={pageCount === 0}
+                    >
+                        <SelectTrigger className="w-24">
+                            <SelectValue placeholder="Page" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Array.from({ length: pageCount }).map((_, idx) => {
+                                const pageNumber = idx + 1;
+                                return (
+                                    <SelectItem key={pageNumber} value={String(pageNumber)}>
+                                        {pageNumber}
+                                    </SelectItem>
+                                );
+                            })}
+                        </SelectContent>
+                    </Select>
+                    <Button variant="secondary" size="icon" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} aria-label="Previous page">
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button variant="secondary" size="icon" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} aria-label="Next page">
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
                 </div>
             </TableCaption>
         </Table>
