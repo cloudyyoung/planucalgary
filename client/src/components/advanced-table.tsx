@@ -21,7 +21,7 @@ const AdvancedTable = <T,>({ table }: TableProps<T>) => {
 
     return (
         <Table>
-            <TableHeader className="sticky top-0 bg-background">
+            <TableHeader className="sticky top-0 bg-background shadow-md">
                 {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => {
