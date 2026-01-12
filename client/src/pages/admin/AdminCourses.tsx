@@ -73,7 +73,7 @@ export const AdminCourses = () => {
   const { data } = useCourses({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
-    sorting: sorting.map(s => `${s.desc ? '-' : ''}${s.id}`).join(','),
+    sorting: sorting.length > 0 ? sorting.map(s => `${s.desc ? '-' : ''}${s.id}`).join(',') : undefined,
   })
 
   const table = useReactTable({
