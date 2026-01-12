@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { ColumnDef, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
 import { Course } from "@planucalgary/shared"
 
 import { useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
-import { set } from "zod";
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -92,10 +91,8 @@ export const AdminCourses = () => {
   })
 
   return (
-    <div className="h-screen p-4">
-      <div className="h-full flex flex-col overflow-hidden">
-        <AdvancedTable table={table} />
-      </div>
+    <div className="h-screen">
+      <AdvancedTable table={table} />
     </div>
   )
 }
