@@ -16,7 +16,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react"
 
 export interface TableProps<T> {
     table: TanStackTable<T>;
@@ -36,12 +36,28 @@ const AdvancedTable = <T,>({ table }: TableProps<T>) => {
                         {headerGroup.headers.map((header) => {
                             return (
                                 <TableHead key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    {header.isPlaceholder ? null : (
+                                        <button
+                                            className={`flex items-center gap-2 ${header.column.getCanSort() ? "cursor-pointer select-none" : "cursor-default"}`}
+                                            type="button"
+                                            onClick={header.column.getToggleSortingHandler()}
+                                            disabled={!header.column.getCanSort()}
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                            {header.column.getCanSort() ? (
+                                                header.column.getIsSorted() === "asc" ? (
+                                                    <ArrowUp className="h-4 w-4" />
+                                                ) : header.column.getIsSorted() === "desc" ? (
+                                                    <ArrowDown className="h-4 w-4" />
+                                                ) : (
+                                                    <ChevronsUpDown className="h-4 w-4" />
+                                                )
+                                            ) : null}
+                                        </button>
+                                    )}
                                 </TableHead>
                             )
                         })}

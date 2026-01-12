@@ -2,16 +2,12 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { CourseListReqQuery, CourseListResBody } from "@planucalgary/shared"
 import api from "@/api"
 
-export const useCourses = ({ keywords, offset, limit }: CourseListReqQuery) => {
+export const useCourses = (props: CourseListReqQuery) => {
   const result = useQuery<CourseListResBody>({
-    queryKey: ['courses', keywords, offset, limit],
+    queryKey: ['courses', ...Object.values(props)],
     queryFn: async () => {
       const response = await api.get('/courses', {
-        params: {
-          keywords,
-          offset,
-          limit,
-        }
+        params: props,
       })
       return response.data
     },

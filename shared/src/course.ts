@@ -52,6 +52,7 @@ export type Course = z.infer<typeof CourseSchema>
 // List Courses
 export const CourseListReqQuerySchema = z.object({
     keywords: z.string().optional(),
+    sorting: z.string().optional(),
 }).extend(PaginatedRequestSchema.shape)
 export type CourseListReqQuery = z.infer<typeof CourseListReqQuerySchema>
 export const CourseListResBodySchema = CourseSchema.array()
