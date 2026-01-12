@@ -175,13 +175,11 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
 
 const AdvancedTable = <T,>({ table }: TableProps<T>) => {
     return (
-        <div className="h-full w-full flex flex-col">
-            <Table>
-                <AdvancedTableHeader table={table} />
-                <AdvancedTableBody table={table} />
-                <AdvancedTablePagination table={table} />
-            </Table>
-        </div>
+        <Table>
+            <AdvancedTableHeader table={table} />
+            <AdvancedTableBody table={table} />
+            <AdvancedTablePagination table={table} />
+        </Table>
     )
 }
 
