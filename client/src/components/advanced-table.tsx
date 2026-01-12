@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown, GripVerticalIcon } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react"
 
 export interface TableProps<T> {
     table: TanStackTable<T>;
@@ -54,17 +54,6 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
                             )
                         ) : null}
                     </button>
-                    {header.column.columnDef.enableResizing !== false && (
-                        <div
-                            onMouseDown={header.getResizeHandler()}
-                            onTouchStart={header.getResizeHandler()}
-                            className="absolute right-0 top-0 h-full w-1 select-none touch-none bg-border cursor-col-resize hover:bg-primary opacity-50 hover:opacity-100 transition-opacity"
-                        >
-                            <div className="bg-border z-10 flex h-4 w-3 items-center justify-center rounded-xs border">
-                                <GripVerticalIcon className="size-2.5" />
-                            </div>
-                        </div>
-                    )}
                 </div>
             )}
         </TableHead>

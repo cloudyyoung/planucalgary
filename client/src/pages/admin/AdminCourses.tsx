@@ -88,7 +88,6 @@ export const AdminCourses = () => {
       pagination,
       sorting,
     },
-    enableColumnResizing: true,
   })
 
   return (
