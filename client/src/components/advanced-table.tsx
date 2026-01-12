@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown, GripVerticalIcon } from "lucide-react"
 import { cn } from "@/lib/utils";
 
 export interface TableProps<T> {
@@ -80,11 +80,15 @@ const AdvancedTable = <T,>({ table }: TableProps<T>) => {
                                                         <div
                                                             onMouseDown={header.getResizeHandler()}
                                                             onTouchStart={header.getResizeHandler()}
-                                                            className="absolute right-0 top-0 h-full w-1 select-none touch-none bg-border cursor-col-resize hover:bg-primary opacity-0 hover:opacity-100 transition-opacity"
+                                                            className="absolute right-0 top-0 h-full w-1 select-none touch-none bg-border cursor-col-resize hover:bg-primary opacity-50 hover:opacity-100 transition-opacity"
                                                             style={{
                                                                 userSelect: isResizing ? "none" : "auto",
                                                             }}
-                                                        />
+                                                        >
+                                                            <div className="bg-border z-10 flex h-4 w-3 items-center justify-center rounded-xs border">
+                                                                <GripVerticalIcon className="size-2.5" />
+                                                            </div>
+                                                        </div>
                                                     )}
                                                 </div>
                                             )}
