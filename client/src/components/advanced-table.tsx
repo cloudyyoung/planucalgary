@@ -29,10 +29,7 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
     return (
         <TableHead
             key={header.id}
-            style={{
-                width: header.getSize(),
-                position: "relative",
-            }}
+            style={{ width: header.getSize(), maxWidth: header.getSize() }}
             className="relative"
         >
             {header.isPlaceholder ? null : (
@@ -111,9 +108,7 @@ const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
                         {row.getVisibleCells().map((cell) => (
                             <TableCell
                                 key={cell.id}
-                                style={{
-                                    width: cell.column.getSize(),
-                                }}
+                                style={{ width: cell.column.getSize(), maxWidth: cell.column.getSize() }}
                             >
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>

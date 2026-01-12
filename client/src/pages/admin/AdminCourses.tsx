@@ -88,11 +88,10 @@ export const AdminCourses = () => {
       pagination,
       sorting,
     },
+    enableColumnResizing: true,
   })
 
   return (
-    <div className="h-screen">
-      <AdvancedTable table={table} />
-    </div>
+    <AdvancedTable table={table} />
   )
 }
