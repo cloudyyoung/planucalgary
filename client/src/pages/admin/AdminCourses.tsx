@@ -87,9 +87,7 @@ export const AdminCourses = () => {
 
   return (
     <div className="h-screen p-4">
-      <div className="rounded-md border shadow h-full flex flex-col overflow-hidden">
-        <AdvancedTable table={table} />
-      </div>
+      <AdvancedTable table={table} />
     </div>
   )
 }
