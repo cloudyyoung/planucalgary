@@ -91,6 +91,8 @@ export const AdminCourses = () => {
   })
 
   return (
-    <AdvancedTable table={table} />
+    <div className="h-[100vh]">
+      <AdvancedTable table={table} />
+    </div>
   )
 }

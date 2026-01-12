@@ -16,10 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react"
-
-export interface TableProps<T> {
-    table: TanStackTable<T>;
-}
+import { cn } from "@/lib/utils";
 
 interface TableHeaderCellProps<T> {
     header: Header<T, unknown>;
@@ -27,10 +24,12 @@ interface TableHeaderCellProps<T> {
 
 const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
     return (
-        <TableHead
+        <th
             key={header.id}
             style={{ width: header.getSize(), maxWidth: header.getSize() }}
-            className="relative"
+            className={cn(
+                "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+            )}
         >
             {header.isPlaceholder ? null : (
                 <div className="flex items-center gap-2">
@@ -56,7 +55,7 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
                     </button>
                 </div>
             )}
-        </TableHead>
+        </th>
     )
 }
 
@@ -66,15 +65,18 @@ interface AdvancedTableHeaderProps<T> {
 
 const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
     return (
-        <TableHeader className="bg-gray-50">
+        <thead className={cn("bg-muted sticky top-0", "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",)}>
             {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <tr
+                    className={cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",)}
+                    key={headerGroup.id}
+                >
                     {headerGroup.headers.map((header) => (
                         <TableHeaderCell key={header.id} header={header} />
                     ))}
-                </TableRow>
+                </tr>
             ))}
-        </TableHeader>
+        </thead>
     )
 }
 
@@ -87,31 +89,37 @@ const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
     const rows = table.getRowModel().rows;
 
     return (
-        <TableBody>
+        <tbody className={cn("[&_tr:last-child]:border-0")}>
             {rows?.length ? (
                 rows.map((row) => (
-                    <TableRow
+                    <tr
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
+                        className={cn(
+                            "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+                        )}
                     >
                         {row.getVisibleCells().map((cell) => (
-                            <TableCell
+                            <td
                                 key={cell.id}
+                                className={cn(
+                                    "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+                                )}
                                 style={{ width: cell.column.getSize(), maxWidth: cell.column.getSize() }}
                             >
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
+                            </td>
                         ))}
-                    </TableRow>
+                    </tr>
                 ))
             ) : (
-                <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                <tr>
+                    <td colSpan={columns.length} className="h-24 text-center">
                         No results.
-                    </TableCell>
-                </TableRow>
+                    </td>
+                </tr>
             )}
-        </TableBody>
+        </tbody>
     )
 }
 
@@ -124,7 +132,7 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
     const currentPage = table.getState().pagination.pageIndex + 1;
 
     return (
-        <div className="bg-gray-50 p-2 border-t">
+        <caption className="bg-muted text-muted-foreground text-sm p-2 sticky bottom-0">
             <div className="flex flex-row items-center justify-end gap-2">
                 <p>Page {currentPage}/{pageCount} ({table.getRowCount()} rows)</p>
                 <Select
@@ -146,24 +154,29 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
                         })}
                     </SelectContent>
                 </Select>
-                <Button variant="secondary" size="icon" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} aria-label="Previous page">
+                <Button variant="outline" size="icon" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} aria-label="Previous page">
                     <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="secondary" size="icon" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} aria-label="Next page">
+                <Button variant="outline" size="icon" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} aria-label="Next page">
                     <ChevronRight className="h-4 w-4" />
                 </Button>
             </div>
-        </div>
+        </caption>
     )
 }
 
-const AdvancedTable = <T,>({ table }: TableProps<T>) => {
+export interface TableProps<T> {
+    table: TanStackTable<T>;
+    className?: string;
+}
+
+const AdvancedTable = <T,>({ table, className }: TableProps<T>) => {
     return (
-        <Table>
+        <table className={cn("w-full caption-bottom text-sm", className)}>
             <AdvancedTableHeader table={table} />
             <AdvancedTableBody table={table} />
             <AdvancedTablePagination table={table} />
-        </Table>
+        </table>
     )
 }
 
