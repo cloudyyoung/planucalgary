@@ -48,11 +48,13 @@ export default {
   theme: {
   	fontFamily: {
   		sans: [
+  			'overpass-variable',
   			'overpass',
   			'sans-serif'
   		],
   		serif: [
-  			'overpass',
+  			'overpass-mono-variable',
+  			'overpass-mono',
   			'serif'
   		],
   		mono: [
