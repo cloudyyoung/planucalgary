@@ -7,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils";
@@ -26,12 +27,12 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
             key={header.id}
             style={{ width: header.getSize() }}
             className={cn(
-                "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+                "h-10 px-2 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
             )}
         >
             {header.isPlaceholder ? null : (
                 <Button
-                    className="px-0"
+                    className="px-0 font-bold"
                     variant="ghost"
                     onClick={onSort}
                 >
@@ -60,16 +61,32 @@ interface AdvancedTableHeaderProps<T> {
 
 const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
     return (
-        <thead className={cn("bg-muted sticky top-0", "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",)}>
+        <thead className={cn("bg-muted sticky top-0", "h-10 px-2 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",)}>
             {table.getHeaderGroups().map((headerGroup) => (
-                <tr
-                    className={cn("transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",)}
-                    key={headerGroup.id}
-                >
-                    {headerGroup.headers.map((header) => (
-                        <TableHeaderCell key={header.id} header={header} />
-                    ))}
-                </tr>
+                <>
+                    <tr
+                        className={cn("transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",)}
+                        key={headerGroup.id}
+                    >
+                        {headerGroup.headers.map((header) => (
+                            <TableHeaderCell key={header.id} header={header} />
+                        ))}
+                    </tr>
+                    <tr key={`${headerGroup.id}-filters`}>
+                        {headerGroup.headers.map((header) => (
+                            <th key={`${header.id}-filter`} className="p-2">
+                                {header.column.getCanFilter() ? (
+                                    <Input
+                                        value={(header.column.getFilterValue() as string) ?? ""}
+                                        onChange={(event) => header.column.setFilterValue(event.target.value)}
+                                        placeholder={`Filter ${String(header.column.id)}`}
+                                        className="h-8 text-sm font-normal"
+                                    />
+                                ) : null}
+                            </th>
+                        ))}
+                    </tr>
+                </>
             ))}
         </thead>
     )

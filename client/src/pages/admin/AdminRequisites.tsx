@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ColumnDef, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
+import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
 import { Requisite } from "@planucalgary/shared"
 
@@ -45,6 +45,7 @@ export const AdminRequisites = () => {
         pageSize: 500,
     })
     const [sorting, setSorting] = useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
     const { data } = useRequisites({
         offset: pagination.pageIndex * pagination.pageSize,
@@ -56,13 +57,16 @@ export const AdminRequisites = () => {
         columns,
         rowCount: data?.total || 0,
         getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
         manualPagination: true,
         enableSorting: false,
         state: {
             pagination,
             sorting,
+            columnFilters,
         },
     })
 
