@@ -2,13 +2,14 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
 import { Requisite, RequisiteTypeSchema } from "@planucalgary/shared"
+import { Bot, Check, Pencil, X } from "lucide-react";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdvancedTable from "@/components/advanced-table";
-import { useRequisites } from "@/hooks/useRequisites";
+import { useRequisites, useRequisitesGenerateChoices } from "@/hooks/useRequisites";
 import { Button } from "@/components/ui/button";
-import { Bot, Check, Pencil, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { StatefulButton } from "@/components/ui/stateful-button";
 
 
 export const AdminRequisites = () => {
@@ -65,9 +66,14 @@ export const AdminRequisites = () => {
         const jsonChoices = row.original.json_choices
         const text = row.original.text
         const [jsonEdit, setJsonEdit] = useState<string>(JSON.stringify(json, null, 2))
+        const { mutateAsync } = useRequisitesGenerateChoices()
 
         const onClickJsonChoice = (choice: any) => {
           setJsonEdit(JSON.stringify(choice, null, 2))
+        }
+
+        const onGenerateChoices = async () => {
+          await mutateAsync(row.original.id)
         }
 
         return (
@@ -92,9 +98,11 @@ export const AdminRequisites = () => {
                           ))
                         }
                       </div>
-                      <Button variant="outline">
-                        <Bot /> Generate Choices
-                      </Button>
+                      <div>
+                        <StatefulButton variant="outline" onClick={onGenerateChoices} className="w-full">
+                          <Bot /> Generate Choices
+                        </StatefulButton>
+                      </div>
                       <div className="grid grid-cols-2 gap-4 overflow-auto h-[40vh]">
                         <Textarea value={jsonEdit} className="p-2 font-mono text-xs !leading-[1.3]" onChange={(e) => setJsonEdit(e.target.value)} />
                         <JSONPretty data={jsonEdit} className="p-2 mb-1" />
