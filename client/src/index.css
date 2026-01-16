@@ -44,6 +44,14 @@
       0 84.2% 60.2%;
     --destructive-foreground:
       0 0% 98%;
+    --caution:
+      42 100% 47%;
+    --caution-foreground:
+      0 0% 3.9%;
+    --success:
+      120 61.5% 40%;
+    --success-foreground:
+      0 0% 98%;
     --border:
       0 0% 89.8%;
     --input:

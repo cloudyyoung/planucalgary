@@ -12,6 +12,15 @@ export const RequisiteSchema = z.object({
     faculties: z.array(z.string()),
     json: z.json().nullable(),
     json_choices: z.json().array(),
+    json_valid: z.boolean(),
+    json_errors: z.object({
+        message: z.string(),
+        value: z.any().nullable(),
+    }).array(),
+    json_warnings: z.object({
+        message: z.string(),
+        value: z.any().nullable(),
+    }).array(),
 })
 export type Requisite = z.infer<typeof RequisiteSchema>
 
