@@ -133,11 +133,7 @@ export const AdminRequisites = () => {
                 </DialogContent>
               </Dialog>
             </div>
-            {typeof json === 'string' ? (
-              <JSONPretty data={`"${json}"`} />
-            ) : (
-              <JSONPretty data={json} />
-            )}
+            <JSONPretty data={JSON.stringify(json)} />
           </div>
         )
       },
@@ -158,7 +154,7 @@ export const AdminRequisites = () => {
                   {errors.map((error, index) => (
                     <li key={index} className="text-sm bg-destructive/10 text-destructive p-2">
                       <span>{error.message}</span>
-                      <pre>{error.value}</pre>
+                      <JSONPretty data={error.value} />
                     </li>
                   ))}
                 </ul>
@@ -170,7 +166,7 @@ export const AdminRequisites = () => {
                   {warnings.map((warning, index) => (
                     <li key={index} className="text-sm bg-caution/10 text-caution p-2">
                       <span>{warning.message}</span>
-                      <pre>{warning.value}</pre>
+                      <JSONPretty data={warning.value} />
                     </li>
                   ))}
                 </ul>
