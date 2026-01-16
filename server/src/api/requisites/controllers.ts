@@ -1,14 +1,11 @@
-import { Request, Response } from "express"
-import { Prisma } from "@prisma/client"
-import { RequisiteList, RequisitesSync, RequisiteUpdate } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler } from "@planucalgary/shared"
 
-import { IdInput } from "../../middlewares"
-import { generatePrereq, getFineTuneJson } from "../utils/openai"
+import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
 import { getValidator } from "../../jsonlogic/requisite_json"
 import { toCourses, toCourseSets, toRequisitesJson } from "./sync"
 
-export const listRequisites = async (req: Request<any, any, any, RequisiteList>, res: Response) => {
+export const listRequisites: RequisiteListHandler = async (req, res) => {
   const { requisite_type } = req.query
   const [requisites, total, validate] = await Promise.all([
     req.prisma.requisiteJson.findMany({
@@ -51,19 +48,23 @@ export const listRequisites = async (req: Request<any, any, any, RequisiteList>,
   return res.paginate(requisitesValidated, total)
 }
 
-export const getRequisite = async (req: Request<IdInput>, res: Response) => {
+export const getRequisite: RequisiteGetHandler = async (req, res) => {
   const requisite = await req.prisma.requisiteJson.findUnique({
     where: { id: req.params.id },
   })
 
   if (!requisite) {
-    return res.status(404).json({ message: "Requisite not found" })
+    throw new Error("Requisite not found")
   }
 
-  return res.json(requisite)
+  return res.json({
+    ...requisite,
+    json: requisite.json as any,
+    json_choices: requisite.json_choices as any[],
+  })
 }
 
-export const updateRequisite = async (req: Request<IdInput, any, RequisiteUpdate>, res: Response) => {
+export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
   const existing = await req.prisma.requisiteJson.findUnique({
     where: { id: req.params.id },
   })
@@ -92,7 +93,7 @@ export const updateRequisite = async (req: Request<IdInput, any, RequisiteUpdate
   return res.json(requisite)
 }
 
-export const generateRequisiteChoices = async (req: Request<IdInput>, res: Response) => {
+export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (req, res) => {
   const existing = await req.prisma.requisiteJson.findUnique({
     where: { id: req.params.id },
   })
@@ -120,7 +121,7 @@ export const generateRequisiteChoices = async (req: Request<IdInput>, res: Respo
   return res.json(updated)
 }
 
-export const syncRequisites = async (req: Request<RequisitesSync>, res: Response) => {
+export const syncRequisites: RequisitesSyncHandler = async (req, res) => {
   const destination = req.body.destination
 
   if (destination === "requisites_jsons") {
@@ -130,36 +131,4 @@ export const syncRequisites = async (req: Request<RequisitesSync>, res: Response
   } else if (destination === "course_sets") {
     toCourseSets(req, res)
   }
-}
-
-export const getFineTuneJsons = async (req: Request<IdInput>, res: Response) => {
-  const requisites = await req.prisma.requisiteJson.findMany({
-    select: {
-      requisite_type: true,
-      text: true,
-      departments: true,
-      faculties: true,
-      json: true,
-    },
-    where: {
-      json: {
-        not: Prisma.DbNull,
-      },
-    },
-    take: req.pagination.limit,
-    skip: req.pagination.offset,
-    orderBy: {
-      id: "asc",
-    },
-  })
-
-  const jsonl = await Promise.all(
-    requisites.map(async ({ requisite_type, text, departments, faculties, json }) => {
-      return await getFineTuneJson(requisite_type, text, departments[0], faculties[0], json)
-    }),
-  )
-
-  const response = jsonl.map((json) => JSON.stringify(json)).join("\n")
-
-  return res.setHeader("Content-Type", "application/jsonl; charset=utf-8").send(response)
 }

@@ -1,31 +1,53 @@
 import * as z from "zod"
+import { type RequestHandler } from "express"
 import { RequisiteTypeSchema } from "./enum"
+import { IdInputSchema } from "./id"
+import { PaginatedResponse } from "./pagination"
 
-export const RequisiteListSchema = z.object({
-    requisite_type: RequisiteTypeSchema.optional(),
-})
-
-export type RequisiteList = z.infer<typeof RequisiteListSchema>
-
-export const RequisiteJsonCreateSchema = z.object({
+export const RequisiteSchema = z.object({
+    id: z.uuid().readonly(),
     requisite_type: RequisiteTypeSchema,
     text: z.string(),
     departments: z.array(z.string()),
     faculties: z.array(z.string()),
-    json: z.any().nullable(),
-    json_choices: z.array(z.string()),
+    json: z.json().nullable(),
+    json_choices: z.json().array(),
 })
+export type Requisite = z.infer<typeof RequisiteSchema>
 
-export type RequisiteJsonCreate = z.infer<typeof RequisiteJsonCreateSchema>
+// List Requisites
+export const RequisiteListReqQuerySchema = z.object({
+    requisite_type: RequisiteTypeSchema.optional(),
+})
+export type RequisiteListReqQuery = z.infer<typeof RequisiteListReqQuerySchema>
+export const RequisiteListResBodySchema = RequisiteSchema.array()
+export type RequisiteListResBody = PaginatedResponse<z.infer<typeof RequisiteSchema>>
+export type RequisiteListHandler = RequestHandler<never, unknown, never, RequisiteListReqQuery>
 
-export const RequisitesSyncSchema = z.object({
+// Sync Requisites
+export const RequisitesSyncReqBodySchema = z.object({
     destination: z.enum(["requisites_jsons", "courses", "course_sets"]),
 })
+export type RequisitesSyncReqBody = z.infer<typeof RequisitesSyncReqBodySchema>
+export type RequisitesSyncHandler = RequestHandler<never, unknown, RequisitesSyncReqBody, never>
 
-export type RequisitesSync = z.infer<typeof RequisitesSyncSchema>
+// Get Requisite
+export const RequisiteGetReqParamsSchema = IdInputSchema
+export type RequisiteGetReqParams = z.infer<typeof RequisiteGetReqParamsSchema>
+export const RequisiteGetResBodySchema = RequisiteSchema
+export type RequisiteGetResBody = z.infer<typeof RequisiteGetResBodySchema>
+export type RequisiteGetHandler = RequestHandler<RequisiteGetReqParams, RequisiteGetResBody>
 
-export const RequisiteUpdateSchema = z.object({
-    json: z.json(),
+// Update Requisite
+export const RequsiteUpdateReqParamsSchema = IdInputSchema
+export type RequisiteUpdateReqParams = z.infer<typeof RequsiteUpdateReqParamsSchema>
+export const RequisiteUpdateReqBodySchema = z.object({
+    json: z.json().nullable(),
 })
+export type RequisiteUpdateReqBody = z.infer<typeof RequisiteUpdateReqBodySchema>
+export type RequisiteUpdateHandler = RequestHandler<RequisiteUpdateReqParams, unknown, RequisiteUpdateReqBody, never>
 
-export type RequisiteUpdate = z.infer<typeof RequisiteUpdateSchema>
+// Generate Requisite Choices
+export const RequisiteGenerateChoicesReqParamsSchema = IdInputSchema
+export type RequisiteGenerateChoicesReqParams = z.infer<typeof RequisiteGenerateChoicesReqParamsSchema>
+export type RequisiteGenerateChoicesHandler = RequestHandler<RequisiteGenerateChoicesReqParams, unknown, never, never>

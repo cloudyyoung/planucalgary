@@ -305,35 +305,3 @@ Here is a full list of departments and their corresponding names you can use.
 ${departments.map((department) => `- Department full name is: "${department.display_name}", its department code is: "${department.code}"`).join("\n")}
 `
 }
-
-export const getFineTuneJson = async (
-  req_type: RequisiteType,
-  req: string,
-  department: string,
-  faculty: string,
-  json: any,
-) => {
-  const { subjects, faculties, departments, courses } = await getRelatedData(req, department, faculty)
-
-  const systemPrompt = getSystemPrompt()
-  const userPrompt = getUserPrompt(req, req_type, department, faculty, subjects, faculties, departments, courses)
-
-  const response = {
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-      {
-        role: "assistant",
-        content: JSON.stringify({ requisite: json }),
-      },
-    ],
-  }
-
-  return response
-}

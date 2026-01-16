@@ -1,25 +1,23 @@
 import { Router } from "express"
-import { RequisiteListSchema, RequisitesSyncSchema } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesReqParamsSchema, RequisiteGetReqParamsSchema, RequisiteListReqQuerySchema, RequisitesSyncReqBodySchema } from "@planucalgary/shared"
 
 import { admin } from "../../middlewares/admin"
-import { IdInputSchema, zod } from "../../middlewares"
+import { zod } from "../../middlewares"
 import {
   generateRequisiteChoices,
   getRequisite,
   listRequisites,
   syncRequisites,
   updateRequisite,
-  getFineTuneJsons,
 } from "./controllers"
 
 const router = Router()
-router.get("/", admin(), zod({ query: RequisiteListSchema }), listRequisites)
-router.post("/sync", admin(), zod({ body: RequisitesSyncSchema }), syncRequisites)
-router.get("/fine-tune", admin(), getFineTuneJsons)
+router.get("/", admin(), zod({ query: RequisiteListReqQuerySchema }), listRequisites)
+router.post("/sync", admin(), zod({ body: RequisitesSyncReqBodySchema }), syncRequisites)
 
-router.get("/:id", admin(), zod({ params: IdInputSchema }), getRequisite)
-router.post("/:id", admin(), zod({ params: IdInputSchema }), generateRequisiteChoices)
-router.put("/:id", admin(), zod({ params: IdInputSchema }), updateRequisite)
+router.get("/:id", admin(), zod({ params: RequisiteGetReqParamsSchema }), getRequisite)
+router.post("/:id", admin(), zod({ params: RequisiteGenerateChoicesReqParamsSchema }), generateRequisiteChoices)
+router.put("/:id", admin(), zod({ params: RequisiteGetReqParamsSchema }), updateRequisite)
 
 export default router
 export { router }
