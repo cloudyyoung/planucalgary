@@ -277,12 +277,17 @@ export interface TableProps<T> {
 const AdvancedTable = <T,>({ table, className, isLoading = false, isFetching = false }: TableProps<T>) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const currentPage = table.getState().pagination.pageIndex;
+    const currentFiltering = table.getState().columnFilters;
 
     useEffect(() => {
         if (scrollContainerRef.current) {
             scrollContainerRef.current.scrollTop = 0;
         }
-    }, [currentPage]);
+    }, [currentPage, currentFiltering]);
+
+    useEffect(() => {
+        table.resetPageIndex();
+    }, [currentFiltering]);
 
     return (
         <div className="flex flex-col w-full h-screen overflow-hidden">
