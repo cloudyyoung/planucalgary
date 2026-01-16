@@ -1,5 +1,6 @@
 import { flexRender, type Table as TanStackTable, type Header } from "@tanstack/react-table"
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
+import { useThrottle } from "react-use"
 import {
     Select,
     SelectContent,
@@ -76,12 +77,7 @@ const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
                         {headerGroup.headers.map((header) => (
                             <th key={`${header.id}-filter`} className="p-2">
                                 {header.column.getCanFilter() ? (
-                                    <Input
-                                        value={(header.column.getFilterValue() as string) ?? ""}
-                                        onChange={(event) => header.column.setFilterValue(event.target.value)}
-                                        placeholder={`Filter ${String(header.column.id)}`}
-                                        className="h-8 text-sm font-normal"
-                                    />
+                                    <ColumnFilterInput header={header} key={`${header.id}-filter-input`} />
                                 ) : null}
                             </th>
                         ))}
@@ -94,6 +90,32 @@ const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
 
 interface AdvancedTableBodyProps<T> {
     table: TanStackTable<T>;
+}
+
+const ColumnFilterInput = <T,>({ header }: { header: Header<T, unknown> }) => {
+    const column = header.column;
+    const columnFilterValue = (column.getFilterValue() as string) ?? "";
+    const [value, setValue] = useState(columnFilterValue);
+    const throttledValue = useThrottle(value, 300);
+
+    useEffect(() => {
+        column.setFilterValue(throttledValue || undefined);
+    }, [column, throttledValue]);
+
+    useEffect(() => {
+        if (columnFilterValue !== value) {
+            setValue(columnFilterValue);
+        }
+    }, [columnFilterValue]);
+
+    return (
+        <Input
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            placeholder={`Filter ${String(column.id)}`}
+            className="h-8 text-sm font-normal"
+        />
+    );
 }
 
 const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
