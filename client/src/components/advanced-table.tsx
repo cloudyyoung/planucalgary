@@ -119,35 +119,67 @@ interface AdvancedTablePaginationProps<T> {
 const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>) => {
     const pageCount = table.getPageCount();
     const currentPage = table.getState().pagination.pageIndex + 1;
+    const pageSize = table.getState().pagination.pageSize;
+
+    const onPreviousPage = () => {
+        table.previousPage();
+    }
+
+    const onNextPage = () => {
+        table.nextPage();
+    }
+
+    const onPageSizeChange = (size: number) => {
+        table.setPageSize(size);
+    }
 
     return (
-        <div className="flex flex-row items-center justify-end gap-2">
-            <p>Page {currentPage}/{pageCount} ({table.getRowCount()} rows)</p>
-            <Select
-                value={String(currentPage)}
-                onValueChange={(value) => table.setPageIndex(Number(value) - 1)}
-                disabled={pageCount === 0}
-            >
-                <SelectTrigger className="w-24">
-                    <SelectValue placeholder="Page" />
-                </SelectTrigger>
-                <SelectContent>
-                    {Array.from({ length: pageCount }).map((_, idx) => {
-                        const pageNumber = idx + 1;
-                        return (
-                            <SelectItem key={pageNumber} value={String(pageNumber)}>
-                                {pageNumber}
+        <div className="flex flex-row items-center justify-between gap-2">
+            <div className="flex flex-row items-center gap-2">
+                <Button variant="outline" size="icon" disabled={!table.getCanPreviousPage()} onClick={onPreviousPage} aria-label="Previous page">
+                    <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" disabled={!table.getCanNextPage()} onClick={onNextPage} aria-label="Next page">
+                    <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Select
+                    value={String(currentPage)}
+                    onValueChange={(value) => table.setPageIndex(Number(value) - 1)}
+                    disabled={pageCount === 0}
+                >
+                    <SelectTrigger className="w-28 bg-background">
+                        <SelectValue placeholder="Page" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {Array.from({ length: pageCount }).map((_, idx) => {
+                            const pageNumber = idx + 1;
+                            return (
+                                <SelectItem key={pageNumber} value={String(pageNumber)}>
+                                    Page {pageNumber}
+                                </SelectItem>
+                            );
+                        })}
+                    </SelectContent>
+                </Select>
+                <Select
+                    value={String(pageSize)}
+                    onValueChange={(value) => onPageSizeChange(Number(value))}
+                >
+                    <SelectTrigger className="w-28 bg-background">
+                        <SelectValue placeholder="Rows" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {[10, 25, 50, 100, 250, 500].map((size) => (
+                            <SelectItem key={size} value={String(size)}>
+                                {size} rows
                             </SelectItem>
-                        );
-                    })}
-                </SelectContent>
-            </Select>
-            <Button variant="outline" size="icon" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} aria-label="Previous page">
-                <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} aria-label="Next page">
-                <ChevronRight className="h-4 w-4" />
-            </Button>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+                <p>Total {table.getRowCount()} rows</p>
+            </div>
         </div>
     )
 }
