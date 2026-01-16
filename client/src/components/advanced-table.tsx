@@ -18,7 +18,7 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
     return (
         <th
             key={header.id}
-            style={{ width: header.getSize(), maxWidth: header.getSize() }}
+            style={{ width: header.getSize() }}
             className={cn(
                 "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
             )}
@@ -95,7 +95,6 @@ const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
                                 className={cn(
                                     "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
                                 )}
-                                style={{ width: cell.column.getSize(), maxWidth: cell.column.getSize() }}
                             >
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </td>
@@ -162,7 +161,7 @@ export interface TableProps<T> {
 
 const AdvancedTable = <T,>({ table, className }: TableProps<T>) => {
     return (
-        <table className={cn("w-full caption-bottom text-sm", className)}>
+        <table className={cn("caption-bottom text-sm w-full table-fixed", className)}>
             <AdvancedTableHeader table={table} />
             <AdvancedTableBody table={table} />
             <AdvancedTablePagination table={table} />

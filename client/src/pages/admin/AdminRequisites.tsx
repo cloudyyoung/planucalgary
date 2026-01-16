@@ -26,14 +26,16 @@ export const columns: ColumnDef<Requisite>[] = [
     {
         accessorKey: "text",
         header: "Text",
+        size: 600,
     },
     {
         accessorKey: "json",
         header: "JSON",
+        size: 600,
         cell: ({ cell }) => {
             const json = cell.getValue<string>()
             return <JSONPretty data={json} />
-        }
+        },
     },
 ]
 
@@ -65,8 +67,6 @@ export const AdminRequisites = () => {
     })
 
     return (
-        <div className="h-[100vh]">
-            <AdvancedTable table={table} />
-        </div>
+        <AdvancedTable table={table} />
     )
 }
