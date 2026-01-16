@@ -15,6 +15,11 @@ interface TableHeaderCellProps<T> {
 }
 
 const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
+    const onSort = () => {
+        if (!header.column.getCanSort()) return;
+        header.column.getToggleSortingHandler();
+    }
+
     return (
         <th
             key={header.id}
@@ -27,7 +32,7 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
                 <Button
                     className="px-0"
                     variant="ghost"
-                    onClick={header.column.getToggleSortingHandler()}
+                    onClick={onSort}
                 >
                     {flexRender(
                         header.column.columnDef.header,
