@@ -39,7 +39,7 @@ export const useRequisitesUpdate = (id: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['requisites'] })
-    }
+    },
   })
 
   return mutation

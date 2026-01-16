@@ -95,10 +95,13 @@ export const AdminRequisites = () => {
         return (
           <div className="flex flex-row justify-start items-center gap-6">
             <div className="flex flex-row gap-1">
+              <StatefulButton variant="outline" onClick={onGenerateChoices} className="w-9">
+                <Bot />
+              </StatefulButton>
               <Dialog open={dialogOpen} onOpenChange={onOpenChange}>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
-                    <Pencil /> Edit JSON
+                  <Button variant="outline" className="w-9">
+                    <Pencil />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="lg:max-w-4xl overflow-hidden">
