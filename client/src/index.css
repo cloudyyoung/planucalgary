@@ -189,7 +189,6 @@
   line-height: 1.3;
   color: #5f6d70;
   background: transparent;
-  overflow: auto;
 }
 
 .__json-pretty__ .__json-key__ {
@@ -212,5 +211,4 @@
   line-height: 1.3;
   color: #5f6d70;
   background: transparent;
-  overflow: auto
 }
