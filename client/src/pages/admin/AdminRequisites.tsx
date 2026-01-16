@@ -59,7 +59,7 @@ export const AdminRequisites = () => {
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
         manualPagination: true,
-        manualSorting: true,
+        enableSorting: false,
         state: {
             pagination,
             sorting,

@@ -28,7 +28,6 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
                     className="px-0"
                     variant="ghost"
                     onClick={header.column.getToggleSortingHandler()}
-                    disabled={!header.column.getCanSort()}
                 >
                     {flexRender(
                         header.column.columnDef.header,
@@ -39,9 +38,9 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
                             <ArrowUp className="h-4 w-4" />
                         ) : header.column.getIsSorted() === "desc" ? (
                             <ArrowDown className="h-4 w-4" />
-                        ) : (
+                        ) : header.column.getCanSort() ? (
                             <ChevronsUpDown className="h-4 w-4" />
-                        )
+                        ) : null
                     ) : null}
                 </Button>
             )}
