@@ -53,11 +53,12 @@ export default {
   			'sans-serif'
   		],
   		serif: [
-  			'overpass-mono-variable',
-  			'overpass-mono',
+  			'overpass-variable',
+  			'overpass',
   			'serif'
   		],
   		mono: [
+  			'overpass-mono-variable',
   			'overpass-mono',
   			'monospace'
   		]

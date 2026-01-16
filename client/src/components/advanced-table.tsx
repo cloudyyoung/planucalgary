@@ -24,28 +24,26 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
             )}
         >
             {header.isPlaceholder ? null : (
-                <div className="flex items-center gap-2">
-                    <Button
-                        className="px-0"
-                        variant="ghost"
-                        onClick={header.column.getToggleSortingHandler()}
-                        disabled={!header.column.getCanSort()}
-                    >
-                        {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                        )}
-                        {header.column.getCanSort() ? (
-                            header.column.getIsSorted() === "asc" ? (
-                                <ArrowUp className="h-4 w-4" />
-                            ) : header.column.getIsSorted() === "desc" ? (
-                                <ArrowDown className="h-4 w-4" />
-                            ) : (
-                                <ChevronsUpDown className="h-4 w-4" />
-                            )
-                        ) : null}
-                    </Button>
-                </div>
+                <Button
+                    className="px-0"
+                    variant="ghost"
+                    onClick={header.column.getToggleSortingHandler()}
+                    disabled={!header.column.getCanSort()}
+                >
+                    {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                    )}
+                    {header.column.getCanSort() ? (
+                        header.column.getIsSorted() === "asc" ? (
+                            <ArrowUp className="h-4 w-4" />
+                        ) : header.column.getIsSorted() === "desc" ? (
+                            <ArrowDown className="h-4 w-4" />
+                        ) : (
+                            <ChevronsUpDown className="h-4 w-4" />
+                        )
+                    ) : null}
+                </Button>
             )}
         </th>
     )

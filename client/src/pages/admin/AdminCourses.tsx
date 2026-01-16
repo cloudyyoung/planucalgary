@@ -12,8 +12,20 @@ export const columns: ColumnDef<Course>[] = [
     header: "ID",
   },
   {
-    accessorKey: "code",
-    header: "Code",
+    accessorKey: "subject_code",
+    header: "Subject Code",
+    cell: ({ cell }) => {
+      const code = cell.getValue<string>()
+      return <span className="font-mono">{code}</span>
+    }
+  },
+  {
+    accessorKey: "course_number",
+    header: "Course Number",
+    cell: ({ cell }) => {
+      const code = cell.getValue<string>()
+      return <span className="font-mono">{code}</span>
+    }
   },
   {
     accessorKey: "prereq",
@@ -24,7 +36,7 @@ export const columns: ColumnDef<Course>[] = [
     header: "Prerequisites JSON",
     cell: ({ cell }) => {
       const json = cell.getValue<string>()
-      return <JSONPretty data={json} theme={theme}></JSONPretty>
+      return <JSONPretty data={json} />
     }
   },
   {
@@ -36,7 +48,7 @@ export const columns: ColumnDef<Course>[] = [
     header: "Antirequisites JSON",
     cell: ({ cell }) => {
       const json = cell.getValue<string>()
-      return <JSONPretty data={json} theme={theme}></JSONPretty>
+      return <JSONPretty data={json} />
     }
   },
   {
@@ -48,19 +60,10 @@ export const columns: ColumnDef<Course>[] = [
     header: "Corequisites JSON",
     cell: ({ cell }) => {
       const json = cell.getValue<string>()
-      return <JSONPretty data={json} theme={theme}></JSONPretty>
+      return <JSONPretty data={json} />
     }
   },
 ]
-
-const theme = {
-  main: 'line-height:1.3;color:#5f6d70;background:transparent;overflow:auto;',
-  error: 'line-height:1.3;color:#5f6d70;background:#ffe0e0;overflow:auto;',
-  key: 'color:#f92672;',
-  string: 'color:#fd971f;',
-  value: 'color:#a6e22e;',
-  boolean: 'color:#ac81fe;',
-}
 
 export const AdminCourses = () => {
   const [pagination, setPagination] = useState<PaginationState>({
