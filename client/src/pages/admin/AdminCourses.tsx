@@ -30,10 +30,12 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "prereq",
     header: "Prerequisites",
+    size: 300,
   },
   {
     accessorKey: "prereq_json",
     header: "Prerequisites JSON",
+    size: 400,
     cell: ({ cell }) => {
       const json = cell.getValue<string>()
       return <JSONPretty data={json} />
@@ -42,10 +44,12 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "antireq",
     header: "Antirequisites",
+    size: 300,
   },
   {
     accessorKey: "antireq_json",
     header: "Antirequisites JSON",
+    size: 400,
     cell: ({ cell }) => {
       const json = cell.getValue<string>()
       return <JSONPretty data={json} />
@@ -54,10 +58,12 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "coreq",
     header: "Corequisites",
+    size: 300,
   },
   {
     accessorKey: "coreq_json",
     header: "Corequisites JSON",
+    size: 400,
     cell: ({ cell }) => {
       const json = cell.getValue<string>()
       return <JSONPretty data={json} />

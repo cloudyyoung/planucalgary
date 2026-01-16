@@ -121,36 +121,34 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
     const currentPage = table.getState().pagination.pageIndex + 1;
 
     return (
-        <caption className="bg-muted text-muted-foreground text-sm p-2 sticky bottom-0">
-            <div className="flex flex-row items-center justify-end gap-2">
-                <p>Page {currentPage}/{pageCount} ({table.getRowCount()} rows)</p>
-                <Select
-                    value={String(currentPage)}
-                    onValueChange={(value) => table.setPageIndex(Number(value) - 1)}
-                    disabled={pageCount === 0}
-                >
-                    <SelectTrigger className="w-24">
-                        <SelectValue placeholder="Page" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {Array.from({ length: pageCount }).map((_, idx) => {
-                            const pageNumber = idx + 1;
-                            return (
-                                <SelectItem key={pageNumber} value={String(pageNumber)}>
-                                    {pageNumber}
-                                </SelectItem>
-                            );
-                        })}
-                    </SelectContent>
-                </Select>
-                <Button variant="outline" size="icon" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} aria-label="Previous page">
-                    <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} aria-label="Next page">
-                    <ChevronRight className="h-4 w-4" />
-                </Button>
-            </div>
-        </caption>
+        <div className="flex flex-row items-center justify-end gap-2">
+            <p>Page {currentPage}/{pageCount} ({table.getRowCount()} rows)</p>
+            <Select
+                value={String(currentPage)}
+                onValueChange={(value) => table.setPageIndex(Number(value) - 1)}
+                disabled={pageCount === 0}
+            >
+                <SelectTrigger className="w-24">
+                    <SelectValue placeholder="Page" />
+                </SelectTrigger>
+                <SelectContent>
+                    {Array.from({ length: pageCount }).map((_, idx) => {
+                        const pageNumber = idx + 1;
+                        return (
+                            <SelectItem key={pageNumber} value={String(pageNumber)}>
+                                {pageNumber}
+                            </SelectItem>
+                        );
+                    })}
+                </SelectContent>
+            </Select>
+            <Button variant="outline" size="icon" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} aria-label="Previous page">
+                <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()} aria-label="Next page">
+                <ChevronRight className="h-4 w-4" />
+            </Button>
+        </div>
     )
 }
 
@@ -161,11 +159,17 @@ export interface TableProps<T> {
 
 const AdvancedTable = <T,>({ table, className }: TableProps<T>) => {
     return (
-        <table className={cn("caption-bottom text-sm w-full table-fixed", className)}>
-            <AdvancedTableHeader table={table} />
-            <AdvancedTableBody table={table} />
-            <AdvancedTablePagination table={table} />
-        </table>
+        <div className="flex flex-col w-full h-screen overflow-hidden">
+            <div className="overflow-x-auto overflow-y-auto flex-1 relative">
+                <table className={cn("text-sm w-full", className)}>
+                    <AdvancedTableHeader table={table} />
+                    <AdvancedTableBody table={table} />
+                </table>
+            </div>
+            <div className="bg-muted text-muted-foreground text-sm p-2 shrink-0">
+                <AdvancedTablePagination table={table} />
+            </div>
+        </div>
     )
 }
 

@@ -37,7 +37,7 @@ export const Courses = () => {
 
   return (
     <>
-      <main className='px-4 py-2 space-y-2'>
+      <main className='px-4 py-2 space-y-2 w-full'>
         <div className="sticky top-0 py-4 bg-background">
           <Input className="w-full h-11" placeholder="Search courses by keywords" value={keywords} onChange={(e) => setKeywords(e.target.value)} />
 

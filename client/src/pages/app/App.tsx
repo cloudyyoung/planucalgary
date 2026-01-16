@@ -21,9 +21,7 @@ export const App = () => {
     <>
       <SidebarProvider>
         <AppSidebar />
-        <div className="w-full">
-          <Outlet />
-        </div>
+        <Outlet />
       </SidebarProvider>
     </>
   )
