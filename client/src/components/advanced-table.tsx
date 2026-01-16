@@ -70,9 +70,9 @@ const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
                     </tr>
                     <tr key={`${headerGroup.id}-filters`}>
                         {headerGroup.headers.map((header) => (
-                            <th key={`${header.id}-filter`} className="px-2 pb-2">
+                            <th key={`${header.id}-filter`} className={cn(header.column.getCanFilter() && "px-2 pb-2")}>
                                 {header.column.getCanFilter() ? (
-                                    <ColumnFilterInput header={header} />
+                                    <ColumnFilter header={header} />
                                 ) : null}
                             </th>
                         ))}
@@ -87,30 +87,56 @@ interface AdvancedTableBodyProps<T> {
     table: TanStackTable<T>;
 }
 
-const ColumnFilterInput = <T,>({ header }: { header: Header<T, unknown> }) => {
+const ColumnFilter = <T,>({ header }: { header: Header<T, unknown> }) => {
     const column = header.column;
-    const columnFilterValue = (column.getFilterValue() as string) ?? "";
-    const [value, setValue] = useState(columnFilterValue);
-    const throttledValue = useThrottle(value, 300);
+    const columnFilterValue = column.getFilterValue() as string | undefined;
+    const { filterVariant } = column.columnDef.meta ?? {}
 
-    useEffect(() => {
-        column.setFilterValue(throttledValue || undefined);
-    }, [column, throttledValue]);
+    if (filterVariant === 'text') {
+        const [value, setValue] = useState(columnFilterValue);
+        const throttledValue = useThrottle(value, 300);
 
-    useEffect(() => {
-        if (columnFilterValue !== value) {
-            setValue(columnFilterValue);
-        }
-    }, [columnFilterValue]);
+        useEffect(() => {
+            column.setFilterValue(throttledValue || undefined);
+        }, [column, throttledValue]);
 
-    return (
-        <Input
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            placeholder={`Filter ${String(column.columnDef.header)}...`}
-            className="h-8 text-sm font-normal"
-        />
-    );
+        useEffect(() => {
+            if (columnFilterValue !== value) {
+                setValue(columnFilterValue);
+            }
+        }, [columnFilterValue]);
+
+        return (
+            <Input
+                value={value}
+                onChange={(event) => setValue(event.target.value)}
+                placeholder={`Filter ${String(column.columnDef.header)}...`}
+                className="h-8 text-sm font-normal"
+            />
+        );
+    } else if (filterVariant === 'select') {
+        const options = column.columnDef.meta?.filterOptions as string[] | undefined || [];
+
+        return (
+            <Select
+                value={columnFilterValue}
+                onValueChange={(value) => column.setFilterValue(value || undefined)}
+            >
+                <SelectTrigger className="h-8 text-sm font-normal w-full bg-background">
+                    <SelectValue placeholder={`Filter ${String(column.columnDef.header)}...`} />
+                </SelectTrigger>
+                <SelectContent>
+                    {options.map((option) => (
+                        <SelectItem key={option} value={option}>
+                            {option}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        );
+    }
+
+    return null;
 }
 
 const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {

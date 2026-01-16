@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ColumnDef, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
+import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
 import { Course } from "@planucalgary/shared"
 
@@ -31,6 +31,7 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "prereq",
     header: "Prerequisites",
     size: 300,
+    filterFn: 'includesString',
   },
   {
     accessorKey: "prereq_json",
@@ -77,11 +78,13 @@ export const AdminCourses = () => {
     pageSize: 500,
   })
   const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const { data } = useCourses({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
     sorting: sorting.length > 0 ? sorting.map(s => `${s.desc ? '-' : ''}${s.id}`).join(',') : undefined,
+    ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value]))
   })
 
   const table = useReactTable({
@@ -91,9 +94,14 @@ export const AdminCourses = () => {
     getCoreRowModel: getCoreRowModel(),
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     manualPagination: true,
     manualSorting: true,
-    enableSorting: true,
+    manualFiltering: true,
+    defaultColumn: {
+      enableColumnFilter: false,
+      enableSorting: true,
+    },
     state: {
       pagination,
       sorting,
