@@ -60,8 +60,8 @@ export const AdminRequisites = () => {
       accessorKey: "json",
       header: "JSON",
       size: 400,
-      cell: ({ cell, row }) => {
-        const json = cell.getValue<string>()
+      cell: ({ row }) => {
+        const json = row.original.json
         const jsonChoices = row.original.json_choices
         const text = row.original.text
         const [jsonEdit, setJsonEdit] = useState<string>(JSON.stringify(json, null, 2))
@@ -95,9 +95,9 @@ export const AdminRequisites = () => {
                       <Button variant="outline">
                         <Bot /> Generate Choices
                       </Button>
-                      <div className="grid grid-cols-2 gap-4">
-                        <Textarea className="h-[30vh]" value={jsonEdit} onChange={(e) => setJsonEdit(e.target.value)} />
-                        <JSONPretty data={jsonEdit} />
+                      <div className="grid grid-cols-2 gap-4 overflow-auto h-[40vh]">
+                        <Textarea value={jsonEdit} className="p-2 font-mono text-xs !leading-[1.3]" onChange={(e) => setJsonEdit(e.target.value)} />
+                        <JSONPretty data={jsonEdit} className="p-2 mb-1" />
                       </div>
                     </DialogDescription>
                   </DialogHeader>
@@ -113,7 +113,11 @@ export const AdminRequisites = () => {
                 </DialogContent>
               </Dialog>
             </div>
-            <JSONPretty data={json} />
+            {typeof json === 'string' ? (
+              <JSONPretty data={`"${json}"`} />
+            ) : (
+              <JSONPretty data={json} />
+            )}
           </div>
         )
       },
