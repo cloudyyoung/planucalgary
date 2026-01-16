@@ -37,12 +37,12 @@ const load = async (app: Express) => {
   app.use(helmet())
   app.use(compression())
   app.use(prisma())
-  // app.use(
-  //   jwt({ secret: JWT_SECRET_KEY!, algorithms: ["HS256"], issuer: "plan-ucalgary-api" }).unless({
-  //     path: ["/accounts/signin", "/accounts/signup"],
-  //   }),
-  //   auth(),
-  // )
+  app.use(
+    jwt({ secret: JWT_SECRET_KEY!, algorithms: ["HS256"], issuer: "plan-ucalgary-api" }).unless({
+      path: ["/accounts/signin", "/accounts/signup"],
+    }),
+    auth(),
+  )
   app.use(emptyget())
   app.use(pagination())
   app.disable("x-powered-by")
