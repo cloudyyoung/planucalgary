@@ -1,13 +1,5 @@
 import { flexRender, type Table as TanStackTable, type Header } from "@tanstack/react-table"
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
     Select,
     SelectContent,
     SelectItem,
@@ -33,9 +25,9 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
         >
             {header.isPlaceholder ? null : (
                 <div className="flex items-center gap-2">
-                    <button
-                        className={`flex items-center gap-2 flex-1 ${header.column.getCanSort() ? "cursor-pointer select-none" : "cursor-default"}`}
-                        type="button"
+                    <Button
+                        className="px-0"
+                        variant="ghost"
                         onClick={header.column.getToggleSortingHandler()}
                         disabled={!header.column.getCanSort()}
                     >
@@ -52,7 +44,7 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
                                 <ChevronsUpDown className="h-4 w-4" />
                             )
                         ) : null}
-                    </button>
+                    </Button>
                 </div>
             )}
         </th>
