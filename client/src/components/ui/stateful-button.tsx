@@ -318,7 +318,7 @@ const StatefulButton: React.FC<StatefulButtonProps> = ({
 
 	const loadingContent = (
 		<>
-			<LoaderCircle className="animate-spin" aria-hidden="true" data-cy="spinner-icon" />
+			<LoaderCircle className="animate-spin text-caution" aria-hidden="true" data-cy="spinner-icon" />
 			<span className="sr-only">{ariaMsg.loading}</span>
 		</>
 	);
@@ -332,13 +332,13 @@ const StatefulButton: React.FC<StatefulButtonProps> = ({
 	);
 	const successContent = (
 		<>
-			<Check aria-hidden="true" data-cy="check-icon" />
+			<Check className='text-success' aria-hidden="true" data-cy="check-icon" />
 			<span className="sr-only">{ariaMsg.success}</span>
 		</>
 	);
 	const errorContent = (
 		<>
-			<X aria-hidden="true" data-cy="x-icon" />
+			<X className='text-destructive' aria-hidden="true" data-cy="x-icon" />
 			<span className="sr-only">{ariaMsg.error}</span>
 		</>
 	);
