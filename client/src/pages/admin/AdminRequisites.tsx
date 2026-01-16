@@ -65,7 +65,10 @@ export const AdminRequisites = () => {
         const json = row.original.json
         const jsonChoices = row.original.json_choices
         const text = row.original.text
-        const [jsonEdit, setJsonEdit] = useState<string>(JSON.stringify(json, null, 2))
+
+        const [dialogOpen, setDialogOpen] = useState(false)
+        const [jsonEdit, setJsonEdit] = useState<string>("")
+
         const { mutateAsync: generateChoices } = useRequisitesGenerateChoices(row.original.id)
         const { mutateAsync: updateJson } = useRequisitesUpdate(row.original.id)
 
@@ -79,12 +82,20 @@ export const AdminRequisites = () => {
 
         const onUpdate = async () => {
           await updateJson({ json: JSON.parse(jsonEdit) })
+          setDialogOpen(false)
+        }
+
+        const onOpenChange = (open: boolean) => {
+          setDialogOpen(open)
+          if (open) {
+            setJsonEdit(JSON.stringify(json, null, 2))
+          }
         }
 
         return (
           <div className="flex flex-row justify-start items-center gap-6">
             <div className="flex flex-row gap-1">
-              <Dialog>
+              <Dialog open={dialogOpen} onOpenChange={onOpenChange}>
                 <DialogTrigger asChild>
                   <Button variant="outline">
                     <Pencil /> Edit JSON
