@@ -2,7 +2,7 @@ import * as z from "zod"
 import { type RequestHandler } from "express"
 import { RequisiteTypeSchema } from "./enum"
 import { IdInputSchema } from "./id"
-import { PaginatedResponse } from "./pagination"
+import { PaginatedRequestSchema, PaginatedResponse } from "./pagination"
 
 export const RequisiteSchema = z.object({
     id: z.uuid().readonly(),
@@ -18,7 +18,7 @@ export type Requisite = z.infer<typeof RequisiteSchema>
 // List Requisites
 export const RequisiteListReqQuerySchema = z.object({
     requisite_type: RequisiteTypeSchema.optional(),
-})
+}).extend(PaginatedRequestSchema.shape)
 export type RequisiteListReqQuery = z.infer<typeof RequisiteListReqQuerySchema>
 export const RequisiteListResBodySchema = RequisiteSchema.array()
 export type RequisiteListResBody = PaginatedResponse<z.infer<typeof RequisiteSchema>>

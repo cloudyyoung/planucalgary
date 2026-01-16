@@ -1,31 +1,18 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import api from "@/api"
+import { RequisiteListReqQuery } from "@planucalgary/shared"
 
-export interface UseRequisitesOptions {
-  offset?: number
-  limit?: number
-  type?: "PREREQ" | "COREQ" | "ANTIREQ"
-}
-
-export const useRequisites = ({offset, limit, type}: UseRequisitesOptions) => {
+export const useRequisites = (props: RequisiteListReqQuery) => {
   const result = useQuery({
-    queryKey: ['requisites', offset, limit, type],
+    queryKey: ['requisites', ...Object.values(props)],
     queryFn: async () => {
       const response = await api.get('/requisites', {
-        params: {
-          offset,
-          limit,
-          type,
-        }
+        params: props,
       })
       return response.data
     },
     placeholderData: keepPreviousData,
   })
 
-  return {
-    ...result,
-    requisites: result.data?.items || [],
-    total: result.data?.total || 0,
-  }
+  return result
 }
