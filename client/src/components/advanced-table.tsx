@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown, X } from "lucide-react"
 import { cn } from "@/lib/utils";
 
 interface TableHeaderCellProps<T> {
@@ -119,13 +119,17 @@ const ColumnFilter = <T,>({ header }: { header: Header<T, unknown> }) => {
 
         return (
             <Select
+                defaultValue="all"
                 value={columnFilterValue}
-                onValueChange={(value) => column.setFilterValue(value || undefined)}
+                onValueChange={(value) => column.setFilterValue(value === "all" ? undefined : value)}
             >
-                <SelectTrigger className="h-8 text-sm font-normal w-full bg-background">
+                <SelectTrigger className="h-8 text-sm font-normal w-full">
                     <SelectValue placeholder={`Filter ${String(column.columnDef.header)}...`} />
                 </SelectTrigger>
                 <SelectContent>
+                    <SelectItem value="all">
+                        All
+                    </SelectItem>
                     {options.map((option) => (
                         <SelectItem key={option} value={option}>
                             {option}
