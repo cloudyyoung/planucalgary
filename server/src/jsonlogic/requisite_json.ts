@@ -130,7 +130,7 @@ export const getValidator = async () => {
             }
           }
 
-          warnings.push({ message: "Course is untracked", value: obj })
+          warnings.push({ message: "Course is untracked in the catalog", value: obj })
           return true
         }
 
@@ -162,7 +162,7 @@ export const getValidator = async () => {
             errors.push({ message: "Course code does not exist", value: obj })
             return false
           } else {
-            warnings.push({ message: "Course is untracked", value: obj })
+            warnings.push({ message: "Course is untracked in the catalog", value: obj })
           }
         }
 
