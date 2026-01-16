@@ -18,11 +18,6 @@ interface TableHeaderCellProps<T> {
 }
 
 const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
-    const onSort = () => {
-        if (!header.column.getCanSort()) return;
-        header.column.getToggleSortingHandler();
-    }
-
     return (
         <th
             key={header.id}
@@ -35,7 +30,7 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
                 <Button
                     className="px-0 font-bold"
                     variant="ghost"
-                    onClick={onSort}
+                    onClick={header.column.getToggleSortingHandler()}
                 >
                     {flexRender(
                         header.column.columnDef.header,
@@ -75,9 +70,9 @@ const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
                     </tr>
                     <tr key={`${headerGroup.id}-filters`}>
                         {headerGroup.headers.map((header) => (
-                            <th key={`${header.id}-filter`} className="p-2">
+                            <th key={`${header.id}-filter`} className="px-2 pb-2">
                                 {header.column.getCanFilter() ? (
-                                    <ColumnFilterInput header={header} key={`${header.id}-filter-input`} />
+                                    <ColumnFilterInput header={header} />
                                 ) : null}
                             </th>
                         ))}
@@ -112,7 +107,7 @@ const ColumnFilterInput = <T,>({ header }: { header: Header<T, unknown> }) => {
         <Input
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            placeholder={`Filter ${String(column.id)}`}
+            placeholder={`Filter ${String(column.columnDef.header)}...`}
             className="h-8 text-sm font-normal"
         />
     );

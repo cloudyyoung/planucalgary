@@ -93,6 +93,7 @@ export const AdminCourses = () => {
     onSortingChange: setSorting,
     manualPagination: true,
     manualSorting: true,
+    enableSorting: true,
     state: {
       pagination,
       sorting,
