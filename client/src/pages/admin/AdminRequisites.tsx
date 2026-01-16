@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import AdvancedTable from "@/components/advanced-table";
 import { useRequisites } from "@/hooks/useRequisites";
 import { Button } from "@/components/ui/button";
-import { Bot, Check, Pickaxe, X } from "lucide-react";
+import { Bot, Check, Pencil, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 
@@ -64,30 +64,29 @@ export const AdminRequisites = () => {
         const json = cell.getValue<string>()
         const jsonChoices = row.original.json_choices
         const text = row.original.text
+        const [jsonEdit, setJsonEdit] = useState<string>(JSON.stringify(json, null, 2))
+
+        const onClickJsonChoice = (choice: any) => {
+          setJsonEdit(JSON.stringify(choice, null, 2))
+        }
 
         return (
           <div className="flex flex-row justify-start items-center gap-6">
             <div className="flex flex-row gap-1">
-              <Button variant="outline" size="icon"><Bot /></Button>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="icon" className="relative">
-                    <Pickaxe />
-                    {
-                      jsonChoices && jsonChoices.length > 0 && (
-                        <div className="absolute bottom-0 right-0 text-xs font-mono rounded-full px-0.5 pointer-events-none">{jsonChoices.length}</div>
-                      )
-                    }
+                  <Button variant="outline">
+                    <Pencil /> Edit JSON
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="lg:max-w-4xl">
+                <DialogContent className="lg:max-w-4xl overflow-hidden">
                   <DialogHeader>
                     <DialogTitle>{text}</DialogTitle>
                     <DialogDescription className="space-y-2">
-                      <div className="max-h-[30vh] overflow-y-auto flex flex-row gap-2">
+                      <div className="max-h-[30vh] max-w-4xl overflow-auto flex flex-row px-6 -mx-6">
                         {
                           jsonChoices.map((choice, index) => (
-                            <Button key={index} variant="ghost" className="h-full text-left justify-start w-full">
+                            <Button key={index} variant="ghost" className="h-full min-h-20 text-left justify-start w-full" onClick={() => onClickJsonChoice(choice)}>
                               <JSONPretty data={choice} />
                             </Button>
                           ))
@@ -96,11 +95,14 @@ export const AdminRequisites = () => {
                       <Button variant="outline">
                         <Bot /> Generate Choices
                       </Button>
-                      <Textarea value={JSON.stringify(json, null, 2)} className="h-[30vh]" />
+                      <div className="grid grid-cols-2 gap-4">
+                        <Textarea className="h-[30vh]" value={jsonEdit} onChange={(e) => setJsonEdit(e.target.value)} />
+                        <JSONPretty data={jsonEdit} />
+                      </div>
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
-                    <Button variant="default" onClick={(e) => {
+                    <Button variant="default" size="lg" onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
                       window.navigator.clipboard.writeText(JSON.stringify(json, null, 2))
