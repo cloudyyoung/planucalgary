@@ -63,7 +63,7 @@ const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
         <thead className={cn("bg-muted sticky top-0", "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",)}>
             {table.getHeaderGroups().map((headerGroup) => (
                 <tr
-                    className={cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",)}
+                    className={cn("transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",)}
                     key={headerGroup.id}
                 >
                     {headerGroup.headers.map((header) => (
@@ -91,7 +91,7 @@ const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
                         className={cn(
-                            "transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+                            "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
                         )}
                     >
                         {row.getVisibleCells().map((cell) => (
