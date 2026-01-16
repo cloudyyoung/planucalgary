@@ -34,6 +34,17 @@ const menuItems = [
   },
 ]
 
+const adminMenuItems = [
+  {
+    title: "Courses",
+    url: "admin/courses",
+  },
+  {
+    title: "Requisites",
+    url: "admin/requisites",
+  },
+]
+
 export const AppSidebar = () => {
   return (
     <Sidebar>
@@ -44,6 +55,22 @@ export const AppSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link to={item.url}>
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Administration</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {adminMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>
