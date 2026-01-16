@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown, X } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils";
 
 interface TableHeaderCellProps<T> {
