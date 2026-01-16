@@ -3,10 +3,12 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import JSONPretty from 'react-json-pretty';
 import { Requisite, RequisiteTypeSchema } from "@planucalgary/shared"
 
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdvancedTable from "@/components/advanced-table";
 import { useRequisites } from "@/hooks/useRequisites";
 import { Button } from "@/components/ui/button";
 import { Bot, Check, Pickaxe, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 
 export const AdminRequisites = () => {
@@ -61,19 +63,53 @@ export const AdminRequisites = () => {
       cell: ({ cell, row }) => {
         const json = cell.getValue<string>()
         const jsonChoices = row.original.json_choices
+        const text = row.original.text
 
         return (
           <div className="flex flex-row justify-start items-center gap-6">
             <div className="flex flex-row gap-1">
               <Button variant="outline" size="icon"><Bot /></Button>
-              <Button variant="outline" size="icon" className="relative">
-                <Pickaxe />
-                {
-                  jsonChoices && jsonChoices.length > 0 && (
-                    <div className="absolute -top-1 -right-1 bg-secondary text-xs font-mono rounded-full px-1">{jsonChoices.length}</div>
-                  )
-                }
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon" className="relative">
+                    <Pickaxe />
+                    {
+                      jsonChoices && jsonChoices.length > 0 && (
+                        <div className="absolute bottom-0 right-0 text-xs font-mono rounded-full px-0.5 pointer-events-none">{jsonChoices.length}</div>
+                      )
+                    }
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="lg:max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>{text}</DialogTitle>
+                    <DialogDescription className="space-y-2">
+                      <div className="max-h-[30vh] overflow-y-auto flex flex-row gap-2">
+                        {
+                          jsonChoices.map((choice, index) => (
+                            <Button key={index} variant="ghost" className="h-full text-left justify-start w-full">
+                              <JSONPretty data={choice} />
+                            </Button>
+                          ))
+                        }
+                      </div>
+                      <Button variant="outline">
+                        <Bot /> Generate Choices
+                      </Button>
+                      <Textarea value={JSON.stringify(json, null, 2)} className="h-[30vh]" />
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button variant="default" onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      window.navigator.clipboard.writeText(JSON.stringify(json, null, 2))
+                    }}>
+                      Update
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
             <JSONPretty data={json} />
           </div>
@@ -92,7 +128,7 @@ export const AdminRequisites = () => {
           <div className="flex flex-col gap-2">
             {errors.length > 0 && (
               <div>
-                <ul className="list-none list-inside">
+                <ul className="list-none list-inside space-y-1">
                   {errors.map((error, index) => (
                     <li key={index} className="text-sm bg-destructive/10 text-destructive p-2">
                       <span>{error.message}</span>
@@ -104,7 +140,7 @@ export const AdminRequisites = () => {
             )}
             {warnings.length > 0 && (
               <div>
-                <ul className="list-none list-inside">
+                <ul className="list-none list-inside space-y-1">
                   {warnings.map((warning, index) => (
                     <li key={index} className="text-sm bg-caution/10 text-caution p-2">
                       <span>{warning.message}</span>
