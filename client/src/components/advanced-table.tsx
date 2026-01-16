@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils";
+import { IndeterminateProgress } from "./ui/indeterminate-progress";
 
 interface TableHeaderCellProps<T> {
     header: Header<T, unknown>;
@@ -53,9 +55,10 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
 
 interface AdvancedTableHeaderProps<T> {
     table: TanStackTable<T>;
+    isFetching: boolean;
 }
 
-const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
+const AdvancedTableHeader = <T,>({ table, isFetching }: AdvancedTableHeaderProps<T>) => {
     return (
         <thead className={cn("bg-muted sticky top-0", "h-10 px-2 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",)}>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -79,6 +82,13 @@ const AdvancedTableHeader = <T,>({ table }: AdvancedTableHeaderProps<T>) => {
                     </tr>
                 </>
             ))}
+            {
+                isFetching && (
+                    <tr className="absolute bottom-0 w-full">
+                        <IndeterminateProgress />
+                    </tr>
+                )
+            }
         </thead>
     )
 }
@@ -260,9 +270,11 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
 export interface TableProps<T> {
     table: TanStackTable<T>;
     className?: string;
+    isLoading?: boolean;
+    isFetching?: boolean;
 }
 
-const AdvancedTable = <T,>({ table, className }: TableProps<T>) => {
+const AdvancedTable = <T,>({ table, className, isLoading = false, isFetching = false }: TableProps<T>) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const currentPage = table.getState().pagination.pageIndex;
 
@@ -275,8 +287,13 @@ const AdvancedTable = <T,>({ table, className }: TableProps<T>) => {
     return (
         <div className="flex flex-col w-full h-screen overflow-hidden">
             <div ref={scrollContainerRef} className="overflow-x-auto overflow-y-auto flex-1 relative">
+                {isLoading && (
+                    <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
+                        <Spinner className="size-8" />
+                    </div>
+                )}
                 <table className={cn("text-sm w-full", className)}>
-                    <AdvancedTableHeader table={table} />
+                    <AdvancedTableHeader table={table} isFetching={isFetching} />
                     <AdvancedTableBody table={table} />
                 </table>
             </div>

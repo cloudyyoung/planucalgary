@@ -60,7 +60,7 @@ export const AdminRequisites = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-  const { data } = useRequisites({
+  const { data, isLoading, isFetching } = useRequisites({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
     ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value]))
@@ -90,6 +90,6 @@ export const AdminRequisites = () => {
   })
 
   return (
-    <AdvancedTable table={table} />
+    <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} />
   )
 }
