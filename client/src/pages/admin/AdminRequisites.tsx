@@ -6,7 +6,7 @@ import { Bot, Check, Pencil, X } from "lucide-react";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdvancedTable from "@/components/advanced-table";
-import { useRequisites, useRequisitesGenerateChoices } from "@/hooks/useRequisites";
+import { useRequisites, useRequisitesGenerateChoices, useRequisitesUpdate } from "@/hooks/useRequisites";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { StatefulButton } from "@/components/ui/stateful-button";
@@ -58,7 +58,7 @@ export const AdminRequisites = () => {
       }
     },
     {
-      accessorKey: "json",
+      id: "json",
       header: "JSON",
       size: 400,
       cell: ({ row }) => {
@@ -66,14 +66,19 @@ export const AdminRequisites = () => {
         const jsonChoices = row.original.json_choices
         const text = row.original.text
         const [jsonEdit, setJsonEdit] = useState<string>(JSON.stringify(json, null, 2))
-        const { mutateAsync } = useRequisitesGenerateChoices()
+        const { mutateAsync: generateChoices } = useRequisitesGenerateChoices(row.original.id)
+        const { mutateAsync: updateJson } = useRequisitesUpdate(row.original.id)
 
         const onClickJsonChoice = (choice: any) => {
           setJsonEdit(JSON.stringify(choice, null, 2))
         }
 
         const onGenerateChoices = async () => {
-          await mutateAsync(row.original.id)
+          await generateChoices()
+        }
+
+        const onUpdate = async () => {
+          await updateJson({ json: JSON.parse(jsonEdit) })
         }
 
         return (
@@ -110,13 +115,9 @@ export const AdminRequisites = () => {
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
-                    <Button variant="default" size="lg" onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      window.navigator.clipboard.writeText(JSON.stringify(json, null, 2))
-                    }}>
+                    <StatefulButton className="w-28 h-10" onClick={onUpdate}>
                       Update
-                    </Button>
+                    </StatefulButton>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

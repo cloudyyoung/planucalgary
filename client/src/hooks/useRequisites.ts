@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import api, { queryClient } from "@/api"
-import { RequisiteListReqQuery } from "@planucalgary/shared"
+import { RequisiteListReqQuery, RequisiteUpdateReqBody } from "@planucalgary/shared"
 
 export const useRequisites = (props: RequisiteListReqQuery) => {
   const result = useQuery({
@@ -17,10 +17,24 @@ export const useRequisites = (props: RequisiteListReqQuery) => {
   return result
 }
 
-export const useRequisitesGenerateChoices = () => {
+export const useRequisitesGenerateChoices = (id: string) => {
   const mutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async () => {
       const response = await api.post(`/requisites/${id}/`)
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['requisites'] })
+    }
+  })
+
+  return mutation
+}
+
+export const useRequisitesUpdate = (id: string) => {
+  const mutation = useMutation({
+    mutationFn: async (data: RequisiteUpdateReqBody) => {
+      const response = await api.put(`/requisites/${id}/`, data)
       return response.data
     },
     onSuccess: () => {
