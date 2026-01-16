@@ -1,4 +1,5 @@
 import { flexRender, type Table as TanStackTable, type Header } from "@tanstack/react-table"
+import { useRef, useEffect } from "react"
 import {
     Select,
     SelectContent,
@@ -133,6 +134,10 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
         table.nextPage();
     }
 
+    const onPageNumberChange = (page: number) => {
+        table.setPageIndex(page - 1);
+    }
+
     const onPageSizeChange = (size: number) => {
         table.setPageSize(size);
     }
@@ -148,7 +153,7 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
                 </Button>
                 <Select
                     value={String(currentPage)}
-                    onValueChange={(value) => table.setPageIndex(Number(value) - 1)}
+                    onValueChange={(value) => onPageNumberChange(Number(value))}
                     disabled={pageCount === 0}
                 >
                     <SelectTrigger className="w-28 bg-background">
@@ -194,9 +199,18 @@ export interface TableProps<T> {
 }
 
 const AdvancedTable = <T,>({ table, className }: TableProps<T>) => {
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const currentPage = table.getState().pagination.pageIndex;
+
+    useEffect(() => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0;
+        }
+    }, [currentPage]);
+
     return (
         <div className="flex flex-col w-full h-screen overflow-hidden">
-            <div className="overflow-x-auto overflow-y-auto flex-1 relative">
+            <div ref={scrollContainerRef} className="overflow-x-auto overflow-y-auto flex-1 relative">
                 <table className={cn("text-sm w-full", className)}>
                     <AdvancedTableHeader table={table} />
                     <AdvancedTableBody table={table} />
