@@ -157,7 +157,7 @@ export const AdminRequisites = () => {
                   {errors.map((error, index) => (
                     <li key={index} className="text-sm bg-destructive/10 text-destructive p-2">
                       <span>{error.message}</span>
-                      <JSONPretty data={error.value} />
+                      <JSONPretty data={JSON.stringify(error.value)} className="text-xs" />
                     </li>
                   ))}
                 </ul>
@@ -169,7 +169,7 @@ export const AdminRequisites = () => {
                   {warnings.map((warning, index) => (
                     <li key={index} className="text-sm bg-caution/10 text-caution p-2">
                       <span>{warning.message}</span>
-                      <JSONPretty data={warning.value} />
+                      <JSONPretty data={JSON.stringify(warning.value)} className="text-xs" />
                     </li>
                   ))}
                 </ul>
