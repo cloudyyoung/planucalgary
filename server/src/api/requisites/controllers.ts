@@ -56,11 +56,16 @@ export const getRequisite: RequisiteGetHandler = async (req, res) => {
   if (!requisite) {
     throw new Error("Requisite not found")
   }
+  const validate = await getValidator()
+  const { valid, errors, warnings } = validate(requisite.json)
 
   return res.json({
     ...requisite,
     json: requisite.json as any,
     json_choices: requisite.json_choices as any[],
+    json_valid: valid,
+    json_errors: errors,
+    json_warnings: warnings,
   })
 }
 
