@@ -4,6 +4,7 @@ import { GradeNodeSchema, CareerSchema } from "./enum"
 import { CourseTopicCreateSchema } from './course-topic'
 import { PaginatedRequestSchema, PaginatedResponse } from './pagination'
 import { IdInputSchema } from './id';
+import { getSortableColumns } from './sorting';
 
 const CourseSchema = z.object({
     id: z.string().readonly(),
@@ -52,7 +53,7 @@ export type Course = z.infer<typeof CourseSchema>
 // List Courses
 export const CourseListReqQuerySchema = z.object({
     keywords: z.string().optional(),
-    sorting: z.string().optional(),
+    sorting: z.enum(getSortableColumns(CourseSchema.keyof().options)).array().optional(),
 }).extend(PaginatedRequestSchema.shape)
 export type CourseListReqQuery = z.infer<typeof CourseListReqQuerySchema>
 export const CourseListResBodySchema = CourseSchema.array()

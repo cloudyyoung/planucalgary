@@ -83,7 +83,7 @@ export const AdminCourses = () => {
   const { data } = useCourses({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
-    sorting: sorting.length > 0 ? sorting.map(s => `${s.desc ? '-' : ''}${s.id}`).join(',') : undefined,
+    sorting: sorting.length > 0 ? sorting.map(s => `${s.desc ? '-' : ''}${s.id}`) : undefined,
     ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value]))
   })
 

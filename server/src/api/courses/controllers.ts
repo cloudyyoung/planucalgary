@@ -1,4 +1,4 @@
-import { CourseListHandler, CourseGetHandler, CourseListResBodySchema, CourseGetResBodySchema, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCreateResBodySchema } from "@planucalgary/shared"
+import { CourseListHandler, CourseGetHandler, CourseListResBodySchema, CourseGetResBodySchema, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCreateResBodySchema, getSortings } from "@planucalgary/shared"
 import { Course, Prisma } from "@prisma/client"
 import { CourseAlreadyExistsError, CourseNotFoundError } from "./errors"
 
@@ -6,7 +6,8 @@ export const listCourses: CourseListHandler = async (req, res) => {
   const keywords = req.query.keywords
   const offset = req.pagination.offset
   const limit = req.pagination.limit
-  const sort = req.query.sorting
+  const sorting = req.query.sorting
+  console.log(req.query)
 
   const getSelectStatement = () => {
     const fields = [
@@ -64,49 +65,16 @@ export const listCourses: CourseListHandler = async (req, res) => {
   }
 
   const getOrderByStatement = () => {
-    const sortableColumns: Record<string, Prisma.Sql> = {
-      id: Prisma.sql`id`,
-      created_at: Prisma.sql`created_at`,
-      updated_at: Prisma.sql`updated_at`,
-      cid: Prisma.sql`cid`,
-      code: Prisma.sql`code`,
-      course_number: Prisma.sql`course_number`,
-      subject_code: Prisma.sql`subject_code`,
-      description: Prisma.sql`description`,
-      name: Prisma.sql`name`,
-      long_name: Prisma.sql`long_name`,
-      notes: Prisma.sql`notes`,
-      version: Prisma.sql`version`,
-      units: Prisma.sql`units`,
-      aka: Prisma.sql`aka`,
-      prereq: Prisma.sql`prereq`,
-      coreq: Prisma.sql`coreq`,
-      antireq: Prisma.sql`antireq`,
-      prereq_json: Prisma.sql`prereq_json`,
-      coreq_json: Prisma.sql`coreq_json`,
-      antireq_json: Prisma.sql`antireq_json`,
-      is_active: Prisma.sql`is_active`,
-      is_multi_term: Prisma.sql`is_multi_term`,
-      is_no_gpa: Prisma.sql`is_no_gpa`,
-      is_repeatable: Prisma.sql`is_repeatable`,
-      course_group_id: Prisma.sql`course_group_id`,
-      coursedog_id: Prisma.sql`coursedog_id`,
-      course_created_at: Prisma.sql`course_created_at`,
-      course_effective_start_date: Prisma.sql`course_effective_start_date`,
-      course_last_updated_at: Prisma.sql`course_last_updated_at`,
-      career: Prisma.sql`career`,
-      grade_mode: Prisma.sql`grade_mode`,
-      rank: Prisma.sql`rank`,
+    if (!sorting || sorting.length === 0) {
+      return Prisma.sql`order by rank desc`
     }
 
-    const sortField = sort?.startsWith("-") ? sort.slice(1) : sort
-    const sortDirection = sort?.startsWith("-") ? Prisma.sql`desc` : Prisma.sql`asc`
-
-    const orderByStatement = sortField && sortableColumns[sortField]
-      ? Prisma.sql`order by ${sortableColumns[sortField]} ${sortDirection}`
-      : Prisma.sql`order by rank desc`
-
-    return orderByStatement
+    const sortings = getSortings(sorting)
+    console.log(sortings)
+    const orderBySegments = Object.entries(sortings).map(([column, direction]) => {
+      return Prisma.sql`${Prisma.raw(column)} ${Prisma.raw(direction)}`
+    })
+    return Prisma.sql`order by ${Prisma.join(orderBySegments, ", ")}`
   }
 
   const selectStatement = getSelectStatement()

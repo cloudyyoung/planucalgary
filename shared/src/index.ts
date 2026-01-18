@@ -9,4 +9,5 @@ export * from "./id";
 export * from "./pagination";
 export * from "./program";
 export * from "./requisite";
+export * from "./sorting";
 export * from "./subject";

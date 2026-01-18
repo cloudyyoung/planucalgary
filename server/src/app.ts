@@ -30,6 +30,7 @@ const load = async (app: Express) => {
   })
 
   app.enable("trust proxy")
+  app.set("query parser", 'extended')
   app.use(json())
   app.use(urlencoded({ extended: false }))
   app.use(cors())
@@ -45,8 +46,6 @@ const load = async (app: Express) => {
   )
   app.use(emptyget())
   app.use(pagination())
-  app.disable("x-powered-by")
-  app.disable("etag")
 
   app.use("/accounts", accountRouter)
   app.use("/courses", courseRouter)

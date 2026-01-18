@@ -1,4 +1,5 @@
 import { NextFunction, Response, Request } from "express"
+import { z } from "zod"
 import { PaginateFn, PaginatedRequestSchema } from "@planucalgary/shared"
 
 export const pagination = () => async (req: Request, res: Response, next: NextFunction) => {
@@ -8,14 +9,11 @@ export const pagination = () => async (req: Request, res: Response, next: NextFu
 
   const parsed = PaginatedRequestSchema.safeParse(req.query)
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error }).end()
+    return res.status(400).json(z.treeifyError(parsed.error)).end()
   }
 
   const offset = parsed.data.offset || 0
   const limit = parsed.data.limit || 100
-
-  delete req.query.offset
-  delete req.query.limit
 
   req.pagination = {
     offset,
