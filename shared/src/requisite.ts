@@ -3,6 +3,7 @@ import { type RequestHandler } from "express"
 import { RequisiteTypeSchema } from "./enum"
 import { IdInputSchema } from "./id"
 import { PaginatedRequestSchema, PaginatedResponse } from "./pagination"
+import { getSortableColumns } from "./sorting"
 
 export const RequisiteSchema = z.object({
     id: z.uuid().readonly(),
@@ -27,6 +28,7 @@ export type Requisite = z.infer<typeof RequisiteSchema>
 // List Requisites
 export const RequisiteListReqQuerySchema = z.object({
     requisite_type: RequisiteTypeSchema.optional(),
+    sorting: z.enum(getSortableColumns(RequisiteSchema.keyof().options)).array().optional(),
 }).extend(PaginatedRequestSchema.shape)
 export type RequisiteListReqQuery = z.infer<typeof RequisiteListReqQuerySchema>
 export const RequisiteListResBodySchema = RequisiteSchema.array()

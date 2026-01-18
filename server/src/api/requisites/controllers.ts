@@ -1,4 +1,4 @@
-import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings } from "@planucalgary/shared"
 
 import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
@@ -6,7 +6,7 @@ import { getValidator } from "../../jsonlogic/requisite_json"
 import { toCourses, toCourseSets, toRequisitesJson } from "./sync"
 
 export const listRequisites: RequisiteListHandler = async (req, res) => {
-  const { requisite_type } = req.query
+  const { requisite_type, sorting } = req.query
   const [requisites, total, validate] = await Promise.all([
     req.prisma.requisiteJson.findMany({
       select: {
@@ -21,9 +21,7 @@ export const listRequisites: RequisiteListHandler = async (req, res) => {
       where: {
         ...(requisite_type && { requisite_type }),
       },
-      orderBy: {
-        text: "asc",
-      },
+      orderBy: sorting ? getSortings(sorting) : { created_at: "desc" },
       skip: req.pagination.offset,
       take: req.pagination.limit,
     }),

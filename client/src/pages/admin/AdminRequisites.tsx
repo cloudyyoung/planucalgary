@@ -23,18 +23,21 @@ export const AdminRequisites = () => {
   const { data, isLoading, isFetching } = useRequisites({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
-    ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value]))
+    sorting: sorting.map(({ id, desc }) => desc ? `-${id}` : id),
+    ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value])),
   })
 
   const columns: ColumnDef<Requisite>[] = useMemo(() => [
     {
       accessorKey: "id",
       header: "ID",
+      enableSorting: true,
     },
     {
       accessorKey: "requisite_type",
       header: "Requisite Type",
       enableColumnFilter: true,
+      enableSorting: true,
       meta: {
         filterVariant: "select",
         filterOptions: RequisiteTypeSchema.options,
@@ -43,10 +46,12 @@ export const AdminRequisites = () => {
     {
       accessorKey: "departments",
       header: "Departments",
+      enableSorting: true,
     },
     {
       accessorKey: "faculties",
       header: "Faculties",
+      enableSorting: true,
     },
     {
       accessorKey: "json_valid",

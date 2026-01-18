@@ -31,7 +31,6 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "prereq",
     header: "Prerequisites",
     size: 300,
-    filterFn: 'includesString',
   },
   {
     accessorKey: "prereq_json",
