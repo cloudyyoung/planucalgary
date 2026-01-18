@@ -7,7 +7,6 @@ export const listCourses: CourseListHandler = async (req, res) => {
   const offset = req.pagination.offset
   const limit = req.pagination.limit
   const sorting = req.query.sorting
-  console.log(req.query)
 
   const getSelectStatement = () => {
     const fields = [
