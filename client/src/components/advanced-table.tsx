@@ -181,6 +181,11 @@ const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
                 className={cn(
                   "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
                 )}
+                style={{
+                  width: cell.column.getSize(),
+                  minWidth: cell.column.getSize(),
+                  maxWidth: cell.column.getSize(),
+                }}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
