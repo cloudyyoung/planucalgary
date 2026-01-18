@@ -22,8 +22,8 @@ export const RequisiteSchema = z.object({
         message: z.string(),
         value: z.any().nullable(),
     }).array(),
-    updated_at: z.iso.datetime().readonly(),
-    created_at: z.iso.datetime().readonly(),
+    updated_at: z.date().readonly(),
+    created_at: z.date().readonly(),
 })
 export type Requisite = z.infer<typeof RequisiteSchema>
 
@@ -58,9 +58,13 @@ export const RequisiteUpdateReqBodySchema = z.object({
     json: z.json().nullable(),
 })
 export type RequisiteUpdateReqBody = z.infer<typeof RequisiteUpdateReqBodySchema>
-export type RequisiteUpdateHandler = RequestHandler<RequisiteUpdateReqParams, unknown, RequisiteUpdateReqBody, never>
+export const RequisiteUpdateResBodySchema = RequisiteSchema
+export type RequisiteUpdateResBody = z.infer<typeof RequisiteUpdateResBodySchema>
+export type RequisiteUpdateHandler = RequestHandler<RequisiteUpdateReqParams, RequisiteUpdateResBody, RequisiteUpdateReqBody, never>
 
 // Generate Requisite Choices
 export const RequisiteGenerateChoicesReqParamsSchema = IdInputSchema
 export type RequisiteGenerateChoicesReqParams = z.infer<typeof RequisiteGenerateChoicesReqParamsSchema>
-export type RequisiteGenerateChoicesHandler = RequestHandler<RequisiteGenerateChoicesReqParams, unknown, never, never>
+export const RequisiteGenerateChoicesResBodySchema = RequisiteSchema
+export type RequisiteGenerateChoicesResBody = z.infer<typeof RequisiteGenerateChoicesResBodySchema>
+export type RequisiteGenerateChoicesHandler = RequestHandler<RequisiteGenerateChoicesReqParams, RequisiteGenerateChoicesResBody, never, never>

@@ -1,9 +1,10 @@
-import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings, RequisiteListResBodySchema, RequisiteGetResBodySchema, RequisiteUpdateResBodySchema, RequisiteGenerateChoicesResBodySchema } from "@planucalgary/shared"
 
 import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
 import { getValidator } from "../../jsonlogic/requisite_json"
 import { toCourses, toCourseSets, toRequisitesJson } from "./sync"
+import { InvalidRequisiteJsonError, RequisiteNotFoundError } from "./errors"
 
 export const listRequisites: RequisiteListHandler = async (req, res) => {
   const { requisite_type, sorting } = req.query
@@ -33,8 +34,8 @@ export const listRequisites: RequisiteListHandler = async (req, res) => {
       json_warnings: warnings,
     }
   })
-
-  return res.paginate(requisitesValidated, total)
+  const response = RequisiteListResBodySchema.parse(requisitesValidated)
+  return res.paginate(response, total)
 }
 
 export const getRequisite: RequisiteGetHandler = async (req, res) => {
@@ -43,21 +44,20 @@ export const getRequisite: RequisiteGetHandler = async (req, res) => {
   })
 
   if (!requisite) {
-    throw new Error("Requisite not found")
+    throw new RequisiteNotFoundError()
   }
+
   const validate = await getValidator()
   const { valid, errors, warnings } = validate(requisite.json)
-
-  return res.json({
+  const response = RequisiteGetResBodySchema.parse({
     ...requisite,
     json: requisite.json as any,
     json_choices: requisite.json_choices as any[],
     json_valid: valid,
     json_errors: errors,
     json_warnings: warnings,
-    updated_at: requisite.updated_at.toISOString(),
-    created_at: requisite.created_at.toISOString(),
   })
+  return res.json(response)
 }
 
 export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
@@ -66,7 +66,7 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
   })
 
   if (!existing) {
-    return res.status(404).json({ message: "Requisite not found" })
+    throw new RequisiteNotFoundError()
   }
 
   if (req.body.json !== null) {
@@ -75,7 +75,7 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
     const { valid, errors, warnings } = validate(json)
 
     if (!valid) {
-      return res.status(400).json({ message: "Invalid JSON", errors, warnings })
+      throw new InvalidRequisiteJsonError()
     }
   }
 
@@ -86,7 +86,8 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
       json: req.body.json ?? undefined,
     },
   })
-  return res.json(requisite)
+  const response = RequisiteUpdateResBodySchema.parse(requisite)
+  return res.json(response)
 }
 
 export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (req, res) => {
@@ -95,7 +96,7 @@ export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (
   })
 
   if (!existing) {
-    return res.status(404).json({ message: "Requisite not found" })
+    throw new RequisiteNotFoundError()
   }
 
   const text = existing.text
@@ -114,7 +115,8 @@ export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (
     where: { id: req.params.id },
     data: { json_choices, json: allEqual ? json_choices[0] : existing.json },
   })
-  return res.json(updated)
+  const response = RequisiteGenerateChoicesResBodySchema.parse(updated)
+  return res.json(response)
 }
 
 export const syncRequisites: RequisitesSyncHandler = async (req, res) => {

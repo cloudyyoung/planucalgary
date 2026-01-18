@@ -8,8 +8,8 @@ import { getSortableColumns } from './sorting';
 
 const CourseSchema = z.object({
     id: z.string().readonly(),
-    created_at: z.iso.datetime().readonly(),
-    updated_at: z.iso.datetime().readonly(),
+    created_at: z.date().readonly(),
+    updated_at: z.date().readonly(),
 
     cid: z.string(),
     code: z.string(),

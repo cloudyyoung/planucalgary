@@ -94,11 +94,7 @@ export const listCourses: CourseListHandler = async (req, res) => {
     await req.prisma.$queryRaw<Course[]>(queryString),
     await req.prisma.$queryRaw<[{ count: number }]>(totalQueryString),
   ])
-  const response = CourseListResBodySchema.parse(courses.map(course => ({
-    ...course,
-    created_at: course.created_at.toISOString(),
-    updated_at: course.updated_at.toISOString(),
-  })))
+  const response = CourseListResBodySchema.parse(courses)
   const total = totalResult[0].count
 
   return res.paginate(response, total)
