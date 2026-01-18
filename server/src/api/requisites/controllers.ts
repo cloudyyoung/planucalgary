@@ -55,6 +55,8 @@ export const getRequisite: RequisiteGetHandler = async (req, res) => {
     json_valid: valid,
     json_errors: errors,
     json_warnings: warnings,
+    updated_at: requisite.updated_at.toISOString(),
+    created_at: requisite.created_at.toISOString(),
   })
 }
 

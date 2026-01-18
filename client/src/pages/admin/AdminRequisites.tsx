@@ -193,6 +193,7 @@ export const AdminRequisites = () => {
     {
       accessorKey: 'updated_at',
       header: 'Updated At',
+      enableSorting: true,
       cell: ({ cell }) => {
         const time = DateTime.fromISO(cell.getValue<string>())
         return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
@@ -201,6 +202,7 @@ export const AdminRequisites = () => {
     {
       accessorKey: 'created_at',
       header: 'Created At',
+      enableSorting: true,
       cell: ({ cell }) => {
         const time = DateTime.fromISO(cell.getValue<string>())
         return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)

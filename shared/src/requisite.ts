@@ -22,6 +22,8 @@ export const RequisiteSchema = z.object({
         message: z.string(),
         value: z.any().nullable(),
     }).array(),
+    updated_at: z.iso.datetime().readonly(),
+    created_at: z.iso.datetime().readonly(),
 })
 export type Requisite = z.infer<typeof RequisiteSchema>
 

@@ -73,6 +73,7 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: 'updated_at',
     header: 'Updated At',
+    enableSorting: true,
     cell: ({ cell }) => {
       const time = DateTime.fromISO(cell.getValue<string>())
       return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
@@ -81,6 +82,7 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: 'created_at',
     header: 'Created At',
+    enableSorting: true,
     cell: ({ cell }) => {
       const time = DateTime.fromISO(cell.getValue<string>())
       return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
