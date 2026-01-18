@@ -42,6 +42,8 @@ export const listCourses: CourseListHandler = async (req, res) => {
       Prisma.sql`course_last_updated_at`,
       Prisma.sql`career`,
       Prisma.sql`grade_mode`,
+      Prisma.sql`updated_at`,
+      Prisma.sql`created_at`,
     ]
 
     fields.push(Prisma.sql`ts_rank(search_vector, plainto_tsquery('english', ${keywords})) AS rank`)
@@ -70,7 +72,6 @@ export const listCourses: CourseListHandler = async (req, res) => {
     }
 
     const sortings = getSortings(sorting)
-    console.log(sortings)
     const orderBySegments = Object.entries(sortings).map(([column, direction]) => {
       return Prisma.sql`${Prisma.raw(column)} ${Prisma.raw(direction)}`
     })
@@ -94,7 +95,11 @@ export const listCourses: CourseListHandler = async (req, res) => {
     await req.prisma.$queryRaw<Course[]>(queryString),
     await req.prisma.$queryRaw<[{ count: number }]>(totalQueryString),
   ])
-  const response = CourseListResBodySchema.parse(courses)
+  const response = CourseListResBodySchema.parse(courses.map(course => ({
+    ...course,
+    created_at: course.created_at.toISOString(),
+    updated_at: course.updated_at.toISOString(),
+  })))
   const total = totalResult[0].count
 
   return res.paginate(response, total)
