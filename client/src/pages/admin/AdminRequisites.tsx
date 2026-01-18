@@ -128,7 +128,7 @@ export const AdminRequisites = () => {
                           <Bot /> Generate Choices
                         </StatefulButton>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 overflow-auto h-[40vh]">
+                      <div className="grid grid-cols-2 gap-4 h-[40vh]">
                         <Textarea value={jsonEdit} className="p-2 font-mono text-xs !leading-[1.3]" onChange={(e) => setJsonEdit(e.target.value)} />
                         <JSONPretty data={jsonEdit} className="p-2 mb-1" />
                       </div>
