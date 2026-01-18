@@ -3,6 +3,7 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import JSONPretty from 'react-json-pretty';
 import { Requisite, RequisiteTypeSchema } from "@planucalgary/shared"
 import { Bot, Check, Pencil, X } from "lucide-react";
+import { DateTime } from "luxon"
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdvancedTable from "@/components/advanced-table";
@@ -189,6 +190,22 @@ export const AdminRequisites = () => {
       header: "Text",
       size: 600,
     },
+    {
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      cell: ({ cell }) => {
+        const time = DateTime.fromISO(cell.getValue<string>())
+        return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+      },
+    },
+    {
+      accessorKey: 'created_at',
+      header: 'Created At',
+      cell: ({ cell }) => {
+        const time = DateTime.fromISO(cell.getValue<string>())
+        return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+      },
+    }
   ], [])
 
   const table = useReactTable({

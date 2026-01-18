@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
+import { DateTime } from "luxon";
 import { Course } from "@planucalgary/shared"
 
 import { useCourses } from "@/hooks/useCourses"
@@ -69,6 +70,22 @@ export const columns: ColumnDef<Course>[] = [
       return <JSONPretty data={json} />
     }
   },
+  {
+    accessorKey: 'updated_at',
+    header: 'Updated At',
+    cell: ({ cell }) => {
+      const time = DateTime.fromISO(cell.getValue<string>())
+      return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+    },
+  },
+  {
+    accessorKey: 'created_at',
+    header: 'Created At',
+    cell: ({ cell }) => {
+      const time = DateTime.fromISO(cell.getValue<string>())
+      return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+    },
+  }
 ]
 
 export const AdminCourses = () => {

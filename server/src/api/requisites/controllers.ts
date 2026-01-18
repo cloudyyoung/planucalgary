@@ -9,15 +9,6 @@ export const listRequisites: RequisiteListHandler = async (req, res) => {
   const { requisite_type, sorting } = req.query
   const [requisites, total, validate] = await Promise.all([
     req.prisma.requisiteJson.findMany({
-      select: {
-        id: true,
-        requisite_type: true,
-        text: true,
-        departments: true,
-        faculties: true,
-        json: true,
-        json_choices: true,
-      },
       where: {
         ...(requisite_type && { requisite_type }),
       },
