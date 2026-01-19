@@ -7,7 +7,7 @@ import { IdInputSchema } from './id';
 import { getSortableColumns } from './sorting';
 
 const CourseSchema = z.object({
-    id: z.string().readonly(),
+    id: z.uuid().readonly(),
     created_at: z.date().readonly(),
     updated_at: z.date().readonly(),
 
