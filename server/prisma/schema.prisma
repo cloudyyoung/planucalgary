@@ -1,9 +1,10 @@
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearchPostgres"]
-}
-
 datasource db {
   provider = "postgresql"
   schemas  = ["planucalgary", "catalog"]
+}
+
+generator client {
+  provider        = "prisma-client"
+  output         = "../src/generated/prisma"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
