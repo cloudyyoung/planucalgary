@@ -5,6 +5,6 @@ datasource db {
 
 generator client {
   provider        = "prisma-client"
-  output         = "../src/generated/prisma"
+  output          = "../../shared/dist/prisma/"
   previewFeatures = ["fullTextSearchPostgres"]
 }
