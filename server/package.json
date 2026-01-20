@@ -27,7 +27,6 @@
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^7.0.1",
-    "@prisma/extension-accelerate": "^3.0.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.1",
     "class-transformer": "^0.5.1",
@@ -70,6 +69,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "prettier": "~3.7.4",
     "prisma": "^7.0.1",
+    "prisma-zod-generator": "^2.1.2",
     "tsx": "^4.21.0"
   }
 }

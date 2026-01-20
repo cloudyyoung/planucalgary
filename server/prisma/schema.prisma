@@ -8,3 +8,9 @@ generator client {
   output          = "../../shared/src/generated/prisma/"
   previewFeatures = ["fullTextSearchPostgres"]
 }
+
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "../../shared/src/generated/zod/"
+  // optional config = "./zod-generator.config.json" (relative to schema file)
+}
