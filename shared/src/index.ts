@@ -3,7 +3,6 @@ export * from "./course-set";
 export * from "./course-topic";
 export * from "./course";
 export * from "./department";
-export * from "./enums";
 export * from "./faculty";
 export * from "./id";
 export * from "./pagination";

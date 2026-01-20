@@ -1,4 +1,4 @@
-import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings, RequisiteListResBodySchema, RequisiteGetResBodySchema, RequisiteUpdateResBodySchema, RequisiteGenerateChoicesResBodySchema } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings, } from "@planucalgary/shared"
 
 import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
@@ -26,16 +26,13 @@ export const listRequisites: RequisiteListHandler = async (req, res) => {
   ])
 
   const requisitesValidated = requisites.map((requisite) => {
-    const { valid, errors, warnings } = validate(requisite.json)
+    const validation = validate(requisite.json)
     return {
       ...requisite,
-      json_valid: valid,
-      json_errors: errors,
-      json_warnings: warnings,
+      ...validation,
     }
   })
-  const response = RequisiteListResBodySchema.parse(requisitesValidated)
-  return res.paginate(response, total)
+  return res.paginate(requisitesValidated, total)
 }
 
 export const getRequisite: RequisiteGetHandler = async (req, res) => {
@@ -48,15 +45,11 @@ export const getRequisite: RequisiteGetHandler = async (req, res) => {
   }
 
   const validate = await getValidator()
-  const { valid, errors, warnings } = validate(requisite.json)
-  const response = RequisiteGetResBodySchema.parse({
+  const validation = validate(requisite.json)
+  const response = {
     ...requisite,
-    json: requisite.json as any,
-    json_choices: requisite.json_choices as any[],
-    json_valid: valid,
-    json_errors: errors,
-    json_warnings: warnings,
-  })
+    ...validation,
+  }
   return res.json(response)
 }
 
@@ -69,12 +62,12 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
     throw new RequisiteNotFoundError()
   }
 
-  if (req.body.json !== null) {
+  if (!!req.body.json) {
     const validate = await getValidator()
     const json = req.body.json
-    const { valid, errors, warnings } = validate(json)
+    const { json_valid } = validate(json)
 
-    if (!valid) {
+    if (!json_valid) {
       throw new InvalidRequisiteJsonError()
     }
   }
@@ -83,11 +76,11 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
     where: { id: req.params.id },
     data: {
       ...req.body,
-      json: req.body.json ?? undefined,
+      json: req.body.json as any,
+      json_choices: req.body.json_choices as any,
     },
   })
-  const response = RequisiteUpdateResBodySchema.parse(requisite)
-  return res.json(response)
+  return res.json(requisite)
 }
 
 export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (req, res) => {
@@ -115,8 +108,7 @@ export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (
     where: { id: req.params.id },
     data: { json_choices, json: allEqual ? json_choices[0] : existing.json },
   })
-  const response = RequisiteGenerateChoicesResBodySchema.parse(updated)
-  return res.json(response)
+  return res.json(updated)
 }
 
 export const syncRequisites: RequisitesSyncHandler = async (req, res) => {

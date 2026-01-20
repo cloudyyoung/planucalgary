@@ -1,3 +1,4 @@
+import { RequisiteJsonValidation, RequisiteJsonValidationMessage } from "@planucalgary/shared"
 import { prismaClient } from "../middlewares"
 import { bool } from "./utils"
 
@@ -51,17 +52,6 @@ export type Program = {
   program: ProgramString
 }
 
-export interface RequisiteValidationError {
-  message: string
-  value: any
-}
-
-export interface ValidateResult {
-  valid: boolean
-  errors: RequisiteValidationError[]
-  warnings: RequisiteValidationError[]
-}
-
 export interface ValidateOptions {
   safe?: boolean
   strict?: boolean
@@ -90,7 +80,7 @@ export const getValidator = async () => {
     return [course.code, ...topics]
   })
 
-  const validator = (json: any, options?: ValidateOptions): ValidateResult => {
+  const validator = (json: any, options?: ValidateOptions): RequisiteJsonValidation => {
     options = options !== undefined ? options : {}
     options.safe = options.safe !== undefined ? options.safe : true
     options.strict = options.strict !== undefined ? options.strict : false
@@ -600,8 +590,8 @@ export const getValidator = async () => {
       return oneOf
     }
 
-    const errors: RequisiteValidationError[] = []
-    const warnings: RequisiteValidationError[] = []
+    const errors: RequisiteJsonValidationMessage[] = []
+    const warnings: RequisiteJsonValidationMessage[] = []
     const valid = generic_validate(json)
 
     if (options.safe === false && errors.length > 0) {
@@ -609,9 +599,9 @@ export const getValidator = async () => {
     }
 
     return {
-      valid,
-      errors,
-      warnings,
+      json_valid: valid,
+      json_errors: errors,
+      json_warnings: warnings,
     }
   }
 
@@ -619,9 +609,9 @@ export const getValidator = async () => {
 }
 
 export class RequisiteJsonError extends Error {
-  errors: RequisiteValidationError[]
+  errors: RequisiteJsonValidationMessage[]
 
-  constructor(errors: RequisiteValidationError[]) {
+  constructor(errors: RequisiteJsonValidationMessage[]) {
     const message =
       "Invalid JSON\n" + errors.map((error) => `- ${error.message}\n    ${JSON.stringify(error.value)}`).join("\n")
     super(message)

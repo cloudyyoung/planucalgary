@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
-import { Requisite, RequisiteTypeSchema } from "@planucalgary/shared"
+import { RequisiteJson } from "@planucalgary/shared/prisma/client"
+import { RequisiteJsonValidation, RequisiteTypeSchema } from "@planucalgary/shared";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
 
@@ -28,7 +29,7 @@ export const AdminRequisites = () => {
     ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value])),
   })
 
-  const columns: ColumnDef<Requisite>[] = useMemo(() => [
+  const columns: ColumnDef<RequisiteJson & RequisiteJsonValidation>[] = useMemo(() => [
     {
       accessorKey: "id",
       header: "ID",

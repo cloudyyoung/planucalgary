@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
 import { DateTime } from "luxon";
-import { Course } from "@planucalgary/shared"
+import { Course } from "@planucalgary/shared/prisma/client";
 
 import { useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";

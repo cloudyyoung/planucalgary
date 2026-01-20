@@ -1,9 +1,9 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import api, { queryClient } from "@/api"
-import { RequisiteListReqQuery, RequisiteUpdateReqBody } from "@planucalgary/shared"
+import { RequisiteListReqQuery, RequisiteListResBody, RequisiteUpdateReqBody } from "@planucalgary/shared"
 
 export const useRequisites = (props: RequisiteListReqQuery) => {
-  const result = useQuery({
+  const result = useQuery<RequisiteListResBody>({
     queryKey: ['requisites', ...Object.values(props)],
     queryFn: async () => {
       const response = await api.get('/requisites', {
