@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from "express"
 import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient } from "@planucalgary/shared/dist/prisma/client"
+import { PrismaClient } from "@planucalgary/shared/prisma/client"
 import { DATABASE_URL } from "../config"
 
 export const adapter = new PrismaPg({ connectionString: DATABASE_URL })

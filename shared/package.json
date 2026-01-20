@@ -6,9 +6,23 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./prisma/client": {
+      "import": "./dist/generated/prisma/client.js",
+      "types": "./dist/generated/prisma/client.d.ts"
+    },
+    "./prisma/browser": {
+      "import": "./dist/generated/prisma/browser.js",
+      "types": "./dist/generated/prisma/browser.d.ts"
+    }
+  },
   "scripts": {
     "watch": "tsc -w -p tsconfig.json",
-    "build": "tsc -p tsconfig.json",
+    "build": "rimraf tsconfig.tsbuildinfo && tsc -p tsconfig.json",
     "clean": "rimraf dist && rimraf node_modules && rimraf tsconfig.tsbuildinfo"
   },
   "dependencies": {
