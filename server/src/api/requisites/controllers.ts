@@ -4,7 +4,7 @@ import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
 import { getValidator } from "../../jsonlogic/requisite_json"
 import { toCourses, toCourseSets, toRequisitesJson } from "./sync"
-import { InvalidRequisiteJsonError, InvalidSyncDestinationError, RequisiteNotFoundError } from "./errors"
+import { InvalidSyncDestinationError, RequisiteNotFoundError } from "./errors"
 
 export const listRequisites: RequisiteListHandler = async (req, res) => {
   const { requisite_type, sorting } = req.query
@@ -64,11 +64,7 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
 
   const validate = await getValidator()
   const json = req.body.json
-  const { json_valid, json_warnings, json_errors } = validate(json)
-
-  if (!json_valid) {
-    throw new InvalidRequisiteJsonError()
-  }
+  const validation = validate(json)
 
   const requisite = await req.prisma.requisiteJson.update({
     where: { id: req.params.id },
@@ -81,9 +77,7 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
 
   return res.json({
     ...requisite,
-    json_valid,
-    json_warnings,
-    json_errors,
+    ...validation,
   })
 }
 

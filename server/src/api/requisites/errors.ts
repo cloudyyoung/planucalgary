@@ -6,14 +6,6 @@ export class RequisiteNotFoundError extends Error {
     }
 }
 
-export class InvalidRequisiteJsonError extends Error {
-    constructor() {
-        super()
-        this.name = "InvalidRequisiteJsonError"
-        this.message = "The provided requisite JSON is invalid."
-    }
-}
-
 export class InvalidSyncDestinationError extends Error {
     constructor() {
         super()
