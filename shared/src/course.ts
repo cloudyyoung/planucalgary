@@ -1,6 +1,6 @@
 import * as z from 'zod'
 import { type RequestHandler } from 'express';
-import { GradeNodeSchema, CareerSchema } from "./enum"
+import { GradeModeSchema, CareerSchema } from "./enum"
 import { CourseTopicCreateSchema } from './course-topic'
 import { PaginatedRequestSchema, PaginatedResponse } from './pagination'
 import { IdInputSchema } from './id';
@@ -45,7 +45,7 @@ const CourseSchema = z.object({
     course_last_updated_at: z.date(),
 
     career: CareerSchema,
-    grade_mode: GradeNodeSchema,
+    grade_mode: GradeModeSchema,
 })
 export type Course = z.infer<typeof CourseSchema>
 
