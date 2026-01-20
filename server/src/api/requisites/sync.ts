@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { RequisiteType, Prisma } from "@prisma/client"
+import { RequisiteType } from "@prisma/client"
 import _ from "lodash"
 
 import { getValidator } from "../../jsonlogic/requisite_json"
@@ -42,7 +42,7 @@ export const toRequisitesJson = async (req: Request, res: Response) => {
         text: prereq,
         departments: department_codes,
         faculties: faculty_codes,
-        json: Prisma.DbNull,
+        json: undefined,
         json_choices: [],
       })
     }
@@ -52,7 +52,7 @@ export const toRequisitesJson = async (req: Request, res: Response) => {
         text: coreq,
         departments: department_codes,
         faculties: faculty_codes,
-        json: Prisma.DbNull,
+        json: undefined,
         json_choices: [],
       })
     }
@@ -62,7 +62,7 @@ export const toRequisitesJson = async (req: Request, res: Response) => {
         text: antireq,
         departments: department_codes,
         faculties: faculty_codes,
-        json: Prisma.DbNull,
+        json: undefined,
         json_choices: [],
       })
     }
@@ -76,7 +76,7 @@ export const toRequisitesJson = async (req: Request, res: Response) => {
       text: name,
       departments: [],
       faculties: [],
-      json: Prisma.DbNull,
+      json: undefined,
       json_choices: [],
     }
   })
@@ -146,9 +146,9 @@ export const toCourses = async (req: Request, res: Response) => {
 
       if (requisite) {
         if (validate(requisite.json)) {
-          prereq_json = requisite.json ?? Prisma.DbNull
+          prereq_json = requisite.json ?? undefined
         } else {
-          prereq_json = Prisma.DbNull
+          prereq_json = undefined
         }
       }
     }
@@ -164,9 +164,9 @@ export const toCourses = async (req: Request, res: Response) => {
 
       if (requisite) {
         if (validate(requisite.json)) {
-          coreq_json = requisite.json ?? Prisma.DbNull
+          coreq_json = requisite.json ?? undefined
         } else {
-          coreq_json = Prisma.DbNull
+          coreq_json = undefined
         }
       }
     }
@@ -182,9 +182,9 @@ export const toCourses = async (req: Request, res: Response) => {
 
       if (requisite) {
         if (validate(requisite.json)) {
-          antireq_json = requisite.json ?? Prisma.DbNull
+          antireq_json = requisite.json ?? undefined
         } else {
-          antireq_json = Prisma.DbNull
+          antireq_json = undefined
         }
       }
     }
@@ -234,7 +234,7 @@ export const toCourseSets = async (req: Request, res: Response) => {
       req.prisma.courseSet.update({
         where: { id },
         data: {
-          json: requisite.json ?? Prisma.DbNull,
+          json: requisite.json ?? undefined,
         },
       }),
     ]
