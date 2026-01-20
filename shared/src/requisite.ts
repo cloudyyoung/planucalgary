@@ -35,7 +35,7 @@ export const RequisiteListReqQuerySchema = z.object({
 export type RequisiteListReqQuery = z.infer<typeof RequisiteListReqQuerySchema>
 export const RequisiteListResBodySchema = RequisiteSchema.array()
 export type RequisiteListResBody = PaginatedResponse<z.infer<typeof RequisiteSchema>>
-export type RequisiteListHandler = RequestHandler<never, unknown, never, RequisiteListReqQuery>
+export type RequisiteListHandler = RequestHandler<never, RequisiteListResBody, never, RequisiteListReqQuery>
 
 // Sync Requisites
 export const RequisitesSyncReqBodySchema = z.object({
