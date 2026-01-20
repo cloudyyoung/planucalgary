@@ -1,4 +1,3 @@
-import { Response } from "express"
 import * as z from "zod"
 
 export const PaginatedRequestSchema = z.object({
@@ -15,5 +14,3 @@ export interface PaginatedResponse<T> {
     has_more: boolean
     items: T[]
 }
-
-export type PaginateFn = <T>(items: T[], total: number) => Response<PaginatedResponse<T>>

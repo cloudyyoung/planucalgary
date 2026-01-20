@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from "express"
 import { z } from "zod"
-import { PaginateFn, PaginatedRequestSchema } from "@planucalgary/shared"
+import { PaginatedRequestSchema, PaginatedResponse } from "@planucalgary/shared"
 
 export const pagination = () => async (req: Request, res: Response, next: NextFunction) => {
   if (req.method !== "GET") {
@@ -44,7 +44,13 @@ declare module "express-serve-static-core" {
     }
   }
 
-  interface Response {
-    paginate: PaginateFn
+  interface Response<
+    ResBody = any,
+    LocalsObj extends Record<string, any> = Record<string, any>,
+    StatusCode extends number = number,
+  > {
+    paginate: ResBody extends PaginatedResponse<infer T>
+    ? (body: T[], total: number) => this
+    : never
   }
 }

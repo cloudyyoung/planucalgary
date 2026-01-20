@@ -1,10 +1,11 @@
 import * as z from 'zod'
-import { type RequestHandler } from 'express';
+import { type RequestHandler, Response } from 'express';
 import { GradeModeSchema, CareerSchema } from "./enums"
 import { CourseTopicCreateSchema } from './course-topic'
 import { PaginatedRequestSchema, PaginatedResponse } from './pagination'
 import { IdInputSchema } from './id';
 import { getSortableColumns } from './sorting';
+import { CourseModelSchema, CoursePureType } from './generated/zod/schemas';
 
 const CourseSchema = z.object({
     id: z.uuid().readonly(),
@@ -53,11 +54,10 @@ export type Course = z.infer<typeof CourseSchema>
 // List Courses
 export const CourseListReqQuerySchema = z.object({
     keywords: z.string().optional(),
-    sorting: z.enum(getSortableColumns(CourseSchema.keyof().options)).array().optional(),
+    sorting: z.enum(getSortableColumns(CourseModelSchema.keyof().options)).array().optional(),
 }).extend(PaginatedRequestSchema.shape)
 export type CourseListReqQuery = z.infer<typeof CourseListReqQuerySchema>
-export const CourseListResBodySchema = CourseSchema.array()
-export type CourseListResBody = PaginatedResponse<z.infer<typeof CourseSchema>>
+export type CourseListResBody = PaginatedResponse<Course>
 export type CourseListHandler = RequestHandler<never, CourseListResBody, never, CourseListReqQuery>
 
 // Get Course
