@@ -1,93 +1,51 @@
 import * as z from 'zod'
-import { type RequestHandler, Response } from 'express';
-import { GradeModeSchema, CareerSchema } from "./enums"
+import { type RequestHandler } from 'express';
 import { CourseTopicCreateSchema } from './course-topic'
 import { PaginatedRequestSchema, PaginatedResponse } from './pagination'
 import { IdInputSchema } from './id';
 import { getSortableColumns } from './sorting';
-import { CourseModelSchema, CoursePureType } from './generated/zod/schemas';
-
-const CourseSchema = z.object({
-    id: z.uuid().readonly(),
-    created_at: z.date().readonly(),
-    updated_at: z.date().readonly(),
-
-    cid: z.string(),
-    code: z.string(),
-    course_number: z.string(),
-
-    subject_code: z.string(),
-
-    description: z.string().nullable(),
-    name: z.string(),
-    long_name: z.string(),
-    notes: z.string().nullable(),
-    version: z.number(),
-    units: z.number().nullable(),
-    aka: z.string().nullable(),
-
-    prereq: z.string().nullable(),
-    prereq_json: z.json().nullable(),
-    coreq: z.string().nullable(),
-    coreq_json: z.json().nullable(),
-    antireq: z.string().nullable(),
-    antireq_json: z.json().nullable(),
-
-    is_active: z.boolean(),
-    is_multi_term: z.boolean(),
-    is_no_gpa: z.boolean(),
-    is_repeatable: z.boolean(),
-
-    course_group_id: z.string(),
-    coursedog_id: z.string(),
-
-    course_created_at: z.date(),
-    course_effective_start_date: z.date(),
-    course_last_updated_at: z.date(),
-
-    career: CareerSchema,
-    grade_mode: GradeModeSchema,
-})
-export type Course = z.infer<typeof CourseSchema>
+import { Course } from './generated/prisma/client';
+import { CourseScalarFieldEnumSchema, CourseCreateInputObjectZodSchema, CourseUpdateInputObjectZodSchema } from './generated/zod/schemas';
 
 
 // List Courses
 export const CourseListReqQuerySchema = z.object({
     keywords: z.string().optional(),
-    sorting: z.enum(getSortableColumns(CourseModelSchema.keyof().options)).array().optional(),
+    sorting: z.enum(getSortableColumns(CourseScalarFieldEnumSchema.options)).array().optional(),
 }).extend(PaginatedRequestSchema.shape)
 export type CourseListReqQuery = z.infer<typeof CourseListReqQuerySchema>
 export type CourseListResBody = PaginatedResponse<Course>
 export type CourseListHandler = RequestHandler<never, CourseListResBody, never, CourseListReqQuery>
 
+
 // Get Course
 export const CourseGetReqParamsSchema = IdInputSchema
 export type CourseGetReqParams = z.infer<typeof CourseGetReqParamsSchema>
-export const CourseGetResBodySchema = CourseSchema
-export type CourseGetResBody = z.infer<typeof CourseGetResBodySchema>
-export type CourseGetHandler = RequestHandler<CourseGetReqParams, CourseGetResBody, never, never>
+export type CourseGetHandler = RequestHandler<CourseGetReqParams, Course, never, never>
 
 
 // Create Course
-export const CourseCreateReqBodySchema = CourseSchema.extend({
+export const CourseCreateReqBodySchema = CourseCreateInputObjectZodSchema.extend({
+    subject_code: z.string(),
     departments: z.array(z.string()),
     faculties: z.array(z.string()),
     topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })),
 })
 export type CourseCreateReqBody = z.infer<typeof CourseCreateReqBodySchema>
-export const CourseCreateResBodySchema = CourseSchema
-export type CourseCreateResBody = z.infer<typeof CourseCreateResBodySchema>
-export type CourseCreateHandler = RequestHandler<never, CourseCreateResBody, CourseCreateReqBody, never>
+export type CourseCreateHandler = RequestHandler<never, Course, CourseCreateReqBody, never>
 
 
 // Update Course
 export const CourseUpdateReqParamsSchema = IdInputSchema
 export type CourseUpdateReqParams = z.infer<typeof CourseUpdateReqParamsSchema>
-export const CourseUpdateReqBodySchema = CourseCreateReqBodySchema.partial()
+export const CourseUpdateReqBodySchema = CourseUpdateInputObjectZodSchema.extend({
+    subject_code: z.string().optional(),
+    departments: z.array(z.string()).optional(),
+    faculties: z.array(z.string()).optional(),
+    topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })).optional(),
+})
 export type CourseUpdateReqBody = z.infer<typeof CourseUpdateReqBodySchema>
-export const CourseUpdateResBodySchema = CourseSchema
-export type CourseUpdateResBody = z.infer<typeof CourseUpdateResBodySchema>
-export type CourseUpdateHandler = RequestHandler<CourseUpdateReqParams, CourseUpdateResBody, CourseUpdateReqBody, never>
+export type CourseUpdateHandler = RequestHandler<CourseUpdateReqParams, Course, CourseUpdateReqBody, never>
 
 
 // Delete Course

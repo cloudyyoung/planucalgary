@@ -1,4 +1,4 @@
-import { CourseListHandler, CourseGetHandler, CourseGetResBodySchema, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCreateResBodySchema, getSortings, CourseListResBody } from "@planucalgary/shared"
+import { CourseListHandler, CourseGetHandler, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, getSortings } from "@planucalgary/shared"
 import { Course, Prisma } from "@prisma/client"
 import { CourseAlreadyExistsError, CourseNotFoundError } from "./errors"
 
@@ -95,9 +95,7 @@ export const listCourses: CourseListHandler = async (req, res) => {
     await req.prisma.$queryRaw<[{ count: number }]>(totalQueryString),
   ])
   const total = totalResult[0].count
-
-  const response = courses.map((course) => CourseGetResBodySchema.parse(course))
-  res.paginate(response, total)
+  res.paginate(courses, total)
 }
 
 export const getCourse: CourseGetHandler = async (req, res) => {
@@ -113,8 +111,7 @@ export const getCourse: CourseGetHandler = async (req, res) => {
   if (!course) {
     throw new CourseNotFoundError()
   }
-  const response = CourseGetResBodySchema.parse(course)
-  return res.json(response)
+  return res.json(course)
 }
 
 export const createCourse: CourseCreateHandler = async (req, res) => {
@@ -161,8 +158,7 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
     },
   })
 
-  const response = CourseCreateResBodySchema.parse(course)
-  return res.json(response)
+  return res.json(course)
 }
 
 export const updateCourse: CourseUpdateHandler = async (req, res) => {
@@ -209,8 +205,7 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
     },
   })
 
-  const response = CourseGetResBodySchema.parse(course)
-  return res.json(response)
+  return res.json(course)
 }
 
 export const deleteCourse: CourseDeleteHandler = async (req, res) => {
