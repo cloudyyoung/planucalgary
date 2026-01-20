@@ -1,12 +1,19 @@
-export interface OperatorsDict {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: (...args: any) => any
-}
 
+/**
+ * Converts a value to a boolean.
+ * @param value - The value to convert.
+ * @returns The boolean representation of the value.
+ */
 export const bool = (value: any): boolean => {
   return !!value
 }
 
+/**
+ * Cleans up a JSON Logic object by removing redundant structures.
+ * 
+ * @param obj - The JSON Logic object to clean up. 
+ * @returns The cleaned-up JSON Logic object.
+ */
 export const cleanup = (obj: any): any => {
   if (obj === null) {
     return null
@@ -16,6 +23,7 @@ export const cleanup = (obj: any): any => {
     return obj
   }
 
+  // If the object is an array, clean up each element
   if (Array.isArray(obj)) {
     const value = obj.map(cleanup).filter(bool)
     if (value.length === 0) return null
@@ -65,6 +73,7 @@ export const cleanup = (obj: any): any => {
   for (const key of keys) {
     const value = obj[key]
 
+    // Skip empty arrays
     if (Array.isArray(value) && value.length === 0) {
       continue
     }
@@ -78,6 +87,7 @@ export const cleanup = (obj: any): any => {
     newObj[key] = newValue
   }
 
+  // If the cleaned object is empty, return null
   if (Object.keys(newObj).length === 0) {
     return null
   }

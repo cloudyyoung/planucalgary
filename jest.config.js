@@ -4,10 +4,10 @@ module.exports = {
   transform: {
     "^.+\\.tsx?$": [
       "ts-jest",
-      {
-        tsconfig: "tsconfig.json",
-      },
     ],
   },
   testMatch: ["**/?(*.)+(spec|test).ts?(x)"],
+  moduleNameMapper: {
+    "^@planucalgary/shared$": "<rootDir>/shared/src/index.ts",
+  },
 }
