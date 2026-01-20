@@ -52,10 +52,10 @@ export const RequsiteUpdateReqParamsSchema = IdInputSchema
 export type RequisiteUpdateReqParams = z.infer<typeof RequsiteUpdateReqParamsSchema>
 export const RequisiteUpdateReqBodySchema = RequisiteJsonUpdateInputObjectZodSchema
 export type RequisiteUpdateReqBody = z.infer<typeof RequisiteUpdateReqBodySchema>
-export type RequisiteUpdateHandler = RequestHandler<RequisiteUpdateReqParams, RequisiteJson, RequisiteUpdateReqBody, never>
+export type RequisiteUpdateHandler = RequestHandler<RequisiteUpdateReqParams, RequisiteJson & RequisiteJsonValidation, RequisiteUpdateReqBody, never>
 
 
 // Generate Requisite Choices
 export const RequisiteGenerateChoicesReqParamsSchema = IdInputSchema
 export type RequisiteGenerateChoicesReqParams = z.infer<typeof RequisiteGenerateChoicesReqParamsSchema>
-export type RequisiteGenerateChoicesHandler = RequestHandler<RequisiteGenerateChoicesReqParams, RequisiteJson, never, never>
+export type RequisiteGenerateChoicesHandler = RequestHandler<RequisiteGenerateChoicesReqParams, RequisiteJson & RequisiteJsonValidation, never, never>

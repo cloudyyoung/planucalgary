@@ -2,14 +2,13 @@ export const getSortableColumns = (columns: string[]) => {
     return columns.flatMap((col) => [col, `-${col}`])
 }
 
-export const getSortings = (sortings: string[]) => {
-    const a = {} as { [key: string]: "asc" | "desc" }
-    for (const sort of sortings) {
+export const getSortings = (sortings: string[] | undefined) => {
+    if (!sortings) return [];
+    return sortings.map((sort) => {
         if (sort.startsWith("-")) {
-            a[sort.slice(1)] = "desc"
+            return { [sort.substring(1)]: "desc" as const }
         } else {
-            a[sort] = "asc"
+            return { [sort]: "asc" as const }
         }
-    }
-    return a
+    })
 }

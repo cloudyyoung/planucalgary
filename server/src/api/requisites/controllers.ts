@@ -13,7 +13,7 @@ export const listRequisites: RequisiteListHandler = async (req, res) => {
       where: {
         ...(requisite_type && { requisite_type }),
       },
-      orderBy: sorting ? getSortings(sorting) : { id: "asc" },
+      orderBy: [...getSortings(sorting), { id: 'asc' }],
       skip: req.pagination.offset,
       take: req.pagination.limit,
     }),
@@ -62,14 +62,12 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
     throw new RequisiteNotFoundError()
   }
 
-  if (!!req.body.json) {
-    const validate = await getValidator()
-    const json = req.body.json
-    const { json_valid } = validate(json)
+  const validate = await getValidator()
+  const json = req.body.json
+  const { json_valid, json_warnings, json_errors } = validate(json)
 
-    if (!json_valid) {
-      throw new InvalidRequisiteJsonError()
-    }
+  if (!json_valid) {
+    throw new InvalidRequisiteJsonError()
   }
 
   const requisite = await req.prisma.requisiteJson.update({
@@ -80,7 +78,13 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
       json_choices: req.body.json_choices as any,
     },
   })
-  return res.json(requisite)
+
+  return res.json({
+    ...requisite,
+    json_valid,
+    json_warnings,
+    json_errors,
+  })
 }
 
 export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (req, res) => {
@@ -108,7 +112,13 @@ export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (
     where: { id: req.params.id },
     data: { json_choices, json: allEqual ? json_choices[0] : existing.json },
   })
-  return res.json(updated)
+
+  const validate = await getValidator()
+  const validation = validate(updated.json)
+  return res.json({
+    ...updated,
+    ...validation,
+  })
 }
 
 export const syncRequisites: RequisitesSyncHandler = async (req, res, next) => {

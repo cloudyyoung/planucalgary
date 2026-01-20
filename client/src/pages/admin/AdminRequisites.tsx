@@ -22,12 +22,14 @@ export const AdminRequisites = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-  const { data, isLoading, isFetching } = useRequisites({
+  const props = useMemo(() => ({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
     sorting: sorting.map(({ id, desc }) => desc ? `-${id}` : id),
     ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value])),
-  })
+  }), [pagination, sorting, columnFilters])
+
+  const { data, isLoading, isFetching } = useRequisites(props)
 
   const columns: ColumnDef<RequisiteJson & RequisiteJsonValidation>[] = useMemo(() => [
     {
@@ -76,8 +78,8 @@ export const AdminRequisites = () => {
         const [dialogOpen, setDialogOpen] = useState(false)
         const [jsonEdit, setJsonEdit] = useState<string>("")
 
-        const { mutateAsync: generateChoices } = useRequisitesGenerateChoices(row.original.id)
-        const { mutateAsync: updateJson } = useRequisitesUpdate(row.original.id)
+        const { mutateAsync: generateChoices } = useRequisitesGenerateChoices(row.original.id, props)
+        const { mutateAsync: updateJson } = useRequisitesUpdate(row.original.id, props)
 
         const onClickJsonChoice = (choice: any) => {
           setJsonEdit(JSON.stringify(choice, null, 2))

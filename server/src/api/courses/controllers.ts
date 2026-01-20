@@ -71,7 +71,9 @@ export const listCourses: CourseListHandler = async (req, res) => {
     }
 
     const sortings = getSortings(sorting)
-    const orderBySegments = Object.entries(sortings).map(([column, direction]) => {
+    const orderBySegments = sortings.map((sort) => {
+      const column = Object.keys(sort)[0]
+      const direction = sort[column]
       return Prisma.sql`${Prisma.raw(column)} ${Prisma.raw(direction)}`
     })
     return Prisma.sql`order by ${Prisma.join(orderBySegments, ", ")}`
