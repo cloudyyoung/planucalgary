@@ -4,7 +4,7 @@ import { RequisiteListReqQuery, RequisiteListResBody, RequisiteUpdateReqBody } f
 
 export const useRequisites = (props: RequisiteListReqQuery) => {
   const result = useQuery<RequisiteListResBody>({
-    queryKey: ['requisites', ...Object.values(props)],
+    queryKey: ['requisites', JSON.stringify(props)],
     queryFn: async () => {
       const response = await api.get('/requisites', {
         params: props,
@@ -24,8 +24,8 @@ export const useRequisitesGenerateChoices = (id: string, props: RequisiteListReq
       const response = await api.post(`/requisites/${id}/`)
       return response.data
     },
-    onSuccess: (data) => {
-      updateRequisiteData(id, data, props)
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['requisites', JSON.stringify(props)] })
     }
   })
 
@@ -38,30 +38,11 @@ export const useRequisitesUpdate = (id: string, props: RequisiteListReqQuery) =>
       const response = await api.put(`/requisites/${id}/`, data, { timeout: 20000 })
       return response.data
     },
-    onSuccess: (data) => {
-      updateRequisiteData(id, data, props)
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['requisites', JSON.stringify(props)] })
     },
   })
 
   return mutation
-}
-
-const updateRequisiteData = (id: string, data: any, props: RequisiteListReqQuery) => {
-  queryClient.setQueryData(['requisites', ...Object.values(props)], (oldData?: RequisiteListResBody) => {
-    if (!oldData) return oldData
-    const newData = {
-      ...oldData,
-      items: oldData.items.map((requisite) => {
-        if (requisite.id === id) {
-          return {
-            ...requisite,
-            ...data,
-          }
-        }
-        return requisite
-      }),
-    }
-    return newData
-  })
 }
 
