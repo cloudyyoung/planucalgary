@@ -21,7 +21,7 @@ export const useRequisites = (props: RequisiteListReqQuery) => {
 export const useRequisitesGenerateChoices = (id: string, props: RequisiteListReqQuery) => {
   const mutation = useMutation({
     mutationFn: async () => {
-      const response = await api.post(`/requisites/${id}/`)
+      const response = await api.post(`/requisites/${id}/`, {}, { timeout: 20000 })
       return response.data
     },
     onSuccess: () => {
