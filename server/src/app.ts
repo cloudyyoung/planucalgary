@@ -4,7 +4,7 @@ import cors from "cors"
 import compression from "compression"
 import morgan from "morgan"
 import helmet from "helmet"
-import { json, urlencoded } from "body-parser"
+import bodyParser from "body-parser"
 import { expressjwt as jwt } from "express-jwt"
 
 import { router as accountRouter } from "./api/accounts/routes"
@@ -31,8 +31,8 @@ const load = async (app: Express) => {
 
   app.enable("trust proxy")
   app.set("query parser", 'extended')
-  app.use(json())
-  app.use(urlencoded({ extended: false }))
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: false }))
   app.use(cors())
   app.use(morgan("dev"))
   app.use(helmet())
