@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { type RequestHandler } from "express"
-import { RequisiteTypeSchema } from "./enum"
+import { RequisiteTypeSchema } from "./enums"
 import { IdInputSchema } from "./id"
 import { PaginatedRequestSchema, PaginatedResponse } from "./pagination"
 import { getSortableColumns } from "./sorting"

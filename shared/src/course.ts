@@ -1,6 +1,6 @@
 import * as z from 'zod'
 import { type RequestHandler } from 'express';
-import { GradeModeSchema, CareerSchema } from "./enum"
+import { GradeModeSchema, CareerSchema } from "./enums"
 import { CourseTopicCreateSchema } from './course-topic'
 import { PaginatedRequestSchema, PaginatedResponse } from './pagination'
 import { IdInputSchema } from './id';

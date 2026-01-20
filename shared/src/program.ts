@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { CareerSchema } from "./enum"
+import { CareerSchema } from "./enums"
 
 export const ProgramStartTermSchema = z.object({
     start_term: z
