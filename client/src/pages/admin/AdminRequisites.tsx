@@ -190,6 +190,7 @@ export const AdminRequisites = () => {
       accessorKey: "text",
       header: "Text",
       size: 600,
+      enableSorting: true,
     },
     {
       accessorKey: 'updated_at',

@@ -4,7 +4,7 @@ import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
 import { getValidator } from "../../jsonlogic/requisite_json"
 import { toCourses, toCourseSets, toRequisitesJson } from "./sync"
-import { InvalidRequisiteJsonError, RequisiteNotFoundError } from "./errors"
+import { InvalidRequisiteJsonError, InvalidSyncDestinationError, RequisiteNotFoundError } from "./errors"
 
 export const listRequisites: RequisiteListHandler = async (req, res) => {
   const { requisite_type, sorting } = req.query
@@ -13,7 +13,7 @@ export const listRequisites: RequisiteListHandler = async (req, res) => {
       where: {
         ...(requisite_type && { requisite_type }),
       },
-      orderBy: sorting ? getSortings(sorting) : { created_at: "desc" },
+      orderBy: sorting ? getSortings(sorting) : { id: "asc" },
       skip: req.pagination.offset,
       take: req.pagination.limit,
     }),
@@ -111,14 +111,15 @@ export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (
   return res.json(updated)
 }
 
-export const syncRequisites: RequisitesSyncHandler = async (req, res) => {
+export const syncRequisites: RequisitesSyncHandler = async (req, res, next) => {
   const destination = req.body.destination
-
   if (destination === "requisites_jsons") {
-    toRequisitesJson(req, res)
+    toRequisitesJson(req, res, next)
   } else if (destination === "courses") {
-    toCourses(req, res)
+    toCourses(req, res, next)
   } else if (destination === "course_sets") {
-    toCourseSets(req, res)
+    toCourseSets(req, res, next)
   }
+
+  throw new InvalidSyncDestinationError()
 }

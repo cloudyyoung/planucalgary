@@ -13,3 +13,11 @@ export class InvalidRequisiteJsonError extends Error {
         this.message = "The provided requisite JSON is invalid."
     }
 }
+
+export class InvalidSyncDestinationError extends Error {
+    constructor() {
+        super()
+        this.name = "InvalidSyncDestinationError"
+        this.message = "The provided sync destination is invalid."
+    }
+}

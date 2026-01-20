@@ -1,10 +1,11 @@
 import { Request, Response } from "express"
 import { RequisiteType } from "@prisma/client"
 import _ from "lodash"
+import { RequisitesSyncHandler } from "@planucalgary/shared"
 
 import { getValidator } from "../../jsonlogic/requisite_json"
 
-export const toRequisitesJson = async (req: Request, res: Response) => {
+export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) => {
   const [courses, courseSets] = await Promise.all([
     req.prisma.course.findMany({
       select: {
@@ -90,15 +91,15 @@ export const toRequisitesJson = async (req: Request, res: Response) => {
 
   const count = result.count
 
-  return res.status(200).json({
-    message: `${count} requisites are added to requisites_jsons.`,
-    courses_requisites: courses_requisites_jsons.length,
-    course_sets_requisites: course_sets_requisites_json.length,
-    new_requisites: count,
-  })
+  // return res.status(200).json({
+  //   message: `${count} requisites are added to requisites_jsons.`,
+  //   courses_requisites: courses_requisites_jsons.length,
+  //   course_sets_requisites: course_sets_requisites_json.length,
+  //   new_requisites: count,
+  // })
 }
 
-export const toCourses = async (req: Request, res: Response) => {
+export const toCourses: RequisitesSyncHandler = async (req, res) => {
   const validate = await getValidator()
 
   const [courses, requisitesJsons] = await Promise.all([
@@ -202,13 +203,13 @@ export const toCourses = async (req: Request, res: Response) => {
   const result = await req.prisma.$transaction(course_updates)
   const count = result.length
 
-  return res.status(200).json({
-    message: `${courses.length} requisites are synced to courses.`,
-    courses_synced: count,
-  })
+  // return res.status(200).json({
+  //   message: `${courses.length} requisites are synced to courses.`,
+  //   courses_synced: count,
+  // })
 }
 
-export const toCourseSets = async (req: Request, res: Response) => {
+export const toCourseSets: RequisitesSyncHandler = async (req, res) => {
   const validate = await getValidator()
 
   const [courseSets, requisitesJsons] = await Promise.all([
@@ -243,8 +244,8 @@ export const toCourseSets = async (req: Request, res: Response) => {
   const result = await req.prisma.$transaction(course_set_updates)
   const count = result.filter((r) => r !== null).length
 
-  return res.status(200).json({
-    message: `${courseSets.length} requisites are synced to course sets.`,
-    course_sets_synced: count,
-  })
+  // return res.status(200).json({
+  //   message: `${courseSets.length} requisites are synced to course sets.`,
+  //   course_sets_synced: count,
+  // })
 }

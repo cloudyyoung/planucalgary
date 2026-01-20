@@ -8,6 +8,7 @@ export const useRequisites = (props: RequisiteListReqQuery) => {
     queryFn: async () => {
       const response = await api.get('/requisites', {
         params: props,
+        timeout: 10000,
       })
       return response.data
     },
@@ -34,7 +35,7 @@ export const useRequisitesGenerateChoices = (id: string) => {
 export const useRequisitesUpdate = (id: string) => {
   const mutation = useMutation({
     mutationFn: async (data: RequisiteUpdateReqBody) => {
-      const response = await api.put(`/requisites/${id}/`, data)
+      const response = await api.put(`/requisites/${id}/`, data, { timeout: 20000 })
       return response.data
     },
     onSuccess: () => {

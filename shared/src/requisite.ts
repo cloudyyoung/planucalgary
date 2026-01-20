@@ -34,6 +34,10 @@ export const RequisitesSyncReqBodySchema = z.object({
     destination: z.enum(["requisites_jsons", "courses", "course_sets"]),
 })
 export type RequisitesSyncReqBody = z.infer<typeof RequisitesSyncReqBodySchema>
+export type RequisitesSyncResBody = {
+    message: string
+    requisites_synced: number
+}
 export type RequisitesSyncHandler = RequestHandler<never, never, RequisitesSyncReqBody, never>
 
 
