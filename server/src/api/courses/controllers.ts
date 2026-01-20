@@ -1,5 +1,5 @@
 import { CourseListHandler, CourseGetHandler, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, getSortings } from "@planucalgary/shared"
-import { Course, Prisma } from "@prisma/client"
+import { Course, Prisma } from "@planucalgary/shared/prisma/client"
 import { CourseAlreadyExistsError, CourseNotFoundError } from "./errors"
 
 export const listCourses: CourseListHandler = async (req, res) => {

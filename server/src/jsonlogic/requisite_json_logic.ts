@@ -1,4 +1,4 @@
-import { Course } from "@prisma/client"
+import { Course } from "@planucalgary/shared/prisma/client"
 import { sum } from "lodash"
 import { prismaClient } from "../middlewares"
 
@@ -6,7 +6,7 @@ export type Operator<T> = {
   name: string
   precedence?: number
   is_rule: (logic: any) => logic is T
-  apply:  (logic: T, data: Data) => any
+  apply: (logic: T, data: Data) => any
 }
 
 export type Operators = Record<string, Operator<any>>
@@ -136,7 +136,7 @@ RequisiteJsonLogic.add_operator({
       ) return false
     }
 
-    return Object.keys(logic).includes('units') && typeof logic.units === 'number' 
+    return Object.keys(logic).includes('units') && typeof logic.units === 'number'
   },
   apply: (logic: RequisiteLogicUnits, data: Data) => {
     const units: number = logic.units

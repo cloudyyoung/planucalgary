@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { RequisiteType } from "@prisma/client"
+import { RequisiteType } from "@planucalgary/shared/prisma/client"
 import _ from "lodash"
 import { RequisitesSyncHandler } from "@planucalgary/shared"
 

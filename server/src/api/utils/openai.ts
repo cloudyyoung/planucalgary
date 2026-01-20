@@ -2,7 +2,7 @@ import OpenAI from "openai"
 
 import { OPENAI_API_KEY } from "../../config"
 import { prismaClient } from "../../middlewares"
-import { Course, CourseTopic, Department, Faculty, RequisiteType, Subject } from "@prisma/client"
+import { Course, CourseTopic, Department, Faculty, RequisiteType, Subject } from "@planucalgary/shared/prisma/client"
 import { cleanup } from "../../jsonlogic/utils"
 import { getSchema } from "../../jsonlogic/schema"
 

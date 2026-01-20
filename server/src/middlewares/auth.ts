@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { Request as JWTRequest } from "express-jwt"
-import { Account } from "@prisma/client"
+import { Account } from "@planucalgary/shared/prisma/client"
 
 export const auth = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
