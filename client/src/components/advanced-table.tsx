@@ -304,17 +304,17 @@ const AdvancedTable = <T,>({ table, className, header, isLoading = false, isFetc
 
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden">
+      {header && (
+        <div className="p-2 bg-muted flex flex-row gap-2">
+          {header}
+        </div>
+      )}
+      {isLoading && (
+        <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-20">
+          <Spinner className="size-8" />
+        </div>
+      )}
       <div ref={scrollContainerRef} className="overflow-x-auto overflow-y-auto flex-1 relative">
-        {isLoading && (
-          <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
-            <Spinner className="size-8" />
-          </div>
-        )}
-        {header && (
-          <div className="p-2 bg-muted flex flex-row gap-2">
-            {header}
-          </div>
-        )}
         <table className={cn("text-sm w-full", className)}>
           <AdvancedTableHeader table={table} isFetching={isFetching} />
           <AdvancedTableBody table={table} />

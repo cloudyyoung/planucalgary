@@ -21,7 +21,9 @@ export interface RequisiteJsonValidation {
 
 // List Requisites
 export const RequisiteListReqQuerySchema = z.object({
+    id: z.string().optional(),
     requisite_type: RequisiteTypeSchema.optional(),
+    text: z.string().optional(),
     sorting: z.enum(getSortableColumns(RequisiteJsonScalarFieldEnumSchema.options)).array().optional(),
 }).extend(PaginatedRequestSchema.shape)
 export type RequisiteListReqQuery = z.infer<typeof RequisiteListReqQuerySchema>
