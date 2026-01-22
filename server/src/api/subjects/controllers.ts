@@ -1,36 +1,57 @@
-import { Request, Response } from "express"
-import { ParamsDictionary } from "express-serve-static-core"
-import { SubjectCreate, SubjectUpdate } from "@planucalgary/shared"
+import { SubjectCreateHandler, SubjectDeleteHandler, SubjectGetHandler, SubjectListHandler, SubjectUpdateHandler, getSortings } from "@planucalgary/shared"
+import { SubjectAlreadyExistsError, SubjectNotFoundError } from "./errors";
 
-export const listSubjects = async (req: Request, res: Response) => {
-  const subjects = await req.prisma.subject.findMany()
-  return res.json(subjects)
+export const listSubjects: SubjectListHandler = async (req, res) => {
+  const { id, code, title, sorting } = req.query;
+  const whereConditions = {
+    ...(id && { id: { contains: id } }),
+    ...(code && { code: { contains: code } }),
+    ...(title && { title: { contains: title } }),
+  }
+  const [subjects, total] = await Promise.all([
+    req.prisma.subject.findMany({
+      where: whereConditions,
+      orderBy: getSortings(sorting),
+      skip: req.pagination.offset,
+      take: req.pagination.limit,
+    }),
+    req.prisma.subject.count({
+      where: whereConditions,
+    }),
+  ])
+
+  return res.paginate(subjects, total)
 }
 
-export const getSubject = async (req: Request, res: Response) => {
+export const getSubject: SubjectGetHandler = async (req, res) => {
+  const { id } = req.params;
   const subject = await req.prisma.subject.findUnique({
-    where: { id: req.params.id },
-    include: {
-      departments: true,
-      courses: true,
-    },
+    where: { id },
   })
+
+  if (!subject) {
+    throw new SubjectNotFoundError()
+  }
+
   return res.json(subject)
 }
 
-export const createSubject = async (req: Request<ParamsDictionary, any, SubjectCreate>, res: Response) => {
+export const createSubject: SubjectCreateHandler = async (req, res) => {
   const existing = await req.prisma.subject.findFirst({
     where: { code: req.body.code },
   })
   if (existing) {
-    return res.status(403).json({ error: "Subject already exists", existing })
+    throw new SubjectAlreadyExistsError()
   }
 
-  const subject = await req.prisma.subject.create({ data: req.body })
+  const subject = await req.prisma.subject.create({
+    data: req.body,
+  })
+
   return res.json(subject)
 }
 
-export const updateSubject = async (req: Request<ParamsDictionary, any, SubjectUpdate>, res: Response) => {
+export const updateSubject: SubjectUpdateHandler = async (req, res) => {
   const subject = await req.prisma.subject.update({
     where: { id: req.params.id },
     data: req.body,
@@ -38,9 +59,9 @@ export const updateSubject = async (req: Request<ParamsDictionary, any, SubjectU
   return res.json(subject)
 }
 
-export const deleteSubject = async (req: Request, res: Response) => {
-  const subject = await req.prisma.subject.delete({
+export const deleteSubject: SubjectDeleteHandler = async (req, res) => {
+  await req.prisma.subject.delete({
     where: { id: req.params.id },
   })
-  return res.json(subject)
+  return res.sendStatus(204)
 }
