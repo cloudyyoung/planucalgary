@@ -227,7 +227,7 @@ export const AdminRequisites = () => {
   const table = useReactTable({
     data: data?.items || [],
     columns,
-    rowCount: data?.total || 0,
+    rowCount: data?.total,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,

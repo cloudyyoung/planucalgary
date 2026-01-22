@@ -6,7 +6,7 @@ import { CourseSet } from "@planucalgary/shared/prisma/client";
 import AdvancedTable from "@/components/advanced-table";
 import { useCourseSets } from "@/hooks/useCourseSets";
 import { CourseSetTypeSchema } from "../../../../shared/dist/course-set";
-
+import JSONPretty from "react-json-pretty";
 
 
 export const AdminCourseSets = () => {
@@ -49,6 +49,16 @@ export const AdminCourseSets = () => {
       size: 200,
       enableColumnFilter: true,
       enableSorting: true,
+    },
+
+    {
+      id: "json",
+      header: "JSON",
+      size: 600,
+      cell: ({ cell }) => {
+        const json = cell.getValue<any>()
+        return <JSONPretty data={JSON.stringify(json)} />
+      },
     },
     {
       accessorKey: "name",
@@ -93,7 +103,7 @@ export const AdminCourseSets = () => {
   const table = useReactTable({
     data: data?.items || [],
     columns,
-    rowCount: data?.total || 0,
+    rowCount: data?.total,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,
