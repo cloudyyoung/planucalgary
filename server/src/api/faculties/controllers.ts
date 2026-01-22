@@ -1,46 +1,69 @@
-import { Request, Response } from "express"
-import { ParamsDictionary } from "express-serve-static-core"
-import { FacultyCreate, FacultyUpdate } from "@planucalgary/shared"
+import { FacultyCreateHandler, FacultyDeleteHandler, FacultyGetHandler, FacultyListHandler, FacultyUpdateHandler, getSortings } from "@planucalgary/shared"
+import { FacultyAlreadyExistsError, FacultyNotFoundError } from "./errors";
 
-export const listFaculties = async (req: Request, res: Response) => {
-  const faculties = await req.prisma.faculty.findMany()
-  return res.json(faculties)
+export const listFaculties: FacultyListHandler = async (req, res) => {
+  const { id, name, display_name, code, is_active, sorting } = req.query;
+  const whereConditions = {
+    ...(id && { id: { contains: id } }),
+    ...(name && { name: { contains: name } }),
+    ...(display_name && { display_name: { contains: display_name } }),
+    ...(code && { code: { contains: code } }),
+    ...(is_active !== undefined && { is_active }),
+  }
+  const [faculties, total] = await Promise.all([
+    req.prisma.faculty.findMany({
+      where: whereConditions,
+      orderBy: getSortings(sorting),
+      skip: req.pagination.offset,
+      take: req.pagination.limit,
+    }),
+    req.prisma.faculty.count({
+      where: whereConditions,
+    }),
+  ])
+
+  return res.paginate(faculties, total)
 }
 
-export const getFaculty = async (req: Request, res: Response) => {
-  const fac = await req.prisma.faculty.findUnique({
-    where: { id: req.params.id },
-    include: {
-      departments: true,
-      courses: true,
-    },
+export const getFaculty: FacultyGetHandler = async (req, res) => {
+  const { id } = req.params;
+  const faculty = await req.prisma.faculty.findUnique({
+    where: { id },
   })
-  return res.json(fac)
+
+  if (!faculty) {
+    throw new FacultyNotFoundError()
+  }
+
+  return res.json(faculty)
 }
 
-export const createFaculty = async (req: Request<ParamsDictionary, any, FacultyCreate>, res: Response) => {
+export const createFaculty: FacultyCreateHandler = async (req, res) => {
   const existing = await req.prisma.faculty.findFirst({
     where: { code: req.body.code },
   })
   if (existing) {
-    return res.status(403).json({ error: "Faculty already exists", existing })
+    throw new FacultyAlreadyExistsError()
   }
 
-  const fac = await req.prisma.faculty.create({ data: req.body })
-  return res.json(fac)
+  const faculty = await req.prisma.faculty.create({
+    data: req.body,
+  })
+
+  return res.json(faculty)
 }
 
-export const updateFaculty = async (req: Request<ParamsDictionary, any, FacultyUpdate>, res: Response) => {
-  const fac = await req.prisma.faculty.update({
+export const updateFaculty: FacultyUpdateHandler = async (req, res) => {
+  const faculty = await req.prisma.faculty.update({
     where: { id: req.params.id },
     data: req.body,
   })
-  return res.json(fac)
+  return res.json(faculty)
 }
 
-export const deleteFaculty = async (req: Request, res: Response) => {
-  const fac = await req.prisma.faculty.delete({
+export const deleteFaculty: FacultyDeleteHandler = async (req, res) => {
+  await req.prisma.faculty.delete({
     where: { id: req.params.id },
   })
-  return res.json(fac)
+  return res.sendStatus(204)
 }

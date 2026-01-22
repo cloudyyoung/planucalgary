@@ -52,6 +52,10 @@ const adminMenuItems = [
     url: "admin/departments",
   },
   {
+    title: "Faculties",
+    url: "admin/faculties",
+  },
+  {
     title: "Requisites",
     url: "admin/requisites",
   },

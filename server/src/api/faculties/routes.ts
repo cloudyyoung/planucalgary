@@ -2,15 +2,15 @@ import { Router } from "express"
 
 import { createFaculty, deleteFaculty, getFaculty, listFaculties, updateFaculty } from "./controllers"
 import { admin } from "../../middlewares/admin"
-import { IdInputSchema, zod } from "../../middlewares"
-import { FacultyCreateSchema, FacultyUpdateSchema } from "@planucalgary/shared"
+import { zod } from "../../middlewares"
+import { FacultyCreateBodySchema, FacultyDeleteParamsSchema, FacultyGetParamsSchema, FacultyUpdateBodySchema, FacultyUpdateParamsSchema, } from "@planucalgary/shared"
 
 const router = Router()
 router.get("/", listFaculties)
-router.get("/:id", zod({ params: IdInputSchema }), getFaculty)
-router.post("/", admin(), zod({ body: FacultyCreateSchema }), createFaculty)
-router.put("/:id", admin(), zod({ params: IdInputSchema, body: FacultyUpdateSchema }), updateFaculty)
-router.delete("/:id", admin(), zod({ params: IdInputSchema }), deleteFaculty)
+router.get("/:id", zod({ params: FacultyGetParamsSchema }), getFaculty)
+router.post("/", admin(), zod({ body: FacultyCreateBodySchema }), createFaculty)
+router.put("/:id", admin(), zod({ params: FacultyUpdateParamsSchema, body: FacultyUpdateBodySchema }), updateFaculty)
+router.delete("/:id", admin(), zod({ params: FacultyDeleteParamsSchema }), deleteFaculty)
 
 export default router
 export { router }
