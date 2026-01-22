@@ -91,12 +91,10 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
 
   const count = result.count
 
-  // return res.status(200).json({
-  //   message: `${count} requisites are added to requisites_jsons.`,
-  //   courses_requisites: courses_requisites_jsons.length,
-  //   course_sets_requisites: course_sets_requisites_json.length,
-  //   new_requisites: count,
-  // })
+  return res.json({
+    message: `${count} requisites are added to requisites_jsons.`,
+    affected_rows: count,
+  })
 }
 
 export const toCourses: RequisitesSyncHandler = async (req, res) => {
@@ -203,10 +201,10 @@ export const toCourses: RequisitesSyncHandler = async (req, res) => {
   const result = await req.prisma.$transaction(course_updates)
   const count = result.length
 
-  // return res.status(200).json({
-  //   message: `${courses.length} requisites are synced to courses.`,
-  //   courses_synced: count,
-  // })
+  return res.json({
+    message: `${courses.length} requisites are synced to courses.`,
+    affected_rows: count,
+  })
 }
 
 export const toCourseSets: RequisitesSyncHandler = async (req, res) => {
@@ -244,8 +242,8 @@ export const toCourseSets: RequisitesSyncHandler = async (req, res) => {
   const result = await req.prisma.$transaction(course_set_updates)
   const count = result.filter((r) => r !== null).length
 
-  // return res.status(200).json({
-  //   message: `${courseSets.length} requisites are synced to course sets.`,
-  //   course_sets_synced: count,
-  // })
+  return res.json({
+    message: `${courseSets.length} requisites are synced to course sets.`,
+    affected_rows: count,
+  })
 }

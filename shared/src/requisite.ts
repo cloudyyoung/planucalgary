@@ -36,9 +36,9 @@ export const RequisitesSyncReqBodySchema = z.object({
 export type RequisitesSyncReqBody = z.infer<typeof RequisitesSyncReqBodySchema>
 export type RequisitesSyncResBody = {
     message: string
-    requisites_synced: number
+    affected_rows: number
 }
-export type RequisitesSyncHandler = RequestHandler<never, never, RequisitesSyncReqBody, never>
+export type RequisitesSyncHandler = RequestHandler<never, RequisitesSyncResBody, RequisitesSyncReqBody, never>
 
 
 // Get Requisite
