@@ -1,4 +1,4 @@
-import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings, } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings, RequisitesSyncDestination } from "@planucalgary/shared"
 
 import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
@@ -117,13 +117,13 @@ export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (
 
 export const syncRequisites: RequisitesSyncHandler = async (req, res, next) => {
   const destination = req.body.destination
-  if (destination === "requisites_jsons") {
+  if (destination === RequisitesSyncDestination.REQUISITES_JSONS) {
     toRequisitesJson(req, res, next)
-  } else if (destination === "courses") {
+  } else if (destination === RequisitesSyncDestination.COURSES) {
     toCourses(req, res, next)
-  } else if (destination === "course_sets") {
+  } else if (destination === RequisitesSyncDestination.COURSE_SETS) {
     toCourseSets(req, res, next)
+  } else {
+    throw new InvalidSyncDestinationError()
   }
-
-  throw new InvalidSyncDestinationError()
 }

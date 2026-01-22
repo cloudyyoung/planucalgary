@@ -2,16 +2,23 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
 import { RequisiteJson } from "@planucalgary/shared/prisma/client"
-import { RequisiteJsonValidation, RequisiteTypeSchema } from "@planucalgary/shared";
+import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@planucalgary/shared";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdvancedTable from "@/components/advanced-table";
-import { useRequisites, useRequisitesGenerateChoices, useRequisitesUpdate } from "@/hooks/useRequisites";
+import { useRequisites, useRequisitesGenerateChoices, useRequisitesSync, useRequisitesUpdate } from "@/hooks/useRequisites";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { StatefulButton } from "@/components/ui/stateful-button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 
 export const AdminRequisites = () => {
@@ -21,6 +28,7 @@ export const AdminRequisites = () => {
   })
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [syncDestination, setSyncDestination] = useState<RequisitesSyncDestination>()
 
   const props = useMemo(() => ({
     offset: pagination.pageIndex * pagination.pageSize,
@@ -30,6 +38,9 @@ export const AdminRequisites = () => {
   }), [pagination, sorting, columnFilters])
 
   const { data, isLoading, isFetching } = useRequisites(props)
+  const { mutateAsync: generateChoices } = useRequisitesGenerateChoices(props)
+  const { mutateAsync: updateJson } = useRequisitesUpdate(props)
+  const { mutateAsync: syncRequisites } = useRequisitesSync()
 
   const columns: ColumnDef<RequisiteJson & RequisiteJsonValidation>[] = useMemo(() => [
     {
@@ -78,19 +89,16 @@ export const AdminRequisites = () => {
         const [dialogOpen, setDialogOpen] = useState(false)
         const [jsonEdit, setJsonEdit] = useState<string>("")
 
-        const { mutateAsync: generateChoices } = useRequisitesGenerateChoices(row.original.id, props)
-        const { mutateAsync: updateJson } = useRequisitesUpdate(row.original.id, props)
-
         const onClickJsonChoice = (choice: any) => {
           setJsonEdit(JSON.stringify(choice, null, 2))
         }
 
         const onGenerateChoices = async () => {
-          await generateChoices()
+          await generateChoices(row.original.id)
         }
 
         const onUpdate = async () => {
-          await updateJson({ json: JSON.parse(jsonEdit) })
+          await updateJson({ id: row.original.id, json: JSON.parse(jsonEdit) })
           setDialogOpen(false)
         }
 
@@ -237,7 +245,32 @@ export const AdminRequisites = () => {
     },
   })
 
+  const onSync = async () => {
+    if (syncDestination) {
+      await syncRequisites(syncDestination)
+    }
+  }
+
+  const Header = <>
+    <Select
+      value={syncDestination}
+      onValueChange={(value) => setSyncDestination(value as RequisitesSyncDestination)}
+    >
+      <SelectTrigger className="w-[180px] bg-background">
+        <SelectValue placeholder="Sync Destination" />
+      </SelectTrigger>
+      <SelectContent>
+        {RequisitesSyncDestinationSchema.options.map((option) => (
+          <SelectItem key={option} value={option}>
+            {option}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+    <StatefulButton variant="outline" onClick={onSync} disabled={!syncDestination}>Sync</StatefulButton>
+  </>
+
   return (
-    <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} />
+    <AdvancedTable table={table} header={Header} isLoading={isLoading} isFetching={isFetching} />
   )
 }

@@ -30,8 +30,14 @@ export type RequisiteListHandler = RequestHandler<never, RequisiteListResBody, n
 
 
 // Sync Requisites
+export enum RequisitesSyncDestination {
+    REQUISITES_JSONS = "REQUISITES_JSONS",
+    COURSES = "COURSES",
+    COURSE_SETS = "COURSE_SETS",
+}
+export const RequisitesSyncDestinationSchema = z.enum(RequisitesSyncDestination)
 export const RequisitesSyncReqBodySchema = z.object({
-    destination: z.enum(["requisites_jsons", "courses", "course_sets"]),
+    destination: RequisitesSyncDestinationSchema,
 })
 export type RequisitesSyncReqBody = z.infer<typeof RequisitesSyncReqBodySchema>
 export type RequisitesSyncResBody = {
@@ -44,7 +50,8 @@ export type RequisitesSyncHandler = RequestHandler<never, RequisitesSyncResBody,
 // Get Requisite
 export const RequisiteGetReqParamsSchema = IdInputSchema
 export type RequisiteGetReqParams = z.infer<typeof RequisiteGetReqParamsSchema>
-export type RequisiteGetHandler = RequestHandler<RequisiteGetReqParams, RequisiteJson & RequisiteJsonValidation, never, never>
+export type RequisiteGetResBody = RequisiteJson & RequisiteJsonValidation
+export type RequisiteGetHandler = RequestHandler<RequisiteGetReqParams, RequisiteGetResBody, never, never>
 
 
 // Update Requisite
@@ -52,10 +59,12 @@ export const RequsiteUpdateReqParamsSchema = IdInputSchema
 export type RequisiteUpdateReqParams = z.infer<typeof RequsiteUpdateReqParamsSchema>
 export const RequisiteUpdateReqBodySchema = RequisiteJsonUpdateInputObjectZodSchema
 export type RequisiteUpdateReqBody = z.infer<typeof RequisiteUpdateReqBodySchema>
-export type RequisiteUpdateHandler = RequestHandler<RequisiteUpdateReqParams, RequisiteJson & RequisiteJsonValidation, RequisiteUpdateReqBody, never>
+export type RequisiteUpdateResBody = RequisiteJson & RequisiteJsonValidation
+export type RequisiteUpdateHandler = RequestHandler<RequisiteUpdateReqParams, RequisiteUpdateResBody, RequisiteUpdateReqBody, never>
 
 
 // Generate Requisite Choices
 export const RequisiteGenerateChoicesReqParamsSchema = IdInputSchema
 export type RequisiteGenerateChoicesReqParams = z.infer<typeof RequisiteGenerateChoicesReqParamsSchema>
-export type RequisiteGenerateChoicesHandler = RequestHandler<RequisiteGenerateChoicesReqParams, RequisiteJson & RequisiteJsonValidation, never, never>
+export type RequisiteGenerateChoicesResBody = RequisiteJson & RequisiteJsonValidation
+export type RequisiteGenerateChoicesHandler = RequestHandler<RequisiteGenerateChoicesReqParams, RequisiteGenerateChoicesResBody, never, never>

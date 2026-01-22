@@ -282,11 +282,12 @@ const AdvancedTablePagination = <T,>({ table }: AdvancedTablePaginationProps<T>)
 export interface TableProps<T> {
   table: TanStackTable<T>;
   className?: string;
+  header?: React.ReactNode;
   isLoading?: boolean;
   isFetching?: boolean;
 }
 
-const AdvancedTable = <T,>({ table, className, isLoading = false, isFetching = false }: TableProps<T>) => {
+const AdvancedTable = <T,>({ table, className, header, isLoading = false, isFetching = false }: TableProps<T>) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const currentPage = table.getState().pagination.pageIndex;
   const currentFiltering = table.getState().columnFilters;
@@ -307,6 +308,11 @@ const AdvancedTable = <T,>({ table, className, isLoading = false, isFetching = f
         {isLoading && (
           <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
             <Spinner className="size-8" />
+          </div>
+        )}
+        {header && (
+          <div className="p-2 bg-muted flex flex-row gap-2">
+            {header}
           </div>
         )}
         <table className={cn("text-sm w-full", className)}>

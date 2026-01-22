@@ -1,12 +1,12 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import api, { queryClient } from "@/api"
-import { RequisiteListReqQuery, RequisiteListResBody, RequisiteUpdateReqBody } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesResBody, RequisiteListReqQuery, RequisiteListResBody, RequisitesSyncDestination, RequisitesSyncResBody, RequisiteUpdateReqBody, RequisiteUpdateResBody } from "@planucalgary/shared"
 
 export const useRequisites = (props: RequisiteListReqQuery) => {
-  const result = useQuery<RequisiteListResBody>({
+  const result = useQuery({
     queryKey: ['requisites', JSON.stringify(props)],
     queryFn: async () => {
-      const response = await api.get('/requisites', {
+      const response = await api.get<RequisiteListResBody>('/requisites', {
         params: props,
         timeout: 10000,
       })
@@ -18,10 +18,10 @@ export const useRequisites = (props: RequisiteListReqQuery) => {
   return result
 }
 
-export const useRequisitesGenerateChoices = (id: string, props: RequisiteListReqQuery) => {
+export const useRequisitesGenerateChoices = (props: RequisiteListReqQuery) => {
   const mutation = useMutation({
-    mutationFn: async () => {
-      const response = await api.post(`/requisites/${id}/`, {}, { timeout: 20000 })
+    mutationFn: async (id: string) => {
+      const response = await api.post<RequisiteGenerateChoicesResBody>(`/requisites/${id}/`, {}, { timeout: 20000 })
       return response.data
     },
     onSuccess: () => {
@@ -32,10 +32,10 @@ export const useRequisitesGenerateChoices = (id: string, props: RequisiteListReq
   return mutation
 }
 
-export const useRequisitesUpdate = (id: string, props: RequisiteListReqQuery) => {
+export const useRequisitesUpdate = (props: RequisiteListReqQuery) => {
   const mutation = useMutation({
     mutationFn: async (data: RequisiteUpdateReqBody) => {
-      const response = await api.put(`/requisites/${id}/`, data, { timeout: 20000 })
+      const response = await api.put<RequisiteUpdateResBody>(`/requisites/${data.id}/`, data, { timeout: 20000 })
       return response.data
     },
     onSuccess: () => {
@@ -46,3 +46,18 @@ export const useRequisitesUpdate = (id: string, props: RequisiteListReqQuery) =>
   return mutation
 }
 
+export const useRequisitesSync = () => {
+  const mutation = useMutation({
+    mutationFn: async (destination: RequisitesSyncDestination) => {
+      const response = await api.post<RequisitesSyncResBody>('/requisites/sync', {
+        destination,
+      }, { timeout: 60000 })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['requisites'] })
+    },
+  })
+
+  return mutation
+}
