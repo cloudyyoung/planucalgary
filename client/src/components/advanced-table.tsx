@@ -109,9 +109,9 @@ const ColumnFilter = <T,>({ header }: { header: Header<T, unknown> }) => {
   const columnFilterValue = column.getFilterValue() as string | undefined;
   const { filterVariant } = column.columnDef.meta ?? {}
 
-  if (filterVariant === 'text') {
+  if (filterVariant === 'text' || filterVariant === undefined) {
     const [value, setValue] = useState(columnFilterValue);
-    const throttledValue = useThrottle(value, 300);
+    const throttledValue = useThrottle(value, 1000);
 
     useEffect(() => {
       column.setFilterValue(throttledValue || undefined);

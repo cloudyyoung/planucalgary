@@ -7,11 +7,13 @@ import { toCourses, toCourseSets, toRequisitesJson } from "./sync"
 import { InvalidSyncDestinationError, RequisiteNotFoundError } from "./errors"
 
 export const listRequisites: RequisiteListHandler = async (req, res) => {
-  const { requisite_type, sorting } = req.query
+  const { id, requisite_type, text, sorting } = req.query
   const [requisites, total, validate] = await Promise.all([
     req.prisma.requisiteJson.findMany({
       where: {
+        ...(id && { id: { contains: id } }),
         ...(requisite_type && { requisite_type }),
+        ...(text && { text: { contains: text } }),
       },
       orderBy: [...getSortings(sorting), { id: 'asc' }],
       skip: req.pagination.offset,

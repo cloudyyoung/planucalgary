@@ -47,6 +47,7 @@ export const AdminRequisites = () => {
       accessorKey: "id",
       header: "ID",
       enableSorting: true,
+      enableColumnFilter: true,
     },
     {
       accessorKey: "requisite_type",
@@ -201,6 +202,7 @@ export const AdminRequisites = () => {
       header: "Text",
       size: 600,
       enableSorting: true,
+      enableColumnFilter: true,
     },
     {
       accessorKey: 'updated_at',
