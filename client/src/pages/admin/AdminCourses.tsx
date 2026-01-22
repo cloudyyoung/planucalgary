@@ -38,7 +38,7 @@ export const columns: ColumnDef<Course>[] = [
     header: "Prerequisites JSON",
     size: 400,
     cell: ({ cell }) => {
-      const json = cell.getValue<string>()
+      const json = JSON.stringify(cell.getValue<any>())
       return <JSONPretty data={json} />
     }
   },
@@ -52,7 +52,7 @@ export const columns: ColumnDef<Course>[] = [
     header: "Antirequisites JSON",
     size: 400,
     cell: ({ cell }) => {
-      const json = cell.getValue<string>()
+      const json = JSON.stringify(cell.getValue<any>())
       return <JSONPretty data={json} />
     }
   },
@@ -66,7 +66,7 @@ export const columns: ColumnDef<Course>[] = [
     header: "Corequisites JSON",
     size: 400,
     cell: ({ cell }) => {
-      const json = cell.getValue<string>()
+      const json = JSON.stringify(cell.getValue<any>())
       return <JSONPretty data={json} />
     }
   },

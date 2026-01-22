@@ -1,7 +1,8 @@
-import { ValidateOptions, ValidateResult, getValidator } from "./requisite_json"
+import { RequisiteJsonValidation } from "@planucalgary/shared"
+import { ValidateOptions, getValidator } from "./requisite_json"
 
 describe("validator", () => {
-  let validate: (json: any, options?: ValidateOptions) => ValidateResult
+  let validate: (json: any, options?: ValidateOptions) => RequisiteJsonValidation
 
   beforeAll(async () => {
     validate = await getValidator()
@@ -10,25 +11,25 @@ describe("validator", () => {
   it("validate course, truthy", () => {
     const json = "CPSC217"
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("validate course, falsy", () => {
     const json = "ABCD1237"
     const result = validate(json)
-    expect(result.valid).toBe(false)
+    expect(result.json_valid).toBe(false)
   })
 
   it("validate and with two courses, truthy", () => {
     const json = { and: ["CPSC217", "CPSC231"] }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("validate and with two courses, truthy", () => {
     const json = { and: ["ABCD222", "TTTT222"] }
     const result = validate(json)
-    expect(result.valid).toBe(false)
+    expect(result.json_valid).toBe(false)
   })
 
   it("validate units with from, truthy", () => {
@@ -37,7 +38,7 @@ describe("validator", () => {
       units: 3,
     }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("validate and with two arguments of units, falsy", () => {
@@ -55,7 +56,7 @@ describe("validator", () => {
     }
 
     const result = validate(json, { strict: true })
-    expect(result.valid).toBe(false)
+    expect(result.json_valid).toBe(false)
   })
 
   it("validate and with two arguments of units + another or, truthy", () => {
@@ -72,7 +73,7 @@ describe("validator", () => {
     }
 
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("validate and with only one argument, false", () => {
@@ -85,7 +86,7 @@ describe("validator", () => {
     }
 
     const result = validate(json)
-    expect(result.valid).toBe(false)
+    expect(result.json_valid).toBe(false)
   })
 
   it("validate year, truthy", () => {
@@ -103,31 +104,31 @@ describe("validator", () => {
     }
 
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a really simple json: course, truthy", () => {
     const json = "CPSC217"
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a simple json: course, falsy", () => {
     const json = "ABCD123"
     const result = validate(json)
-    expect(result.valid).toBe(false)
+    expect(result.json_valid).toBe(false)
   })
 
   it("valid a simple json: and with two courses, truthy", () => {
     const json = { and: ["ACCT445", "ACCT357"] }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a simple json: and with two courses, falsy", () => {
     const json = { and: ["ABCD123", "CDEF456"] }
     const result = validate(json)
-    expect(result.valid).toBe(false)
+    expect(result.json_valid).toBe(false)
   })
 
   it("valid a simpler json, and with units + or, truthy", () => {
@@ -147,7 +148,7 @@ describe("validator", () => {
       ],
     }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a simpler json: and with units + units + or, falsy", () => {
@@ -175,7 +176,7 @@ describe("validator", () => {
       ],
     }
     const result = validate(json)
-    expect(result.valid).toBe(false)
+    expect(result.json_valid).toBe(false)
   })
 
   it("valid a complex json: and with units + consent, truthy", () => {
@@ -198,7 +199,7 @@ describe("validator", () => {
       ],
     }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a year json", () => {
@@ -206,7 +207,7 @@ describe("validator", () => {
       year: "fourth",
     }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a complex json: and with course + admission + consent, truthy", () => {
@@ -226,7 +227,7 @@ describe("validator", () => {
       ],
     }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a complex json: and with units + consent, truthy", () => {
@@ -249,7 +250,7 @@ describe("validator", () => {
       ],
     }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a complex json: and with units + nested or + year, truthy", () => {
@@ -285,7 +286,7 @@ describe("validator", () => {
       ],
     }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a complex json: or with untracked course, truthy", () => {
@@ -293,7 +294,7 @@ describe("validator", () => {
       or: ["PLAN602", "Environmental Design Planning 602"],
     }
     const result = validate(json, { strict: true })
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 
   it("valid a complex json: units with level, falsy", () => {
@@ -306,7 +307,7 @@ describe("validator", () => {
       ],
     }
     const result = validate(json)
-    expect(result.valid).toBe(false)
+    expect(result.json_valid).toBe(false)
   })
 
   it("validate course with topic number", () => {
@@ -315,6 +316,6 @@ describe("validator", () => {
       units: 3,
     }
     const result = validate(json)
-    expect(result.valid).toBe(true)
+    expect(result.json_valid).toBe(true)
   })
 })
