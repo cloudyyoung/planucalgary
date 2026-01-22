@@ -214,5 +214,5 @@ export const deleteCourse: CourseDeleteHandler = async (req, res) => {
   await req.prisma.course.delete({
     where: { id: req.params.id },
   })
-  return res.json()
+  return res.sendStatus(204)
 }
