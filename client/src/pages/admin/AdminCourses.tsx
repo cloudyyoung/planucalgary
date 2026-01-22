@@ -6,6 +6,7 @@ import { Course } from "@planucalgary/shared/prisma/client";
 
 import { useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
+import { Input } from "@/components/ui/input";
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -97,12 +98,14 @@ export const AdminCourses = () => {
   })
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [keywords, setKeywords] = useState<string>("")
 
   const { data } = useCourses({
     offset: pagination.pageIndex * pagination.pageSize,
     limit: pagination.pageSize,
     sorting: sorting.length > 0 ? sorting.map(s => `${s.desc ? '-' : ''}${s.id}`) : undefined,
-    ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value]))
+    keywords,
+    ...Object.fromEntries(columnFilters.map(({ id, value }) => [id, value])),
   })
 
   const table = useReactTable({
@@ -126,7 +129,11 @@ export const AdminCourses = () => {
     },
   })
 
+  const Header = <>
+    <Input placeholder="Search courses..." className="max-w-sm bg-background" value={keywords} onChange={e => setKeywords(e.target.value)} />
+  </>
+
   return (
-    <AdvancedTable table={table} />
+    <AdvancedTable table={table} header={Header} />
   )
 }
