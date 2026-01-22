@@ -8,21 +8,20 @@ import { InvalidSyncDestinationError, RequisiteNotFoundError } from "./errors"
 
 export const listRequisites: RequisiteListHandler = async (req, res) => {
   const { id, requisite_type, text, sorting } = req.query
+  const whereConditions = {
+    ...(id && { id: { contains: id } }),
+    ...(requisite_type && { requisite_type }),
+    ...(text && { text: { contains: text } }),
+  }
   const [requisites, total, validate] = await Promise.all([
     req.prisma.requisiteJson.findMany({
-      where: {
-        ...(id && { id: { contains: id } }),
-        ...(requisite_type && { requisite_type }),
-        ...(text && { text: { contains: text } }),
-      },
+      where: whereConditions,
       orderBy: [...getSortings(sorting), { id: 'asc' }],
       skip: req.pagination.offset,
       take: req.pagination.limit,
     }),
     req.prisma.requisiteJson.count({
-      where: {
-        ...(requisite_type && { requisite_type }),
-      },
+      where: whereConditions,
     }),
     getValidator(),
   ])

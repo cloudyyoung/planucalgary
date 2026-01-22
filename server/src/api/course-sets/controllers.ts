@@ -3,22 +3,24 @@ import { CourseSetAlreadyExistsError, CourseSetNotFoundError } from "./errors";
 
 export const listCourseSets: CourseSetListHandler = async (req, res) => {
   const { type, id, course_set_group_id, name, description, csid, sorting } = req.query;
-
+  const whereConditions = {
+    ...(id && { id: { contains: id } }),
+    ...(type && { type }),
+    ...(course_set_group_id && { course_set_group_id: { contains: course_set_group_id } }),
+    ...(name && { name: { contains: name } }),
+    ...(description && { description: { contains: description } }),
+    ...(csid && { csid: { contains: csid } }),
+  }
   const [courseSets, total] = await Promise.all([
     req.prisma.courseSet.findMany({
-      where: {
-        ...(id && { id: { contains: id } }),
-        ...(type && { type }),
-        ...(course_set_group_id && { course_set_group_id: { contains: course_set_group_id } }),
-        ...(name && { name: { contains: name } }),
-        ...(description && { description: { contains: description } }),
-        ...(csid && { csid: { contains: csid } }),
-      },
+      where: whereConditions,
       orderBy: getSortings(sorting),
       skip: req.pagination.offset,
       take: req.pagination.limit,
     }),
-    req.prisma.courseSet.count(),
+    req.prisma.courseSet.count({
+      where: whereConditions,
+    }),
   ])
 
   return res.paginate(courseSets, total)
