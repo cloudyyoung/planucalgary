@@ -1,9 +1,9 @@
-import * as z from 'zod'
+import z from 'zod'
 import { type RequestHandler } from 'express';
 import { CourseTopicCreateSchema } from './course-topic'
 import { PaginatedRequestSchema, PaginatedResponse } from './pagination'
 import { IdInputSchema } from './id';
-import { getSortableColumns } from './sorting';
+import { getSortingReqQuerySchema } from './sorting';
 import { Course } from './generated/prisma/client';
 import { CourseScalarFieldEnumSchema, CourseCreateInputObjectZodSchema, CourseUpdateInputObjectZodSchema } from './generated/zod/schemas';
 
@@ -11,7 +11,7 @@ import { CourseScalarFieldEnumSchema, CourseCreateInputObjectZodSchema, CourseUp
 // List Courses
 export const CourseListReqQuerySchema = z.object({
     keywords: z.string().optional(),
-    sorting: z.enum(getSortableColumns(CourseScalarFieldEnumSchema.options)).array().optional(),
+    sorting: getSortingReqQuerySchema(CourseScalarFieldEnumSchema),
 }).extend(PaginatedRequestSchema.shape)
 export type CourseListReqQuery = z.infer<typeof CourseListReqQuerySchema>
 export type CourseListResBody = PaginatedResponse<Course>

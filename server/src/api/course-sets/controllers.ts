@@ -1,21 +1,20 @@
-import { Request, Response } from "express"
-import { ParamsDictionary } from "express-serve-static-core"
-import { CourseSetCreateHandler, CourseSetDeleteHandler, CourseSetGetHandler, CourseSetListHandler, CourseSetUpdateHandler } from "@planucalgary/shared"
+import { CourseSetCreateHandler, CourseSetDeleteHandler, CourseSetGetHandler, CourseSetListHandler, CourseSetUpdateHandler, getSortings } from "@planucalgary/shared"
 import { CourseSetAlreadyExistsError, CourseSetNotFoundError } from "./errors";
 
 export const listCourseSets: CourseSetListHandler = async (req, res) => {
-  const { type, id, course_set_group_id, name, description, csid } = req.query;
+  const { type, id, course_set_group_id, name, description, csid, sorting } = req.query;
 
   const [courseSets, total] = await Promise.all([
     req.prisma.courseSet.findMany({
       where: {
         ...(id && { id: { contains: id } }),
         ...(type && { type }),
-        ...(course_set_group_id && { course_set_group_id }),
+        ...(course_set_group_id && { course_set_group_id: { contains: course_set_group_id } }),
         ...(name && { name: { contains: name } }),
         ...(description && { description: { contains: description } }),
         ...(csid && { csid: { contains: csid } }),
       },
+      orderBy: getSortings(sorting),
       skip: req.pagination.offset,
       take: req.pagination.limit,
     }),

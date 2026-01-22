@@ -2,7 +2,7 @@ import * as z from "zod"
 import { type RequestHandler } from "express"
 import { IdInputSchema } from "./id"
 import { PaginatedRequestSchema, PaginatedResponse } from "./pagination"
-import { getSortableColumns } from "./sorting"
+import { getSortingReqQuerySchema } from "./sorting"
 import { RequisiteJson } from "./generated/prisma/client"
 import { RequisiteJsonScalarFieldEnumSchema, RequisiteTypeSchema, RequisiteJsonUpdateInputObjectZodSchema } from "./generated/zod/schemas"
 
@@ -24,7 +24,7 @@ export const RequisiteListReqQuerySchema = z.object({
     id: z.string().optional(),
     requisite_type: RequisiteTypeSchema.optional(),
     text: z.string().optional(),
-    sorting: z.enum(getSortableColumns(RequisiteJsonScalarFieldEnumSchema.options)).array().optional(),
+    sorting: getSortingReqQuerySchema(RequisiteJsonScalarFieldEnumSchema),
 }).extend(PaginatedRequestSchema.shape)
 export type RequisiteListReqQuery = z.infer<typeof RequisiteListReqQuerySchema>
 export type RequisiteListResBody = PaginatedResponse<RequisiteJson & RequisiteJsonValidation>

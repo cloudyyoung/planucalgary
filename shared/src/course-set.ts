@@ -3,7 +3,8 @@ import { RequestHandler } from "express";
 import { PaginatedRequestSchema, PaginatedResponse } from "./pagination";
 import { IdInputSchema } from "./id";
 import { CourseSet } from './generated/prisma/client';
-import { CourseSetCreateInputObjectZodSchema, CourseSetUpdateInputObjectZodSchema } from "./generated/zod/schemas";
+import { CourseSetCreateInputObjectZodSchema, CourseSetScalarFieldEnumSchema, CourseSetUpdateInputObjectZodSchema } from "./generated/zod/schemas";
+import { getSortingReqQuerySchema } from "./sorting";
 
 
 // List Course Sets
@@ -12,17 +13,18 @@ export enum CourseSetType {
     DYNAMIC = "dynamic",
 }
 export const CourseSetTypeSchema = z.enum(CourseSetType);
-export const CourseSetListQuerySchema = z.object({
+export const CourseSetListReqQuerySchema = z.object({
     id: z.string().optional(),
     type: CourseSetTypeSchema.optional(),
     course_set_group_id: z.string().optional(),
     name: z.string().optional(),
     description: z.string().optional(),
     csid: z.string().optional(),
+    sorting: getSortingReqQuerySchema(CourseSetScalarFieldEnumSchema),
 }).extend(PaginatedRequestSchema.shape);
-export type CourseSetListQuery = z.infer<typeof CourseSetListQuerySchema>;
+export type CourseSetListReqQuery = z.infer<typeof CourseSetListReqQuerySchema>;
 export type CourseSetListResBody = PaginatedResponse<CourseSet>;
-export type CourseSetListHandler = RequestHandler<never, CourseSetListResBody, never, CourseSetListQuery>;
+export type CourseSetListHandler = RequestHandler<never, CourseSetListResBody, never, CourseSetListReqQuery>;
 
 
 // Get Course Set
