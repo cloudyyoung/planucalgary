@@ -1,46 +1,69 @@
-import { Request, Response } from "express"
-import { ParamsDictionary } from "express-serve-static-core"
-import { DepartmentCreate, DepartmentUpdate } from "@planucalgary/shared"
+import { DepartmentCreateHandler, DepartmentDeleteHandler, DepartmentGetHandler, DepartmentListHandler, DepartmentUpdateHandler, getSortings } from "@planucalgary/shared"
+import { DepartmentAlreadyExistsError, DepartmentNotFoundError } from "./errors";
 
-export const listDepartments = async (req: Request, res: Response) => {
-  const faculties = await req.prisma.department.findMany()
-  return res.json(faculties)
+export const listDepartments: DepartmentListHandler = async (req, res) => {
+  const { id, name, display_name, code, is_active, sorting } = req.query;
+  const whereConditions = {
+    ...(id && { id: { contains: id } }),
+    ...(name && { name: { contains: name } }),
+    ...(display_name && { display_name: { contains: display_name } }),
+    ...(code && { code: { contains: code } }),
+    ...(is_active !== undefined && { is_active }),
+  }
+  const [departments, total] = await Promise.all([
+    req.prisma.department.findMany({
+      where: whereConditions,
+      orderBy: getSortings(sorting),
+      skip: req.pagination.offset,
+      take: req.pagination.limit,
+    }),
+    req.prisma.department.count({
+      where: whereConditions,
+    }),
+  ])
+
+  return res.paginate(departments, total)
 }
 
-export const getDepartment = async (req: Request, res: Response) => {
-  const fac = await req.prisma.department.findUnique({
-    where: { id: req.params.id },
-    include: {
-      faculties: true,
-      courses: true,
-    },
+export const getDepartment: DepartmentGetHandler = async (req, res) => {
+  const { id } = req.params;
+  const department = await req.prisma.department.findUnique({
+    where: { id },
   })
-  return res.json(fac)
+
+  if (!department) {
+    throw new DepartmentNotFoundError()
+  }
+
+  return res.json(department)
 }
 
-export const createDepartment = async (req: Request<ParamsDictionary, any, DepartmentCreate>, res: Response) => {
+export const createDepartment: DepartmentCreateHandler = async (req, res) => {
   const existing = await req.prisma.department.findFirst({
     where: { code: req.body.code },
   })
   if (existing) {
-    return res.status(403).json({ error: "Department already exists", existing })
+    throw new DepartmentAlreadyExistsError()
   }
 
-  const fac = await req.prisma.department.create({ data: req.body })
-  return res.json(fac)
+  const department = await req.prisma.department.create({
+    data: req.body,
+  })
+
+  return res.json(department)
 }
 
-export const updateDepartment = async (req: Request<ParamsDictionary, any, DepartmentUpdate>, res: Response) => {
-  const fac = await req.prisma.department.update({
+export const updateDepartment: DepartmentUpdateHandler = async (req, res) => {
+  const department = await req.prisma.department.update({
     where: { id: req.params.id },
     data: req.body,
   })
-  return res.json(fac)
+  return res.json(department)
 }
 
-export const deleteDepartment = async (req: Request, res: Response) => {
-  const fac = await req.prisma.department.delete({
+export const deleteDepartment: DepartmentDeleteHandler = async (req, res) => {
+  await req.prisma.department.delete({
     where: { id: req.params.id },
   })
-  return res.json(fac)
+  return res.sendStatus(204)
 }
