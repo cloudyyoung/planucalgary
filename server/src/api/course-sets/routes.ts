@@ -2,15 +2,15 @@ import { Router } from "express"
 
 import { createCourseSet, deleteCourseSet, getCourseSet, listCourseSets, updateCourseSet } from "./controllers"
 import { admin } from "../../middlewares/admin"
-import { IdInputSchema, zod } from "../../middlewares"
-import { CourseSetCreateSchema, CourseSetUpdateSchema } from "@planucalgary/shared"
+import { zod } from "../../middlewares"
+import { CourseSetCreateBodySchema, CourseSetDeleteParamsSchema, CourseSetGetParamsSchema, CourseSetUpdateBodySchema, CourseSetUpdateParamsSchema, } from "@planucalgary/shared"
 
 const router = Router()
 router.get("/", listCourseSets)
-router.get("/:id", zod({ params: IdInputSchema }), getCourseSet)
-router.post("/", admin(), zod({ body: CourseSetCreateSchema }), createCourseSet)
-router.put("/:id", admin(), zod({ params: IdInputSchema, body: CourseSetUpdateSchema }), updateCourseSet)
-router.delete("/:id", admin(), zod({ params: IdInputSchema }), deleteCourseSet)
+router.get("/:id", zod({ params: CourseSetGetParamsSchema }), getCourseSet)
+router.post("/", admin(), zod({ body: CourseSetCreateBodySchema }), createCourseSet)
+router.put("/:id", admin(), zod({ params: CourseSetUpdateParamsSchema, body: CourseSetUpdateBodySchema }), updateCourseSet)
+router.delete("/:id", admin(), zod({ params: CourseSetDeleteParamsSchema }), deleteCourseSet)
 
 export default router
 export { router }

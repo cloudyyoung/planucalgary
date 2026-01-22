@@ -5,7 +5,7 @@ export const PaginatedRequestSchema = z.object({
     limit: z.coerce.number().int().min(0).max(5000).optional(),
 }).loose()
 
-export type PaginatedRequest = z.infer<typeof PaginatedRequestSchema>
+export type PaginatedRequest<T> = z.infer<typeof PaginatedRequestSchema> & T
 
 export interface PaginatedResponse<T> {
     total: number
