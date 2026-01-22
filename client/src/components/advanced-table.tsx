@@ -1,6 +1,6 @@
 import { flexRender, type Table as TanStackTable, type Header, RowData } from "@tanstack/react-table"
 import { useRef, useEffect, useState } from "react"
-import { useThrottle } from "react-use"
+import { useDebounce } from "react-use"
 import {
   Select,
   SelectContent,
@@ -92,7 +92,9 @@ const AdvancedTableHeader = <T,>({ table, isFetching }: AdvancedTableHeaderProps
       {
         isFetching && (
           <tr className="absolute bottom-0 w-full">
-            <IndeterminateProgress />
+            <td>
+              <IndeterminateProgress />
+            </td>
           </tr>
         )
       }
@@ -106,23 +108,22 @@ interface AdvancedTableBodyProps<T> {
 
 const ColumnFilter = <T,>({ header }: { header: Header<T, unknown> }) => {
   const column = header.column;
-  const columnFilterValue = column.getFilterValue() as string | undefined;
-  const { filterVariant } = column.columnDef.meta ?? {}
+  const filterValue = column.getFilterValue() as (string | undefined)
+  const filterVariant = column.columnDef.meta?.filterVariant
+
+  const [value, setValue] = useState(filterValue ?? '');
+  const [debouncedValue, setDebouncedValue] = useState('');
+
+  useDebounce(() => {
+    setDebouncedValue(value);
+  }, 300, [value]);
+
+  useEffect(() => {
+    const filteredValue = debouncedValue === '' ? undefined : debouncedValue;
+    column.setFilterValue(filteredValue);
+  }, [column, debouncedValue]);
 
   if (filterVariant === 'text' || filterVariant === undefined) {
-    const [value, setValue] = useState(columnFilterValue);
-    const throttledValue = useThrottle(value, 1000);
-
-    useEffect(() => {
-      column.setFilterValue(throttledValue || undefined);
-    }, [column, throttledValue]);
-
-    useEffect(() => {
-      if (columnFilterValue !== value) {
-        setValue(columnFilterValue);
-      }
-    }, [columnFilterValue]);
-
     return (
       <Input
         value={value}
@@ -133,11 +134,10 @@ const ColumnFilter = <T,>({ header }: { header: Header<T, unknown> }) => {
     );
   } else if (filterVariant === 'select') {
     const options = column.columnDef.meta?.filterOptions as string[] | undefined || [];
-
     return (
       <Select
         defaultValue="all"
-        value={columnFilterValue}
+        value={filterValue ?? 'all'}
         onValueChange={(value) => column.setFilterValue(value === "all" ? undefined : value)}
       >
         <SelectTrigger className="h-8 text-sm font-normal w-full">

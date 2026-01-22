@@ -50,7 +50,6 @@ export const AdminCourseSets = () => {
       enableColumnFilter: true,
       enableSorting: true,
     },
-
     {
       id: "json",
       header: "JSON",
