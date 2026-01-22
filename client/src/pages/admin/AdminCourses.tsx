@@ -18,15 +18,15 @@ export const columns: ColumnDef<Course>[] = [
     cell: ({ cell }) => {
       const code = cell.getValue<string>()
       return <span className="font-mono">{code}</span>
-    }
+    },
   },
   {
     accessorKey: "course_number",
     header: "Course Number",
     cell: ({ cell }) => {
-      const code = cell.getValue<string>()
-      return <span className="font-mono">{code}</span>
-    }
+      const number = cell.getValue<string>()
+      return <span className="font-mono">{number}</span>
+    },
   },
   {
     accessorKey: "prereq",
@@ -40,7 +40,7 @@ export const columns: ColumnDef<Course>[] = [
     cell: ({ cell }) => {
       const json = JSON.stringify(cell.getValue<any>())
       return <JSONPretty data={json} />
-    }
+    },
   },
   {
     accessorKey: "antireq",
@@ -54,7 +54,7 @@ export const columns: ColumnDef<Course>[] = [
     cell: ({ cell }) => {
       const json = JSON.stringify(cell.getValue<any>())
       return <JSONPretty data={json} />
-    }
+    },
   },
   {
     accessorKey: "coreq",
@@ -68,7 +68,7 @@ export const columns: ColumnDef<Course>[] = [
     cell: ({ cell }) => {
       const json = JSON.stringify(cell.getValue<any>())
       return <JSONPretty data={json} />
-    }
+    },
   },
   {
     accessorKey: 'updated_at',

@@ -49,6 +49,10 @@ export const AdminCourseSets = () => {
       size: 200,
       enableColumnFilter: true,
       enableSorting: true,
+      cell: ({ cell }) => {
+        const group_id = cell.getValue<string>()
+        return <span className="font-mono">{group_id}</span>
+      },
     },
     {
       id: "json",
@@ -78,6 +82,10 @@ export const AdminCourseSets = () => {
       header: "CSID",
       enableColumnFilter: true,
       enableSorting: true,
+      cell: ({ cell }) => {
+        const csid = cell.getValue<string>()
+        return <span className="font-mono">{csid}</span>
+      },
     },
     {
       accessorKey: 'updated_at',
