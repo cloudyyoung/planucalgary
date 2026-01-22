@@ -91,8 +91,8 @@ const AdvancedTableHeader = <T,>({ table, isFetching }: AdvancedTableHeaderProps
       ))}
       {
         isFetching && (
-          <tr className="absolute bottom-0 w-full">
-            <td>
+          <tr>
+            <td className="absolute bottom-0 w-full">
               <IndeterminateProgress />
             </td>
           </tr>
