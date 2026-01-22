@@ -1,61 +1,46 @@
 import * as z from "zod"
-import { CareerSchema } from "./generated/zod/schemas"
+import { RequestHandler } from "express"
+import { PaginatedRequestSchema, PaginatedResponse } from "./pagination"
+import { IdInputSchema } from "./id"
+import { Program } from './generated/prisma/client'
+import { CareerSchema, ProgramCreateInputObjectZodSchema, ProgramScalarFieldEnumSchema, ProgramUpdateInputObjectZodSchema } from "./generated/zod/schemas"
+import { getSortingReqQuerySchema } from "./sorting"
 
-export const ProgramStartTermSchema = z.object({
-    start_term: z
-        .object({
-            year: z.number(),
-            term: z.enum(["WINTER", "SPRING", "SUMMER", "FALL"]).nullable(),
-        })
-        .nullable(),
-})
+// List Programs
+export const ProgramListReqQuerySchema = z.object({
+    id: z.string().optional(),
+    code: z.string().optional(),
+    name: z.string().optional(),
+    pid: z.string().optional(),
+    is_active: z.coerce.boolean().optional(),
+    sorting: getSortingReqQuerySchema(ProgramScalarFieldEnumSchema),
+}).extend(PaginatedRequestSchema.shape);
+export type ProgramListReqQuery = z.infer<typeof ProgramListReqQuerySchema>;
+export type ProgramListResBody = PaginatedResponse<Program>;
+export type ProgramListHandler = RequestHandler<never, ProgramListResBody, never, ProgramListReqQuery>;
 
-export type ProgramStartTerm = z.infer<typeof ProgramStartTermSchema>
 
-export const ProgramCreateSchema = z.object({
-    pid: z.string(),
-    coursedog_id: z.string(),
-    program_group_id: z.string(),
-    code: z.string(),
-    name: z.string(),
-    long_name: z.string(),
-    display_name: z.string(),
-    type: z.string(),
-    degree_designation_code: z.string().optional(),
-    degree_designation_name: z.string().optional(),
-    career: CareerSchema,
-    admission_info: z.string().optional(),
-    general_info: z.string().optional(),
-    transcript_level: z.int().optional(),
-    transcript_description: z.string().optional(),
-    requisites: z.any().optional(),
-    is_active: z.boolean(),
-    start_term: ProgramStartTermSchema.optional(),
-    program_created_at: z.date(),
-    program_effective_start_date: z.date(),
-    program_last_updated_at: z.date(),
-    version: z.int(),
-})
+// Get Program
+export const ProgramGetParamsSchema = IdInputSchema
+export type ProgramGetParams = z.infer<typeof ProgramGetParamsSchema>;
+export type ProgramGetHandler = RequestHandler<ProgramGetParams, Program, never, never>;
 
-export type ProgramCreate = z.infer<typeof ProgramCreateSchema>
 
-export const ProgramUpdateSchema = ProgramCreateSchema.partial()
+// Create Program
+export const ProgramCreateBodySchema = ProgramCreateInputObjectZodSchema
+export type ProgramCreateBody = z.infer<typeof ProgramCreateBodySchema>;
+export type ProgramCreateHandler = RequestHandler<never, Program, ProgramCreateBody, never>;
 
-export type ProgramUpdate = z.infer<typeof ProgramUpdateSchema>
 
-export const ProgramCreateRelationsSchema = z.object({
-    departments: z.array(z.string()),
-    faculties: z.array(z.string()),
-})
+// Update Program
+export const ProgramUpdateParamsSchema = IdInputSchema
+export type ProgramUpdateParams = z.infer<typeof ProgramUpdateParamsSchema>;
+export const ProgramUpdateBodySchema = ProgramUpdateInputObjectZodSchema
+export type ProgramUpdateBody = z.infer<typeof ProgramUpdateBodySchema>;
+export type ProgramUpdateHandler = RequestHandler<ProgramUpdateParams, Program, ProgramUpdateBody, never>;
 
-export type ProgramCreateRelations = z.infer<typeof ProgramCreateRelationsSchema>
 
-export const ProgramUpdateRelationsSchema = ProgramCreateRelationsSchema.partial()
-
-export type ProgramUpdateRelations = z.infer<typeof ProgramUpdateRelationsSchema>
-
-export const ProgramListSchema = z.object({
-    keywords: z.string().optional(),
-})
-
-export type ProgramList = z.infer<typeof ProgramListSchema>
+// Delete Program
+export const ProgramDeleteParamsSchema = IdInputSchema
+export type ProgramDeleteParams = z.infer<typeof ProgramDeleteParamsSchema>;
+export type ProgramDeleteHandler = RequestHandler<ProgramDeleteParams, void, never, never>;

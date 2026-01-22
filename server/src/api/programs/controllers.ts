@@ -1,131 +1,70 @@
-import { Request, Response } from "express"
-import { ParamsDictionary } from "express-serve-static-core"
-import { ProgramCreate, ProgramUpdate, ProgramCreateRelations, ProgramUpdateRelations, ProgramList, ProgramStartTerm } from "@planucalgary/shared"
-import { IdInput } from "../../middlewares"
-import { Program, Prisma } from "@prisma/client"
+import { ProgramCreateHandler, ProgramDeleteHandler, ProgramGetHandler, ProgramListHandler, ProgramListReqQuerySchema, ProgramUpdateHandler, getSortings } from "@planucalgary/shared"
+import { ProgramAlreadyExistsError, ProgramNotFoundError } from "./errors"
 
-export const listPrograms = async (req: Request<any, any, any, ProgramList>, res: Response) => {
-  const keywords = req.query.keywords
-  const offset = req.pagination.offset
-  const limit = req.pagination.limit
-  const is_admin = req.account?.is_admin === true
-
-  const getSelectStatement = () => {
-    const fields = [
-      "id",
-      "pid",
-      "code",
-      "name",
-      "long_name",
-      "display_name",
-      "type",
-      "degree_designation_code",
-      "degree_designation_name",
-      "career",
-      "is_active",
-      "start_term",
-    ]
-
-    if (is_admin) {
-      fields.push("requisites")
-    }
-
-    return Prisma.sql`select ${Prisma.join(
-      fields.map((field) => Prisma.sql`${Prisma.raw(field)}`),
-      ", ",
-    )} from "catalog"."programs"`
+export const listPrograms: ProgramListHandler = async (req, res) => {
+  const { id, code, name, pid, is_active, sorting } = ProgramListReqQuerySchema.parse(req.query);
+  const whereConditions = {
+    ...(id && { id: { contains: id } }),
+    ...(code && { code: { contains: code } }),
+    ...(name && { name: { contains: name } }),
+    ...(pid && { pid: { contains: pid } }),
+    ...(is_active !== undefined && { is_active }),
   }
-
-  const getWhereStatement = () => {
-    const whereSegments = []
-    if (keywords) {
-      whereSegments.push(Prisma.sql`search_vector @@ plainto_tsquery('english', ${keywords})`)
-    }
-
-    if (whereSegments.length === 0) {
-      return Prisma.empty
-    }
-    return Prisma.sql`where ${Prisma.join(whereSegments, " and ")}`
-  }
-
-  const selectStatement = getSelectStatement()
-  const whereStatement = getWhereStatement()
-
-  const queryString = Prisma.sql`
-      ${selectStatement}
-      ${whereStatement}
-      offset ${offset}
-      limit ${limit}
-    `
-  const totalQueryString = Prisma.sql`select count(*)::int from "catalog"."programs" ${whereStatement}`
-
-  const [programs, totalResult] = await Promise.all([
-    await req.prisma.$queryRaw<Program[]>(queryString),
-    await req.prisma.$queryRaw<[{ count: number }]>(totalQueryString),
+  const [programs, total] = await Promise.all([
+    req.prisma.program.findMany({
+      where: whereConditions,
+      orderBy: getSortings(sorting),
+      skip: req.pagination.offset,
+      take: req.pagination.limit,
+    }),
+    req.prisma.program.count({
+      where: whereConditions,
+    }),
   ])
-  const total = totalResult[0].count
 
   return res.paginate(programs, total)
 }
 
-export const getProgram = async (req: Request<IdInput>, res: Response) => {
+export const getProgram: ProgramGetHandler = async (req, res) => {
+  const { id } = req.params;
   const program = await req.prisma.program.findUnique({
-    where: { id: req.params.id },
-    include: {
-      departments: true,
-      faculties: true,
-    },
+    where: { id },
   })
+
+  if (!program) {
+    throw new ProgramNotFoundError()
+  }
+
   return res.json(program)
 }
 
-export const createProgram = async (
-  req: Request<ParamsDictionary, any, ProgramCreate & ProgramStartTerm & ProgramCreateRelations>,
-  res: Response,
-) => {
+export const createProgram: ProgramCreateHandler = async (req, res) => {
   const existing = await req.prisma.program.findFirst({
-    where: { pid: req.body.pid },
+    where: { pid: req.body.pid as string },
   })
   if (existing) {
-    return res.status(403).json({ error: "Program with the given pid already exists", existing })
+    throw new ProgramAlreadyExistsError()
   }
 
   const program = await req.prisma.program.create({
-    data: {
-      ...req.body,
-      departments: {
-        connect: req.body.departments.map((code: string) => ({ code })),
-      },
-      faculties: {
-        connect: req.body.faculties.map((code: string) => ({ code })),
-      },
-    },
+    data: req.body as any,
   })
+
   return res.json(program)
 }
 
-export const updateProgram = async (
-  req: Request<ParamsDictionary, any, ProgramUpdate & ProgramStartTerm & ProgramUpdateRelations>,
-  res: Response,
-) => {
+export const updateProgram: ProgramUpdateHandler = async (req, res) => {
   const program = await req.prisma.program.update({
     where: { id: req.params.id },
-    data: {
-      ...req.body,
-      departments: {
-        connect: req.body.departments?.map((code: string) => ({ code })),
-      },
-      faculties: {
-        connect: req.body.faculties?.map((code: string) => ({ code })),
-      },
-    },
+    data: req.body as any,
   })
   return res.json(program)
 }
 
-export const deleteProgram = async (req: Request<IdInput>, res: Response) => {
-  const program = await req.prisma.program.delete({
+export const deleteProgram: ProgramDeleteHandler = async (req, res) => {
+  await req.prisma.program.delete({
     where: { id: req.params.id },
   })
-  return res.json(program)
+  return res.sendStatus(204)
 }
+

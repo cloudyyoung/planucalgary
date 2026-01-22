@@ -18,8 +18,13 @@ import { IndeterminateProgress } from "./ui/indeterminate-progress";
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     filterVariant?: 'text' | 'range' | 'select'
-    filterOptions?: TValue[]
+    filterOptions?: TValue[] | FilterOption[]
   }
+}
+
+export type FilterOption = {
+  label: string;
+  value: string;
 }
 
 interface TableHeaderCellProps<T> {
@@ -106,7 +111,7 @@ interface AdvancedTableBodyProps<T> {
   table: TanStackTable<T>;
 }
 
-const ColumnFilter = <T,>({ header }: { header: Header<T, unknown> }) => {
+const ColumnFilter = <T, TValue>({ header }: { header: Header<T, unknown> }) => {
   const column = header.column;
   const filterValue = column.getFilterValue() as (string | undefined)
   const filterVariant = column.columnDef.meta?.filterVariant
@@ -133,7 +138,12 @@ const ColumnFilter = <T,>({ header }: { header: Header<T, unknown> }) => {
       />
     );
   } else if (filterVariant === 'select') {
-    const options = column.columnDef.meta?.filterOptions as string[] | undefined || [];
+    const options = column.columnDef.meta?.filterOptions as (TValue[] | FilterOption[]) ?? [];
+
+    const isFilterOption = (opt: any): opt is FilterOption => {
+      return typeof opt === 'object' && 'label' in opt && 'value' in opt;
+    }
+
     return (
       <Select
         defaultValue="all"
@@ -147,11 +157,15 @@ const ColumnFilter = <T,>({ header }: { header: Header<T, unknown> }) => {
           <SelectItem value="all">
             All
           </SelectItem>
-          {options.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
+          {options.map((option) => {
+            const value = isFilterOption(option) ? option.value : String(option);
+            const label = isFilterOption(option) ? option.label : String(option);
+            return (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            );
+          })}
         </SelectContent>
       </Select>
     );

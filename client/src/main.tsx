@@ -17,6 +17,7 @@ import { AdminCourseSets } from './pages/admin/AdminCourseSets';
 import { AdminSubjects } from './pages/admin/AdminSubjects';
 import { AdminDepartments } from './pages/admin/AdminDepartments';
 import { AdminFaculties } from './pages/admin/AdminFaculties';
+import { AdminPrograms } from './pages/admin/AdminPrograms';
 
 
 const router = createBrowserRouter([
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       { path: "/admin/subjects", element: <AdminSubjects /> },
       { path: "/admin/departments", element: <AdminDepartments /> },
       { path: "/admin/faculties", element: <AdminFaculties /> },
+      { path: "/admin/programs", element: <AdminPrograms /> },
       { path: "/admin/requisites", element: <AdminRequisites /> },
     ],
   }
