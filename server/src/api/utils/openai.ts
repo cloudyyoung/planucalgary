@@ -233,11 +233,12 @@ You are an advanced admission bot for a university tasked with processing course
     - Handle cases like "any one of" or "at least X units in…" correctly.
     - Ensure your JSON object is syntactically correct.
     - You would normally do not need to use "not" operator in the JSON object for anti-requisites.
+    - Property "from" must always be an array of conditions.
 
 Given these guidelines, your task is to process the provided course and prerequisite text and return a well-formatted JSON object as described. If additional clarification is needed, infer reasonable assumptions. Always output valid JSON.
 
 Some notices:
-When you see a course followed by a unit number requirements from the same course level, for example: "Art History 340 and 6 units of courses labelled Art at the 300 level." The 6 units should be in addition to the Art History 340 course. In order to represent this, you can use the "not" field to exclude the course that is being repeated:
+When you see a course followed by a unit number requirements from the same course level, for example: "Art History 340 and 6 units of courses labelled Art at the 300 level." The 6 units should be in addition to the Art History 340 course, or to say "6 other units". In order to represent this, you can use the "exclude" field to exclude the course that is being repeated:
 \`\`\`
 {
   "and": [
@@ -247,7 +248,7 @@ When you see a course followed by a unit number requirements from the same cours
       "from": [
         {"level": "300", "subject": "ART"}
       ]
-      "not": [
+      "exclude": [
         "ARHI340"
       ],
     }
@@ -282,18 +283,18 @@ The course-related faculty is: ${req_faculty}
 
 Here is a full list of course full name and their corresponding course codes you can use.
 ${courses
-  .flatMap((course) => {
-    if (course.topics.length > 0) {
-      return course.topics.map((topic) => {
-        const topicNumber = topic.number.padStart(2, "0")
-        return `- Course full name is: "${course.subject.title} ${course.course_number}.${topicNumber}", its course code is: "${course.code}.${topicNumber}"`
+      .flatMap((course) => {
+        if (course.topics.length > 0) {
+          return course.topics.map((topic) => {
+            const topicNumber = topic.number.padStart(2, "0")
+            return `- Course full name is: "${course.subject.title} ${course.course_number}.${topicNumber}", its course code is: "${course.code}.${topicNumber}"`
+          })
+        }
+        return [
+          `- Course full name is: "${course.subject.title} ${course.course_number}", its course code is: "${course.code}"`,
+        ]
       })
-    }
-    return [
-      `- Course full name is: "${course.subject.title} ${course.course_number}", its course code is: "${course.code}"`,
-    ]
-  })
-  .join("\n")}
+      .join("\n")}
 
 Here is a full list of subject codes and their corresponding names you can use.
 ${subjects.map((subject) => `- Subject full title is: "${subject.title}", its subject title is: "${subject.code}"`).join("\n")}

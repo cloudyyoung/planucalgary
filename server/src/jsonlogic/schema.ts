@@ -68,7 +68,7 @@ export const getSchema = () => {
           units: {
             type: "object",
             description: "X units",
-            required: ["units", "from", "not"],
+            required: ["units", "from", "include", "exclude"],
             additionalProperties: false,
             properties: {
               units: { type: "number", description: "X units", additionalProperties: false },
@@ -86,7 +86,21 @@ export const getSchema = () => {
                   { type: "null" },
                 ],
               },
-              not: {
+              include: {
+                description:
+                  "Include a list of courses when counting units. This field is usually used when the requisite says some additional units must be taken besides the previously named courses",
+                additionalProperties: false,
+                anyOf: [
+                  {
+                    type: "array",
+                    items: {
+                      anyOf: [{ type: "string", description: "A course code" }, { $ref: "#/$defs/dynamic_course" }],
+                    },
+                  },
+                  { type: "null" },
+                ],
+              },
+              exclude: {
                 description:
                   "Exclude a list of courses when counting units. This field is usually used when the requisite says some additional units besides the previously named courses",
                 additionalProperties: false,

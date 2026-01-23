@@ -42,7 +42,8 @@ If the boolean is `true`, return `false`. Otherwise, return `true`.
 Accepts:
 
 - `units`: the number of units to satisfy
-- `from`: an array of courses that represent the units that the units must be taken from
+- `from`: an array of conditions that represent the units that the units must be taken from
+- `include`: an array of courses that represent the units that the units must be taken from
 - `exclude`: an array of courses that represent the units that the units cannot be taken from
 - `field`: a field of study that the units must satisfy
 - `level`: a level of course number that the units must satisfy
@@ -53,11 +54,12 @@ If the number of units that satisfies all the properties is greater than or equa
 ```
 {
     "units": number,
-    "from": Course[] | null,
-    "exclude": Course[] | null,
-    "field": string | null,
-    "level": Level | null,
-    "subject": Subject | null,
+    "from": any[],
+    "include": Course[],
+    "exclude": Course[],
+    "field": string,
+    "level": Level,
+    "subject": Subject,
 }
 ```
 
@@ -125,15 +127,15 @@ Defines a program.
 ```
 
 {
-    "program": string | null,
-    "faculty": Faculty | null,
-    "department": Department | null,
-    "honours": boolean | null,
-    "type": "major" | "minor" | "concentration" | null,
+    "program": string,
+    "faculty": Faculty,
+    "department": Department,
+    "honours": boolean,
+    "type": "major" | "minor" | "concentration",
     "degree": string,
-    "career": "undergraduate" | "graduate" | "doctoral" | null
-    "year": Year | null
-    "gpa": number | null
+    "career": "undergraduate" | "graduate" | "doctoral"
+    "year": Year
+    "gpa": number
 }
 
 ```
