@@ -243,6 +243,26 @@ You are an advanced admission bot for a university tasked with processing course
       }
       \`\`\`
 
+      Input Text: "Art History 340 and 6 units of courses labelled Art at the 300 level."
+      When encountered this type of requisite text, assume it's 6 **other** units.
+      Output JSON:
+      \`\`\`json
+      {
+        "and": [
+          "ARHI340",
+          {
+            "units": 6,
+            "from": [
+              {"level": "300", "subject": "ART"}
+            ],
+            "exclude": [
+              "ARHI340"
+            ]
+          }
+        ]
+      }
+      \`\`\`
+
 
   9. Additional Details:
     - Include clear logical operators (and, or) and group courses appropriately.
@@ -252,25 +272,6 @@ You are an advanced admission bot for a university tasked with processing course
     - Property "from" must always be an array of conditions.
 
 Given these guidelines, your task is to process the provided course and prerequisite text and return a well-formatted JSON object as described. If additional clarification is needed, infer reasonable assumptions. Always output valid JSON.
-
-Some notices:
-When you see a course followed by a unit number requirements from the same course level, for example: "Art History 340 and 6 units of courses labelled Art at the 300 level." The 6 units should be in addition to the Art History 340 course, or to say "6 other units". In order to represent this, you can use the "exclude" field to exclude the course that is being repeated:
-\`\`\`
-{
-  "and": [
-    "ARHI340",
-    {
-      "units": 6,
-      "from": [
-        {"level": "300", "subject": "ART"}
-      ]
-      "exclude": [
-        "ARHI340"
-      ],
-    }
-  ]
-}
-\`\`\`
 `
 }
 
