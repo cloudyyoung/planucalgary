@@ -352,7 +352,7 @@ export const getValidator = async () => {
 
         if (courseOnly) {
           const results = and_arguments.map(
-            (c) => operator_validators.course(c) || operator_validators.dynamic_course(c),
+            (c) => operator_validators.course(c) || operator_validators.dynamic_course(c) || operator_validators.and(c, true) || operator_validators.or(c, true) || operator_validators.not(c, true)
           )
           return results.every(bool)
         }
@@ -380,7 +380,7 @@ export const getValidator = async () => {
 
         if (courseOnly) {
           const results = or_arguments.map(
-            (c) => operator_validators.course(c) || operator_validators.dynamic_course(c),
+            (c) => operator_validators.course(c) || operator_validators.dynamic_course(c) || operator_validators.and(c, true) || operator_validators.or(c, true) || operator_validators.not(c, true)
           )
           return results.every(bool)
         }
@@ -448,7 +448,8 @@ export const getValidator = async () => {
               operator_validators.course(c) ||
               operator_validators.dynamic_course(c) ||
               operator_validators.and(c, true) ||
-              operator_validators.or(c, true),
+              operator_validators.or(c, true) ||
+              operator_validators.not(c, true),
           )
           if (!results.every(bool)) {
             errors.push({ message: "Property 'include' must be an array of courses, got alien element(s)", value: obj })
@@ -468,7 +469,8 @@ export const getValidator = async () => {
               operator_validators.course(c) ||
               operator_validators.dynamic_course(c) ||
               operator_validators.and(c, true) ||
-              operator_validators.or(c, true),
+              operator_validators.or(c, true) ||
+              operator_validators.not(c, true),
           )
           if (!results.every(bool)) {
             errors.push({ message: "Property 'exclude' must be an array of courses, got alien element(s)", value: obj })
