@@ -227,6 +227,22 @@ You are an advanced admission bot for a university tasked with processing course
       }
       \`\`\`
 
+      Input Text: "	24 units including Accounting 217 or 301."
+      Output JSON:
+      \`\`\`json
+      {
+        "units": 24,
+        "include": [
+          {
+            "or": [
+              "ACCT217",
+              "ACCT301"
+            ]
+          }
+        ]
+      }
+      \`\`\`
+
 
   9. Additional Details:
     - Include clear logical operators (and, or) and group courses appropriately.
