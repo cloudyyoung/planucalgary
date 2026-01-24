@@ -51,7 +51,7 @@ export const useRequisitesSync = () => {
     mutationFn: async (destination: RequisitesSyncDestination) => {
       const response = await api.post<RequisitesSyncResBody>('/requisites/sync', {
         destination,
-      }, { timeout: 60000 })
+      }, { timeout: 1_200_000 })
       return response.data
     },
     onSuccess: () => {
