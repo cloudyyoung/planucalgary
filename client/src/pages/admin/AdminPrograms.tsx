@@ -2,6 +2,7 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import { Program } from "@planucalgary/shared/prisma/client";
+import JSONPretty from "react-json-pretty";
 
 import AdvancedTable from "@/components/advanced-table";
 import { usePrograms } from "@/hooks/usePrograms";
@@ -73,6 +74,17 @@ export const AdminPrograms = () => {
                     { label: "Yes", value: "true" },
                     { label: "No", value: "false" },
                 ],
+            },
+        },
+        {
+            accessorKey: 'requisites',
+            header: 'Requisites',
+            size: 2000,
+            cell: ({ cell }) => {
+                const requisites = cell.getValue<string>()
+                return <div className="overflow-hidden text-wrap break-all">
+                    <JSONPretty data={JSON.stringify(requisites)} />
+                </div>
             },
         },
         {
