@@ -55,7 +55,7 @@ export const AdminCourseSets = () => {
       },
     },
     {
-      id: "json",
+      accessorKey: "json",
       header: "JSON",
       size: 600,
       cell: ({ cell }) => {
