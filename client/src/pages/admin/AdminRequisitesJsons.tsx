@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 
 
-export const AdminRequisites = () => {
+export const AdminRequisitesJsons = () => {
   const monaco = useMonaco();
 
   useEffect(() => {

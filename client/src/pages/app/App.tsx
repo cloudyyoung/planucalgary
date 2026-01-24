@@ -60,8 +60,8 @@ const adminMenuItems = [
     url: "admin/programs",
   },
   {
-    title: "Requisites",
-    url: "admin/requisites",
+    title: "Requisites Jsons",
+    url: "admin/requisites-jsons",
   },
 ]
 

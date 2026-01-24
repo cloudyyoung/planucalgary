@@ -12,7 +12,7 @@ import { queryClient } from './api';
 import { App } from '@/pages/app/App'
 import { Courses } from '@/pages/courses/Courses';
 import { AdminCourses } from './pages/admin/AdminCourses';
-import { AdminRequisites } from './pages/admin/AdminRequisites';
+import { AdminRequisitesJsons } from './pages/admin/AdminRequisitesJsons';
 import { AdminCourseSets } from './pages/admin/AdminCourseSets';
 import { AdminSubjects } from './pages/admin/AdminSubjects';
 import { AdminDepartments } from './pages/admin/AdminDepartments';
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
       { path: "/admin/departments", element: <AdminDepartments /> },
       { path: "/admin/faculties", element: <AdminFaculties /> },
       { path: "/admin/programs", element: <AdminPrograms /> },
-      { path: "/admin/requisites", element: <AdminRequisites /> },
+      { path: "/admin/requisites-jsons", element: <AdminRequisitesJsons /> },
     ],
   }
 ]);
