@@ -215,31 +215,37 @@ export const toCourseSets: RequisitesSyncHandler = async (req, res) => {
     req.prisma.requisiteJson.findMany(),
   ])
 
-  const course_set_updates = courseSets.flatMap((courseSet) => {
-    const { id, name } = courseSet
+  const result = await req.prisma.$transaction(
+    async (tx) => {
+      const updates = courseSets.flatMap((courseSet) => {
+        const { id, name } = courseSet
 
-    const requisite = requisitesJsons.find(
-      (r) =>
-        r.requisite_type === RequisiteType.COURSE_SET &&
-        r.text === name &&
-        _.isEmpty(r.departments) &&
-        _.isEmpty(r.faculties),
-    )
+        const requisite = requisitesJsons.find(
+          (r) =>
+            r.requisite_type === RequisiteType.COURSE_SET &&
+            r.text === name &&
+            _.isEmpty(r.departments) &&
+            _.isEmpty(r.faculties),
+        )
 
-    if (!requisite) return []
-    if (!validate(requisite.json)) return []
+        if (!requisite) return []
+        if (!validate(requisite.json)) return []
 
-    return [
-      req.prisma.courseSet.update({
-        where: { id },
-        data: {
-          json: requisite.json ?? undefined,
-        },
-      }),
-    ]
-  })
+        return [
+          tx.courseSet.update({
+            where: { id },
+            data: { json: requisite.json as any },
+          }),
+        ]
+      })
 
-  const result = await req.prisma.$transaction(course_set_updates)
+      return Promise.all(updates)
+    },
+    {
+      timeout: 1_200_000,
+      maxWait: 1_200_000,
+    },
+  )
   const count = result.filter((r) => r !== null).length
 
   return res.json({
