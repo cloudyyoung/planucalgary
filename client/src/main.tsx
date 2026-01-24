@@ -27,6 +27,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "/courses", element: <Courses /> },
+      { path: "/requisite-sets", element: <AdminRequisiteSets /> },
       { path: "/admin/courses", element: <AdminCourses /> },
       { path: "/admin/course-sets", element: <AdminCourseSets /> },
       { path: "/admin/requisite-sets", element: <AdminRequisiteSets /> },

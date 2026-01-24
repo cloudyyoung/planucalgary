@@ -32,6 +32,10 @@ const menuItems = [
     title: "Courses",
     url: "courses",
   },
+  {
+    title: "Requisite Sets",
+    url: "requisite-sets",
+  },
 ]
 
 const adminMenuItems = [
