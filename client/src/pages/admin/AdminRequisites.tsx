@@ -181,7 +181,7 @@ export const AdminRequisites = () => {
                             folding: true,
                             automaticLayout: true,
                           }}
-                          className="font-mono !leading-[1.3] border rounded w-full"
+                          className="border rounded w-full"
                         />
                       </div>
                     </DialogDescription>
