@@ -52,6 +52,7 @@ export const createCourseSet: CourseSetCreateHandler = async (req, res) => {
     data: {
       ...req.body,
       json: req.body.json as any,
+      raw_json: req.body.raw_json as any,
     },
   })
 
@@ -64,6 +65,7 @@ export const updateCourseSet: CourseSetUpdateHandler = async (req, res) => {
     data: {
       ...req.body,
       json: req.body.json as any,
+      raw_json: req.body.raw_json as any,
     },
   })
   return res.json(courseSet)

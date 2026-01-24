@@ -22,7 +22,6 @@ export const listRequisiteSets: RequisiteSetListHandler = async (req, res) => {
             where: whereConditions,
         }),
     ])
-    console.log(whereConditions)
 
     return res.paginate(requisiteSets, total)
 }
@@ -52,6 +51,7 @@ export const createRequisiteSet: RequisiteSetCreateHandler = async (req, res) =>
         data: {
             ...req.body,
             json: req.body.json as any,
+            raw_json: req.body.raw_json as any,
         },
     })
 
@@ -64,6 +64,7 @@ export const updateRequisiteSet: RequisiteSetUpdateHandler = async (req, res) =>
         data: {
             ...req.body,
             json: req.body.json as any,
+            raw_json: req.body.raw_json as any,
         },
     })
     return res.json(requisiteSet)
