@@ -44,6 +44,10 @@ const adminMenuItems = [
     url: "admin/course-sets",
   },
   {
+    title: "Requisite Sets",
+    url: "admin/requisite-sets",
+  },
+  {
     title: "Subjects",
     url: "admin/subjects",
   },
