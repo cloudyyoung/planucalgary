@@ -129,7 +129,7 @@ export const AdminRequisites = () => {
                       <div className="max-h-[30vh] max-w-4xl overflow-auto flex flex-row px-6 -mx-6">
                         {
                           jsonChoices.map((choice, index) => (
-                            <Button key={index} variant="ghost" className="h-full min-h-20 text-left justify-start w-full" onClick={() => onClickJsonChoice(choice)}>
+                            <Button key={index} variant="ghost" className="h-full min-h-20 text-left justify-start w-full text-xs" onClick={() => onClickJsonChoice(choice)}>
                               <JSONPretty data={choice} />
                             </Button>
                           ))
@@ -140,14 +140,13 @@ export const AdminRequisites = () => {
                           <Bot /> Generate Choices
                         </StatefulButton>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 h-[40vh]">
+                      <div className="h-[40vh]">
                         <Editor
                           defaultLanguage="json"
                           value={jsonEdit}
                           onChange={(value) => setJsonEdit(value || "")}
-                          className="font-mono !leading-[1.3] border rounded"
+                          className="font-mono !leading-[1.3] border rounded w-full"
                         />
-                        <JSONPretty data={jsonEdit} className="p-2 mb-1" />
                       </div>
                     </DialogDescription>
                   </DialogHeader>
