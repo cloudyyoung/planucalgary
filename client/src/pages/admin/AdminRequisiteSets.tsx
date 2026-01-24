@@ -33,6 +33,16 @@ export const AdminRequisiteSets = () => {
             enableColumnFilter: true,
         },
         {
+            accessorKey: "csid",
+            header: "CSID",
+            enableColumnFilter: true,
+            enableSorting: true,
+            cell: ({ cell }) => {
+                const csid = cell.getValue<string>()
+                return <span className="font-mono">{csid}</span>
+            },
+        },
+        {
             accessorKey: "requisite_set_group_id",
             header: "Requisite Set Group ID",
             size: 200,
@@ -71,16 +81,6 @@ export const AdminRequisiteSets = () => {
             size: 500,
             enableColumnFilter: true,
             enableSorting: true,
-        },
-        {
-            accessorKey: "csid",
-            header: "CSID",
-            enableColumnFilter: true,
-            enableSorting: true,
-            cell: ({ cell }) => {
-                const csid = cell.getValue<string>()
-                return <span className="font-mono">{csid}</span>
-            },
         },
         {
             accessorKey: 'updated_at',

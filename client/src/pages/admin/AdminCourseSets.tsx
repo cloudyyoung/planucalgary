@@ -34,6 +34,16 @@ export const AdminCourseSets = () => {
       enableColumnFilter: true,
     },
     {
+      accessorKey: "csid",
+      header: "CSID",
+      enableColumnFilter: true,
+      enableSorting: true,
+      cell: ({ cell }) => {
+        const csid = cell.getValue<string>()
+        return <span className="font-mono">{csid}</span>
+      },
+    },
+    {
       accessorKey: "type",
       header: "Requisite Type",
       enableColumnFilter: true,
@@ -76,16 +86,6 @@ export const AdminCourseSets = () => {
       size: 500,
       enableColumnFilter: true,
       enableSorting: true,
-    },
-    {
-      accessorKey: "csid",
-      header: "CSID",
-      enableColumnFilter: true,
-      enableSorting: true,
-      cell: ({ cell }) => {
-        const csid = cell.getValue<string>()
-        return <span className="font-mono">{csid}</span>
-      },
     },
     {
       accessorKey: 'updated_at',
