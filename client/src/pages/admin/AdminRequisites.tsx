@@ -26,7 +26,7 @@ export const AdminRequisites = () => {
 
   useEffect(() => {
     if (monaco) {
-      monaco.editor.defineTheme('customDark', {
+      monaco.editor.defineTheme('json', {
         base: 'vs',
         inherit: true,
         rules: [
@@ -173,7 +173,7 @@ export const AdminRequisites = () => {
                           defaultLanguage="json"
                           value={jsonEdit}
                           onChange={(value) => setJsonEdit(value || "")}
-                          theme="customDark"
+                          theme="json"
                           options={{
                             fontSize: 13,
                             lineNumbers: 'on',
