@@ -73,6 +73,7 @@ export const updateRequisite: RequisiteUpdateHandler = async (req, res) => {
       ...req.body,
       json: req.body.json as any,
       json_choices: req.body.json_choices as any,
+      raw_json: req.body.raw_json as any,
     },
   })
 

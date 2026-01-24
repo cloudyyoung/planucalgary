@@ -154,6 +154,7 @@ model RequisiteJson {
 
   json_choices Json[]
   json         Json?
+  raw_json     Json?
 
   @@unique([requisite_type, text, departments, faculties], map: "requisite_components_unique")
   @@map("requisites_jsons")
