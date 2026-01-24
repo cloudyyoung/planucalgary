@@ -103,6 +103,7 @@ model CourseSet {
   name                String
   description         String?
   json                Json?
+  raw_json            Json?
 
   course_set_created_at      DateTime
   course_set_last_updated_at DateTime
@@ -122,6 +123,7 @@ model RequisiteSet {
   name                   String
   description            String?
   json                   Json?
+  raw_json               Json?
 
   requisite_set_created_at      DateTime
   requisite_set_last_updated_at DateTime
