@@ -5,8 +5,11 @@ import { RequisitesSyncHandler } from "@planucalgary/shared"
 
 import { getValidator } from "../../jsonlogic/requisite_json"
 
+const TRANSACTION_MAX_WAIT = 1_200_000
+const TRANSACTION_TIMEOUT = 1_200_000
+
 export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) => {
-  const [courses, courseSets] = await Promise.all([
+  const [courses, courseSets, requisiteSets] = await Promise.all([
     req.prisma.course.findMany({
       select: {
         prereq: true,
@@ -28,6 +31,7 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
       },
     }),
     req.prisma.courseSet.findMany(),
+    req.prisma.requisiteSet.findMany(),
   ])
 
   const courses_requisites_jsons = courses.flatMap((course) => {
@@ -71,25 +75,68 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
   })
 
   const course_sets_requisites_json = courseSets.flatMap((courseSet) => {
-    const { name } = courseSet
-    return {
-      requisite_type: RequisiteType.COURSE_SET,
-      text: name,
-      departments: [],
-      faculties: [],
-      json: undefined,
-      json_choices: [],
-    }
+    const { name, raw_json } = courseSet
+    return req.prisma.requisiteJson.upsert({
+      where: {
+        requisite_type_text_departments_faculties: {
+          requisite_type: RequisiteType.COURSE_SET,
+          text: name,
+          departments: [],
+          faculties: [],
+        }
+      },
+      create: {
+        requisite_type: RequisiteType.COURSE_SET,
+        text: name,
+        departments: [],
+        faculties: [],
+        raw_json: raw_json as any,
+      },
+      update: {
+        raw_json: raw_json as any,
+      },
+    })
   })
 
-  const requisites_jsons = [...courses_requisites_jsons, ...course_sets_requisites_json]
-
-  const result = await req.prisma.requisiteJson.createMany({
-    data: requisites_jsons,
-    skipDuplicates: true,
+  const requisite_sets_requisites_json = requisiteSets.flatMap((requisiteSet) => {
+    const { name } = requisiteSet
+    return req.prisma.requisiteJson.upsert({
+      where: {
+        requisite_type_text_departments_faculties: {
+          requisite_type: RequisiteType.REQUISITE_SET,
+          text: name,
+          departments: [],
+          faculties: [],
+        }
+      },
+      create: {
+        requisite_type: RequisiteType.REQUISITE_SET,
+        text: name,
+        departments: [],
+        faculties: [],
+        raw_json: requisiteSet.json as any,
+      },
+      update: {
+        raw_json: requisiteSet.json as any,
+      },
+    })
   })
 
-  const count = result.count
+  await req.prisma.$transaction(async (tx) => {
+    await Promise.all([
+      tx.requisiteJson.createMany({
+        data: courses_requisites_jsons,
+        skipDuplicates: true,
+      }),
+      ...course_sets_requisites_json,
+      ...requisite_sets_requisites_json,
+    ])
+  }, {
+    timeout: TRANSACTION_TIMEOUT,
+    maxWait: TRANSACTION_MAX_WAIT,
+  })
+
+  const count = courses_requisites_jsons.length + courseSets.length + requisiteSets.length
 
   return res.json({
     message: `${count} requisites are added to requisites_jsons.`,
@@ -242,8 +289,8 @@ export const toCourseSets: RequisitesSyncHandler = async (req, res) => {
       return Promise.all(updates)
     },
     {
-      timeout: 1_200_000,
-      maxWait: 1_200_000,
+      timeout: TRANSACTION_TIMEOUT,
+      maxWait: TRANSACTION_MAX_WAIT,
     },
   )
   const count = result.filter((r) => r !== null).length
