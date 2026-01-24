@@ -158,7 +158,7 @@ export const AdminRequisites = () => {
                         {
                           jsonChoices.map((choice, index) => (
                             <Button key={index} variant="ghost" className="h-full min-h-20 text-left justify-start w-full" onClick={() => onClickJsonChoice(choice)}>
-                              <JSONPretty data={choice} />
+                              <JSONPretty data={JSON.stringify(choice)} />
                             </Button>
                           ))
                         }
