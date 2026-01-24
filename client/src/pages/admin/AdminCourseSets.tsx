@@ -88,6 +88,15 @@ export const AdminCourseSets = () => {
       enableSorting: true,
     },
     {
+      accessorKey: 'raw_json',
+      header: 'Raw JSON',
+      size: 600,
+      cell: ({ cell }) => {
+        const raw_json = cell.getValue<any>()
+        return <JSONPretty data={JSON.stringify(raw_json)} />
+      },
+    },
+    {
       accessorKey: 'updated_at',
       header: 'Updated At',
       enableSorting: true,
