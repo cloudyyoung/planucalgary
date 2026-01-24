@@ -44,7 +44,7 @@ export const createRequisiteSet: RequisiteSetCreateHandler = async (req, res) =>
         where: { csid: req.body.csid },
     })
     if (existing) {
-        throw new RequisiteSetAlreadyExistsError()
+        throw new RequisiteSetAlreadyExistsError(existing.id)
     }
 
     const requisiteSet = await req.prisma.requisiteSet.create({

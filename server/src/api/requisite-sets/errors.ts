@@ -7,9 +7,10 @@ export class RequisiteSetNotFoundError extends Error {
 }
 
 export class RequisiteSetAlreadyExistsError extends Error {
-    constructor() {
+    constructor(existing_id: string) {
         super()
         this.name = "RequisiteSetAlreadyExistsError"
         this.message = "A requisite set already exists."
+        this.stack = existing_id
     }
 }
