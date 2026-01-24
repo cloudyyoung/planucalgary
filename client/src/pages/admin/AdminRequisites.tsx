@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JSONPretty from 'react-json-pretty';
 import { RequisiteJson } from "@planucalgary/shared/prisma/client"
 import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@planucalgary/shared";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
-import Editor from '@monaco-editor/react';
+import Editor, { useMonaco } from '@monaco-editor/react';
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdvancedTable from "@/components/advanced-table";
@@ -22,6 +22,34 @@ import {
 
 
 export const AdminRequisites = () => {
+  const monaco = useMonaco();
+
+  useEffect(() => {
+    if (monaco) {
+      monaco.editor.defineTheme('customDark', {
+        base: 'vs',
+        inherit: true,
+        rules: [
+          { token: 'string', foreground: '#fd971f' },
+          { token: 'number', foreground: '#a6e22e' },
+          { token: 'string.key.json', foreground: '#f92672' },
+          { token: 'string.value.json', foreground: '#fd971f' },
+          { token: 'true', foreground: '#ac81fe' },
+          { token: 'false', foreground: '#ac81fe' },
+          { token: 'null', foreground: '#a78bfa' },
+          { token: 'comment', foreground: '#6b7280' },
+        ],
+        colors: {
+          'editor.background': '#ffffff',
+          'editor.foreground': '#5f6d70',
+          'editorLineNumber.foreground': '#6b7280',
+          'editorLineNumber.activeForeground': '#9ca3af',
+          'editor.lineHighlightBackground': '#f5f5f5',
+        }
+      });
+    }
+  }, [monaco]);
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 500,
@@ -129,7 +157,7 @@ export const AdminRequisites = () => {
                       <div className="max-h-[30vh] max-w-4xl overflow-auto flex flex-row px-6 -mx-6">
                         {
                           jsonChoices.map((choice, index) => (
-                            <Button key={index} variant="ghost" className="h-full min-h-20 text-left justify-start w-full text-xs" onClick={() => onClickJsonChoice(choice)}>
+                            <Button key={index} variant="ghost" className="h-full min-h-20 text-left justify-start w-full" onClick={() => onClickJsonChoice(choice)}>
                               <JSONPretty data={choice} />
                             </Button>
                           ))
@@ -145,6 +173,14 @@ export const AdminRequisites = () => {
                           defaultLanguage="json"
                           value={jsonEdit}
                           onChange={(value) => setJsonEdit(value || "")}
+                          theme="customDark"
+                          options={{
+                            fontSize: 13,
+                            lineNumbers: 'on',
+                            scrollBeyondLastLine: false,
+                            folding: true,
+                            automaticLayout: true,
+                          }}
                           className="font-mono !leading-[1.3] border rounded w-full"
                         />
                       </div>
