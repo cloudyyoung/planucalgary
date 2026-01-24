@@ -99,7 +99,7 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
   })
 
   const requisite_sets_requisites_json = requisiteSets.flatMap((requisiteSet) => {
-    const { name } = requisiteSet
+    const { name, raw_json } = requisiteSet
     return req.prisma.requisiteJson.upsert({
       where: {
         requisite_type_text_departments_faculties: {
@@ -114,10 +114,10 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
         text: name,
         departments: [],
         faculties: [],
-        raw_json: requisiteSet.json as any,
+        raw_json: raw_json as any,
       },
       update: {
-        raw_json: requisiteSet.json as any,
+        raw_json: raw_json as any,
       },
     })
   })
