@@ -5,12 +5,12 @@ import { RequisiteJson } from "@planucalgary/shared/prisma/client"
 import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@planucalgary/shared";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
+import Editor from '@monaco-editor/react';
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdvancedTable from "@/components/advanced-table";
 import { useRequisites, useRequisitesGenerateChoices, useRequisitesSync, useRequisitesUpdate } from "@/hooks/useRequisites";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { StatefulButton } from "@/components/ui/stateful-button";
 import {
   Select,
@@ -141,7 +141,12 @@ export const AdminRequisites = () => {
                         </StatefulButton>
                       </div>
                       <div className="grid grid-cols-2 gap-4 h-[40vh]">
-                        <Textarea value={jsonEdit} className="p-2 font-mono text-xs !leading-[1.3]" onChange={(e) => setJsonEdit(e.target.value)} />
+                        <Editor
+                          defaultLanguage="json"
+                          value={jsonEdit}
+                          onChange={(value) => setJsonEdit(value || "")}
+                          className="font-mono !leading-[1.3] border rounded"
+                        />
                         <JSONPretty data={jsonEdit} className="p-2 mb-1" />
                       </div>
                     </DialogDescription>
