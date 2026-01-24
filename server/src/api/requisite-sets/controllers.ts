@@ -22,6 +22,7 @@ export const listRequisiteSets: RequisiteSetListHandler = async (req, res) => {
             where: whereConditions,
         }),
     ])
+    console.log(whereConditions)
 
     return res.paginate(requisiteSets, total)
 }

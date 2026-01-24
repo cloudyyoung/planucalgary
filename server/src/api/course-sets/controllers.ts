@@ -43,6 +43,7 @@ export const createCourseSet: CourseSetCreateHandler = async (req, res) => {
   const existing = await req.prisma.courseSet.findFirst({
     where: { csid: req.body.csid },
   })
+
   if (existing) {
     throw new CourseSetAlreadyExistsError()
   }

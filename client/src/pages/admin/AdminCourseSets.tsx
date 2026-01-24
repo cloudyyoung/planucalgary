@@ -45,7 +45,7 @@ export const AdminCourseSets = () => {
     },
     {
       accessorKey: "type",
-      header: "Requisite Type",
+      header: "Course Set Type",
       enableColumnFilter: true,
       enableSorting: true,
       meta: {
@@ -56,7 +56,7 @@ export const AdminCourseSets = () => {
     {
       accessorKey: "course_set_group_id",
       header: "Course Set Group ID",
-      size: 200,
+      size: 250,
       enableColumnFilter: true,
       enableSorting: true,
       cell: ({ cell }) => {
