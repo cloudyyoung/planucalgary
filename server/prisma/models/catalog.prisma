@@ -176,8 +176,7 @@ model Faculty {
   departments Department[]
   courses     Course[]
   programs    Program[]
-  subject     Subject?     @relation(fields: [subjectId], references: [id])
-  subjectId   String?
+  subjects    Subject[]
 
   @@index([code], map: "faculty_code_unique")
   @@map("faculties")

@@ -148,9 +148,8 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
       prereq_json: req.body.prereq_json as any,
       antireq_json: req.body.antireq_json as any,
       coreq_json: req.body.coreq_json as any,
-      subject_code: undefined,
       subject: {
-        connect: { code: req.body.subject_code },
+        connect: { code: req.body.subject },
       },
       departments: {
         connect: departmentCodes,
@@ -190,9 +189,8 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
     data: {
       ...req.body,
       raw_json: req.body.raw_json as any,
-      subject_code: undefined,
       subject: {
-        connect: req.body.subject_code ? { code: req.body.subject_code } : undefined,
+        connect: req.body.subject ? { code: req.body.subject } : undefined,
       },
       prereq_json: req.body.prereq_json as any,
       antireq_json: req.body.antireq_json as any,

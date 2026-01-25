@@ -8,12 +8,9 @@ import { Course } from './generated/prisma/client';
 import { CourseScalarFieldEnumSchema, CourseCreateInputObjectZodSchema, CourseUpdateInputObjectZodSchema } from './generated/zod/schemas';
 
 const CourseRelationsSchema = z.object({
-    subject: z.undefined(),
-    departments: z.undefined(),
-    faculties: z.undefined(),
-    subject_code: z.string().optional(),
-    departments_codes: z.string().array().optional(),
-    faculties_codes: z.string().array().optional(),
+    subject: z.string(),
+    departments: z.string().array().optional(),
+    faculties: z.string().array().optional(),
     topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })).optional(),
 });
 
@@ -43,7 +40,7 @@ export type CourseCreateHandler = RequestHandler<never, Course, CourseCreateReqB
 // Update Course
 export const CourseUpdateReqParamsSchema = IdInputSchema
 export type CourseUpdateReqParams = z.infer<typeof CourseUpdateReqParamsSchema>
-export const CourseUpdateReqBodySchema = CourseUpdateInputObjectZodSchema.extend(CourseRelationsSchema.shape)
+export const CourseUpdateReqBodySchema = CourseUpdateInputObjectZodSchema.extend(CourseRelationsSchema.loose().shape)
 export type CourseUpdateReqBody = z.infer<typeof CourseUpdateReqBodySchema>
 export type CourseUpdateHandler = RequestHandler<CourseUpdateReqParams, Course, CourseUpdateReqBody, never>
 

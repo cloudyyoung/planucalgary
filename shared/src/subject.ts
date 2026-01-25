@@ -7,11 +7,8 @@ import { SubjectCreateInputObjectZodSchema, SubjectScalarFieldEnumSchema, Subjec
 import { getSortingReqQuerySchema } from "./sorting";
 
 const SubjectRelationsSchema = z.object({
-    departments: z.undefined(),
-    faculties: z.undefined(),
-    courses: z.undefined(),
-    department_codes: z.string().array().optional(),
-    faculty_codes: z.string().array().optional(),
+    departments: z.string().array(),
+    faculties: z.string().array(),
 });
 
 // List Subjects
@@ -41,7 +38,7 @@ export type SubjectCreateHandler = RequestHandler<never, Subject, SubjectCreateB
 // Update Subject
 export const SubjectUpdateParamsSchema = IdInputSchema
 export type SubjectUpdateParams = z.infer<typeof SubjectUpdateParamsSchema>;
-export const SubjectUpdateBodySchema = SubjectUpdateInputObjectZodSchema.extend(SubjectRelationsSchema.shape)
+export const SubjectUpdateBodySchema = SubjectUpdateInputObjectZodSchema.extend(SubjectRelationsSchema.loose().shape)
 export type SubjectUpdateBody = z.infer<typeof SubjectUpdateBodySchema>;
 export type SubjectUpdateHandler = RequestHandler<SubjectUpdateParams, Subject, SubjectUpdateBody, never>;
 
