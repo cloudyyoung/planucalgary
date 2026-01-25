@@ -42,6 +42,11 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
 
     const requisites_jsons = []
 
+    const raw_json_array: { type: string, rules: any[] }[] = Array.isArray(raw_json) ? raw_json as any : []
+    const prereq_raw_json = raw_json_array.find((r) => r.type === "Prerequisite")
+    const coreq_raw_json = raw_json_array.find((r) => r.type === "Corequisite")
+    const antireq_raw_json = raw_json_array.find((r) => r.type === "Antirequisite")
+
     if (prereq) {
       requisites_jsons.push(req.prisma.requisiteJson.upsert({
         where: {
@@ -57,10 +62,10 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
           text: prereq,
           departments: department_codes,
           faculties: faculty_codes,
-          raw_json: raw_json as any,
+          raw_json: prereq_raw_json as any,
         },
         update: {
-          raw_json: raw_json as any,
+          raw_json: prereq_raw_json as any,
         },
       }))
     }
@@ -79,10 +84,10 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
           text: coreq,
           departments: department_codes,
           faculties: faculty_codes,
-          raw_json: raw_json as any,
+          raw_json: coreq_raw_json as any,
         },
         update: {
-          raw_json: raw_json as any,
+          raw_json: coreq_raw_json as any,
         },
       }))
     }
@@ -102,10 +107,10 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
           text: antireq,
           departments: department_codes,
           faculties: faculty_codes,
-          raw_json: raw_json as any,
+          raw_json: antireq_raw_json as any,
         },
         update: {
-          raw_json: raw_json as any,
+          raw_json: antireq_raw_json as any,
         },
       }))
     }
