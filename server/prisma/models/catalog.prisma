@@ -64,6 +64,8 @@ model Course {
   topics     CourseTopic[]
   grade_mode GradeMode
 
+  raw_json Json?
+
   search_vector Unsupported("tsvector")? @default(dbgenerated())
 
   @@index([search_vector], type: Gin, map: "course_search_vector_gin")
@@ -133,6 +135,7 @@ model RequisiteSet {
 }
 
 enum RequisiteType {
+  ATOMIC
   PREREQ
   COREQ
   ANTIREQ
