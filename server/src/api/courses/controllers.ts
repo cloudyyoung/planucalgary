@@ -124,23 +124,6 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
     throw new CourseAlreadyExistsError(existing.id)
   }
 
-  const [departments, faculties] = await Promise.all([
-    req.prisma.department.findMany({
-      where: { code: { in: req.body.departments } },
-    }),
-    req.prisma.faculty.findMany({
-      where: { code: { in: req.body.faculties } },
-    }),
-  ])
-
-  const departmentCodes = departments.map((department) => ({
-    code: department.code,
-  }))
-
-  const facultyCodes = faculties.map((faculty) => ({
-    code: faculty.code,
-  }))
-
   const course = await req.prisma.course.create({
     data: {
       ...req.body,
@@ -149,13 +132,22 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
       antireq_json: req.body.antireq_json as any,
       coreq_json: req.body.coreq_json as any,
       subject: {
-        connect: { code: req.body.subject },
+        connectOrCreate: {
+          where: { code: req.body.subject },
+          create: { code: req.body.subject, title: req.body.subject },
+        }
       },
       departments: {
-        connect: departmentCodes,
+        connectOrCreate: req.body.departments?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
       },
       faculties: {
-        connect: facultyCodes,
+        connectOrCreate: req.body.faculties?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
       },
       topics: {
         create: req.body.topics,
@@ -167,39 +159,31 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
 }
 
 export const updateCourse: CourseUpdateHandler = async (req, res) => {
-  const [departments, faculties] = await Promise.all([
-    req.prisma.department.findMany({
-      where: { code: { in: req.body.departments } },
-    }),
-    req.prisma.faculty.findMany({
-      where: { code: { in: req.body.faculties } },
-    }),
-  ])
-
-  const departmentCodes = departments.map((department) => ({
-    code: department.code,
-  }))
-
-  const facultyCodes = faculties.map((faculty) => ({
-    code: faculty.code,
-  }))
-
   const course = await req.prisma.course.update({
     where: { id: req.params.id },
     data: {
       ...req.body,
       raw_json: req.body.raw_json as any,
       subject: {
-        connect: req.body.subject ? { code: req.body.subject } : undefined,
+        connectOrCreate: {
+          where: { code: req.body.subject },
+          create: { code: req.body.subject, title: req.body.subject },
+        }
       },
       prereq_json: req.body.prereq_json as any,
       antireq_json: req.body.antireq_json as any,
       coreq_json: req.body.coreq_json as any,
       departments: {
-        connect: req.body.departments ? departmentCodes : undefined,
+        connectOrCreate: req.body.departments?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
       },
       faculties: {
-        connect: req.body.faculties ? facultyCodes : undefined,
+        connectOrCreate: req.body.faculties?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
       },
       topics: {
         connectOrCreate: req.body.topics?.map((topic) => ({
