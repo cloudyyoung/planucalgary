@@ -7,9 +7,10 @@ export class CourseNotFoundError extends Error {
 }
 
 export class CourseAlreadyExistsError extends Error {
-  constructor() {
+  constructor(existing_id: string) {
     super()
     this.name = "CourseAlreadyExistsError"
     this.message = "A course with the given CID already exists."
+    this.stack = existing_id
   }
 }

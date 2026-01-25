@@ -121,7 +121,7 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
     where: { cid: req.body.cid },
   })
   if (existing) {
-    throw new CourseAlreadyExistsError()
+    throw new CourseAlreadyExistsError(existing.id)
   }
 
   const [departments, faculties] = await Promise.all([
