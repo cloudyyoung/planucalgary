@@ -49,10 +49,16 @@ export const createSubject: SubjectCreateHandler = async (req, res) => {
     data: {
       ...req.body,
       departments: {
-        connect: req.body.departments?.map((code) => ({ code })) || [],
+        connectOrCreate: req.body.departments?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
       },
       faculties: {
-        connect: req.body.faculties?.map((code) => ({ code })) || [],
+        connectOrCreate: req.body.faculties?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
       },
     },
   })
@@ -66,10 +72,16 @@ export const updateSubject: SubjectUpdateHandler = async (req, res) => {
     data: {
       ...req.body,
       departments: {
-        connect: req.body.departments?.map((code) => ({ code })) || [],
+        connectOrCreate: req.body.departments?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
       },
       faculties: {
-        connect: req.body.faculties?.map((code) => ({ code })) || [],
+        connectOrCreate: req.body.faculties?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
       },
     },
   })
