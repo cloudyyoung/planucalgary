@@ -8,6 +8,17 @@ import { getValidator } from "../../jsonlogic/requisite_json"
 const TRANSACTION_MAX_WAIT = 1_200_000
 const TRANSACTION_TIMEOUT = 1_200_000
 
+interface CDCourseRequisite {
+  id: string
+  name: string
+  type: string
+  rules: {
+    id: string
+    name: string
+    condition: string
+  }[]
+}
+
 export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) => {
   const [courses, courseSets, requisiteSets] = await Promise.all([
     req.prisma.course.findMany({
@@ -42,10 +53,36 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
 
     const requisites_jsons = []
 
-    const raw_json_array: { type: string, rules: any[] }[] = Array.isArray(raw_json) ? raw_json as any : []
+    const raw_json_array: CDCourseRequisite[] = Array.isArray(raw_json) ? raw_json as any : []
     const prereq_raw_json = raw_json_array.find((r) => r.type === "Prerequisite")
     const coreq_raw_json = raw_json_array.find((r) => r.type === "Corequisite")
     const antireq_raw_json = raw_json_array.find((r) => r.type === "Antirequisite")
+
+    const rules = raw_json_array.map((r) => r.rules).flat()
+    rules.forEach((rule) => {
+      if (!rule.name) return
+
+      req.prisma.requisiteJson.upsert({
+        where: {
+          requisite_type_text_departments_faculties: {
+            requisite_type: RequisiteType.ATOMIC,
+            text: rule.name,
+            departments: [],
+            faculties: [],
+          }
+        },
+        create: {
+          requisite_type: RequisiteType.ATOMIC,
+          text: rule.name,
+          departments: [],
+          faculties: [],
+          raw_json: rule as any,
+        },
+        update: {
+          raw_json: rule as any,
+        },
+      })
+    })
 
     if (prereq) {
       requisites_jsons.push(req.prisma.requisiteJson.upsert({
