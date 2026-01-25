@@ -26,6 +26,7 @@ export type CourseGetHandler = RequestHandler<CourseGetReqParams, Course, never,
 
 // Create Course
 export const CourseCreateReqBodySchema = CourseCreateInputObjectZodSchema.extend({
+    subject: z.undefined(),
     subject_code: z.string(),
     departments: z.array(z.string()),
     faculties: z.array(z.string()),

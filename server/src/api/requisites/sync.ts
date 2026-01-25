@@ -15,6 +15,7 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
         prereq: true,
         coreq: true,
         antireq: true,
+        raw_json: true,
         departments: {
           select: {
             code: true,
@@ -35,41 +36,78 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
   ])
 
   const courses_requisites_jsons = courses.flatMap((course) => {
-    const { prereq, coreq, antireq, departments, faculties } = course
+    const { prereq, coreq, antireq, departments, faculties, raw_json } = course
     const department_codes = departments.map((d) => d.code)
     const faculty_codes = faculties.map((f) => f.code)
 
     const requisites_jsons = []
 
     if (prereq) {
-      requisites_jsons.push({
-        requisite_type: RequisiteType.PREREQ,
-        text: prereq,
-        departments: department_codes,
-        faculties: faculty_codes,
-        json: undefined,
-        json_choices: [],
-      })
+      requisites_jsons.push(req.prisma.requisiteJson.upsert({
+        where: {
+          requisite_type_text_departments_faculties: {
+            requisite_type: RequisiteType.PREREQ,
+            text: prereq,
+            departments: department_codes,
+            faculties: faculty_codes,
+          }
+        },
+        create: {
+          requisite_type: RequisiteType.PREREQ,
+          text: prereq,
+          departments: department_codes,
+          faculties: faculty_codes,
+          raw_json: raw_json as any,
+        },
+        update: {
+          raw_json: raw_json as any,
+        },
+      }))
     }
     if (coreq) {
-      requisites_jsons.push({
-        requisite_type: RequisiteType.COREQ,
-        text: coreq,
-        departments: department_codes,
-        faculties: faculty_codes,
-        json: undefined,
-        json_choices: [],
-      })
+      requisites_jsons.push(req.prisma.requisiteJson.upsert({
+        where: {
+          requisite_type_text_departments_faculties: {
+            requisite_type: RequisiteType.COREQ,
+            text: coreq,
+            departments: department_codes,
+            faculties: faculty_codes,
+          }
+        },
+        create: {
+          requisite_type: RequisiteType.COREQ,
+          text: coreq,
+          departments: department_codes,
+          faculties: faculty_codes,
+          raw_json: raw_json as any,
+        },
+        update: {
+          raw_json: raw_json as any,
+        },
+      }))
     }
+
     if (antireq) {
-      requisites_jsons.push({
-        requisite_type: RequisiteType.ANTIREQ,
-        text: antireq,
-        departments: department_codes,
-        faculties: faculty_codes,
-        json: undefined,
-        json_choices: [],
-      })
+      requisites_jsons.push(req.prisma.requisiteJson.upsert({
+        where: {
+          requisite_type_text_departments_faculties: {
+            requisite_type: RequisiteType.ANTIREQ,
+            text: antireq,
+            departments: department_codes,
+            faculties: faculty_codes,
+          }
+        },
+        create: {
+          requisite_type: RequisiteType.ANTIREQ,
+          text: antireq,
+          departments: department_codes,
+          faculties: faculty_codes,
+          raw_json: raw_json as any,
+        },
+        update: {
+          raw_json: raw_json as any,
+        },
+      }))
     }
     return requisites_jsons
   })
@@ -124,10 +162,7 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
 
   await req.prisma.$transaction(async (tx) => {
     await Promise.all([
-      tx.requisiteJson.createMany({
-        data: courses_requisites_jsons,
-        skipDuplicates: true,
-      }),
+      ...courses_requisites_jsons,
       ...course_sets_requisites_json,
       ...requisite_sets_requisites_json,
     ])

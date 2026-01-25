@@ -16,7 +16,7 @@ export const listRequisites: RequisiteListHandler = async (req, res) => {
   const [requisites, total, validate] = await Promise.all([
     req.prisma.requisiteJson.findMany({
       where: whereConditions,
-      orderBy: [...getSortings(sorting), { id: 'asc' }],
+      orderBy: [...getSortings(sorting), { requisite_type: 'asc' }, { id: 'asc' }],
       skip: req.pagination.offset,
       take: req.pagination.limit,
     }),
