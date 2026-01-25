@@ -58,32 +58,6 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
     const coreq_raw_json = raw_json_array.find((r) => r.type === "Corequisite")
     const antireq_raw_json = raw_json_array.find((r) => r.type === "Antirequisite")
 
-    const rules = raw_json_array.map((r) => r.rules).flat()
-    rules.forEach((rule) => {
-      if (!rule.name) return
-
-      req.prisma.requisiteJson.upsert({
-        where: {
-          requisite_type_text_departments_faculties: {
-            requisite_type: RequisiteType.ATOMIC,
-            text: rule.name,
-            departments: [],
-            faculties: [],
-          }
-        },
-        create: {
-          requisite_type: RequisiteType.ATOMIC,
-          text: rule.name,
-          departments: [],
-          faculties: [],
-          raw_json: rule as any,
-        },
-        update: {
-          raw_json: rule as any,
-        },
-      })
-    })
-
     if (prereq) {
       requisites_jsons.push(req.prisma.requisiteJson.upsert({
         where: {

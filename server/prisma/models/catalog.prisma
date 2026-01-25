@@ -135,7 +135,6 @@ model RequisiteSet {
 }
 
 enum RequisiteType {
-  ATOMIC
   PREREQ
   COREQ
   ANTIREQ
