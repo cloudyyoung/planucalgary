@@ -7,6 +7,16 @@ import { getSortingReqQuerySchema } from './sorting';
 import { Course } from './generated/prisma/client';
 import { CourseScalarFieldEnumSchema, CourseCreateInputObjectZodSchema, CourseUpdateInputObjectZodSchema } from './generated/zod/schemas';
 
+const CourseRelationsSchema = z.object({
+    subject: z.undefined(),
+    departments: z.undefined(),
+    faculties: z.undefined(),
+    subject_code: z.string().optional(),
+    departments_codes: z.string().array().optional(),
+    faculties_codes: z.string().array().optional(),
+    topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })).optional(),
+});
+
 
 // List Courses
 export const CourseListReqQuerySchema = z.object({
@@ -25,13 +35,7 @@ export type CourseGetHandler = RequestHandler<CourseGetReqParams, Course, never,
 
 
 // Create Course
-export const CourseCreateReqBodySchema = CourseCreateInputObjectZodSchema.extend({
-    subject: z.undefined(),
-    subject_code: z.string(),
-    departments: z.array(z.string()),
-    faculties: z.array(z.string()),
-    topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })),
-})
+export const CourseCreateReqBodySchema = CourseCreateInputObjectZodSchema.extend(CourseRelationsSchema.shape)
 export type CourseCreateReqBody = z.infer<typeof CourseCreateReqBodySchema>
 export type CourseCreateHandler = RequestHandler<never, Course, CourseCreateReqBody, never>
 
@@ -39,12 +43,7 @@ export type CourseCreateHandler = RequestHandler<never, Course, CourseCreateReqB
 // Update Course
 export const CourseUpdateReqParamsSchema = IdInputSchema
 export type CourseUpdateReqParams = z.infer<typeof CourseUpdateReqParamsSchema>
-export const CourseUpdateReqBodySchema = CourseUpdateInputObjectZodSchema.extend({
-    subject_code: z.string().optional(),
-    departments: z.array(z.string()).optional(),
-    faculties: z.array(z.string()).optional(),
-    topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })).optional(),
-})
+export const CourseUpdateReqBodySchema = CourseUpdateInputObjectZodSchema.extend(CourseRelationsSchema.shape)
 export type CourseUpdateReqBody = z.infer<typeof CourseUpdateReqBodySchema>
 export type CourseUpdateHandler = RequestHandler<CourseUpdateReqParams, Course, CourseUpdateReqBody, never>
 

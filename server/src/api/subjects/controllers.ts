@@ -40,12 +40,21 @@ export const createSubject: SubjectCreateHandler = async (req, res) => {
   const existing = await req.prisma.subject.findFirst({
     where: { code: req.body.code },
   })
+
   if (existing) {
     throw new SubjectAlreadyExistsError(existing.id)
   }
 
   const subject = await req.prisma.subject.create({
-    data: req.body,
+    data: {
+      ...req.body,
+      departments: {
+        connect: req.body.department_codes?.map((code) => ({ code })) || [],
+      },
+      faculties: {
+        connect: req.body.faculty_codes?.map((code) => ({ code })) || [],
+      },
+    },
   })
 
   return res.json(subject)
@@ -54,7 +63,15 @@ export const createSubject: SubjectCreateHandler = async (req, res) => {
 export const updateSubject: SubjectUpdateHandler = async (req, res) => {
   const subject = await req.prisma.subject.update({
     where: { id: req.params.id },
-    data: req.body,
+    data: {
+      ...req.body,
+      departments: {
+        connect: req.body.department_codes?.map((code) => ({ code })) || [],
+      },
+      faculties: {
+        connect: req.body.faculty_codes?.map((code) => ({ code })) || [],
+      },
+    },
   })
   return res.json(subject)
 }
