@@ -41,7 +41,7 @@ export const createSubject: SubjectCreateHandler = async (req, res) => {
     where: { code: req.body.code },
   })
   if (existing) {
-    throw new SubjectAlreadyExistsError()
+    throw new SubjectAlreadyExistsError(existing.id)
   }
 
   const subject = await req.prisma.subject.create({

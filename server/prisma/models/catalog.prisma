@@ -176,6 +176,8 @@ model Faculty {
   departments Department[]
   courses     Course[]
   programs    Program[]
+  subject     Subject?     @relation(fields: [subjectId], references: [id])
+  subjectId   String?
 
   @@index([code], map: "faculty_code_unique")
   @@map("faculties")
@@ -218,13 +220,12 @@ model Subject {
   updated_at DateTime @default(now()) @updatedAt
 
   code  String @unique
-  title String @unique
+  title String
 
+  faculties   Faculty[]
   departments Department[]
   courses     Course[]
 
-  @@unique([code, title], map: "subject_code_title_unique")
-  @@unique([title], map: "subject_title_unique")
   @@unique([code], map: "subject_code_unique")
   @@map("subjects")
   @@schema("catalog")

@@ -80,6 +80,7 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
         },
       }))
     }
+    
     if (coreq) {
       requisites_jsons.push(req.prisma.requisiteJson.upsert({
         where: {
