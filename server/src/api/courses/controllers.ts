@@ -143,7 +143,11 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
 
   const course = await req.prisma.course.create({
     data: {
-      ...(req.body as any),
+      ...req.body,
+      raw_json: req.body.raw_json as any,
+      prereq_json: req.body.prereq_json as any,
+      antireq_json: req.body.antireq_json as any,
+      coreq_json: req.body.coreq_json as any,
       subject_code: undefined,
       subject: {
         connect: { code: req.body.subject_code },
@@ -173,7 +177,7 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
     }),
   ])
 
-  const deaprtmentCodes = departments.map((department) => ({
+  const departmentCodes = departments.map((department) => ({
     code: department.code,
   }))
 
@@ -185,15 +189,16 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
     where: { id: req.params.id },
     data: {
       ...req.body,
+      raw_json: req.body.raw_json as any,
       subject_code: undefined,
       subject: {
         connect: req.body.subject_code ? { code: req.body.subject_code } : undefined,
       },
-      prereq_json: req.body.prereq_json ? req.body.prereq_json : undefined,
-      antireq_json: req.body.antireq_json ? req.body.antireq_json : undefined,
-      coreq_json: req.body.coreq_json ? req.body.coreq_json : undefined,
+      prereq_json: req.body.prereq_json as any,
+      antireq_json: req.body.antireq_json as any,
+      coreq_json: req.body.coreq_json as any,
       departments: {
-        connect: req.body.departments ? deaprtmentCodes : undefined,
+        connect: req.body.departments ? departmentCodes : undefined,
       },
       faculties: {
         connect: req.body.faculties ? facultyCodes : undefined,
