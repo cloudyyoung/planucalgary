@@ -123,6 +123,7 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
   const existing = await req.prisma.course.findFirst({
     where: { cid: req.body.cid },
   })
+
   if (existing) {
     throw new CourseAlreadyExistsError(existing.id)
   }
