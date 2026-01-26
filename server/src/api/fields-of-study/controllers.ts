@@ -11,6 +11,7 @@ export const listFieldsOfStudy: FieldsOfStudyListHandler = async (req, res) => {
     }
     const [FieldsOfStudy, total] = await Promise.all([
         req.prisma.fieldOfStudy.findMany({
+            include: { course_sets: true },
             where: whereConditions,
             orderBy: getSortings(sorting),
             skip: req.pagination.offset,
@@ -27,6 +28,7 @@ export const listFieldsOfStudy: FieldsOfStudyListHandler = async (req, res) => {
 export const getFieldsOfStudy: FieldsOfStudyGetHandler = async (req, res) => {
     const { id } = req.params;
     const FieldsOfStudy = await req.prisma.fieldOfStudy.findUnique({
+        include: { course_sets: true },
         where: { id },
     })
 
@@ -39,6 +41,7 @@ export const getFieldsOfStudy: FieldsOfStudyGetHandler = async (req, res) => {
 
 export const createFieldsOfStudy: FieldsOfStudyCreateHandler = async (req, res) => {
     const existing = await req.prisma.fieldOfStudy.findFirst({
+        include: { course_sets: true },
         where: { name: req.body.name },
     })
     if (existing) {
@@ -47,6 +50,7 @@ export const createFieldsOfStudy: FieldsOfStudyCreateHandler = async (req, res) 
 
     const FieldsOfStudy = await req.prisma.fieldOfStudy.create({
         data: req.body,
+        include: { course_sets: true },
     })
 
     return res.json(FieldsOfStudy)
@@ -54,6 +58,7 @@ export const createFieldsOfStudy: FieldsOfStudyCreateHandler = async (req, res) 
 
 export const updateFieldsOfStudy: FieldsOfStudyUpdateHandler = async (req, res) => {
     const FieldsOfStudy = await req.prisma.fieldOfStudy.update({
+        include: { course_sets: true },
         where: { id: req.params.id },
         data: req.body,
     })
