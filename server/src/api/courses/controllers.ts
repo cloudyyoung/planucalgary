@@ -163,6 +163,22 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
 }
 
 export const updateCourse: CourseUpdateHandler = async (req, res) => {
+  const departments = await Promise.all(req.body.departments?.map(async (code) => {
+    return req.prisma.department.upsert({
+      where: { code },
+      create: { code, name: code, display_name: code, is_active: false },
+      update: { code, name: code, display_name: code },
+    })
+  }) || [])
+
+  const faculties = await Promise.all(req.body.faculties?.map(async (code) => {
+    return req.prisma.faculty.upsert({
+      where: { code },
+      create: { code, name: code, display_name: code, is_active: false },
+      update: { code, name: code, display_name: code },
+    })
+  }) || [])
+
   const topics = await Promise.all(req.body.topics?.map(async (topic) => {
     return req.prisma.courseTopic.upsert({
       where: { number_course_id: { number: topic.number, course_id: req.params.id } },
@@ -185,21 +201,9 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
       prereq_json: req.body.prereq_json as any,
       antireq_json: req.body.antireq_json as any,
       coreq_json: req.body.coreq_json as any,
-      departments: {
-        connectOrCreate: req.body.departments?.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
-      },
-      faculties: {
-        connectOrCreate: req.body.faculties?.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
-      },
-      topics: {
-        set: topics,
-      },
+      departments: { set: departments },
+      faculties: { set: faculties },
+      topics: { set: topics },
     },
   })
 
