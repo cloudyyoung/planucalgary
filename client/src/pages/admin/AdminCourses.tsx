@@ -72,6 +72,15 @@ export const columns: ColumnDef<Course>[] = [
     },
   },
   {
+    accessorKey: 'raw_json',
+    header: 'Raw JSON',
+    size: 600,
+    cell: ({ cell }) => {
+      const raw_json = cell.getValue<any>()
+      return <JsonView src={raw_json} displaySize={false} displayArrayIndex={false} collapsed />
+    },
+  },
+  {
     accessorKey: 'updated_at',
     header: 'Updated At',
     enableSorting: true,

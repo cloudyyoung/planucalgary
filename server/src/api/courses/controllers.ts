@@ -43,9 +43,12 @@ export const listCourses: CourseListHandler = async (req, res) => {
       Prisma.sql`grade_mode`,
       Prisma.sql`updated_at`,
       Prisma.sql`created_at`,
+      Prisma.sql`ts_rank(search_vector, plainto_tsquery('english', ${keywords})) AS rank`,
     ]
 
-    fields.push(Prisma.sql`ts_rank(search_vector, plainto_tsquery('english', ${keywords})) AS rank`)
+    if (req.account?.is_admin) {
+      fields.push(Prisma.sql`raw_json`)
+    }
 
     return Prisma.sql`select ${Prisma.join(fields, ", ")} from "catalog"."courses"`
   }
