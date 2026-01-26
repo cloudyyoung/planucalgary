@@ -163,29 +163,52 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
 }
 
 export const updateCourse: CourseUpdateHandler = async (req, res) => {
-  const departments = await Promise.all(req.body.departments?.map(async (code) => {
-    return req.prisma.department.upsert({
-      where: { code },
-      create: { code, name: code, display_name: code, is_active: false },
-      update: { code, name: code, display_name: code },
-    })
-  }) || [])
+  const promises = []
 
-  const faculties = await Promise.all(req.body.faculties?.map(async (code) => {
-    return req.prisma.faculty.upsert({
-      where: { code },
-      create: { code, name: code, display_name: code, is_active: false },
-      update: { code, name: code, display_name: code },
-    })
-  }) || [])
+  promises.push(
+    req.body.departments &&
+    Promise.all(
+      req.body.departments.map((code) =>
+        req.prisma.department.upsert({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+          update: { code, name: code, display_name: code },
+        }),
+      ),
+    ))
 
-  const topics = await Promise.all(req.body.topics?.map(async (topic) => {
-    return req.prisma.courseTopic.upsert({
-      where: { number_course_id: { number: topic.number, course_id: req.params.id } },
-      create: { ...topic, course_id: req.params.id },
-      update: { ...topic, course_id: req.params.id },
-    })
-  }) || [])
+  promises.push(
+    req.body.faculties &&
+    Promise.all(
+      req.body.faculties.map((code) =>
+        req.prisma.faculty.upsert({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+          update: { code, name: code, display_name: code },
+        }),
+      ),
+    )
+  )
+
+  promises.push(
+    req.body.topics &&
+    Promise.all(
+      req.body.topics.map((topic) =>
+        req.prisma.courseTopic.upsert({
+          where: {
+            number_course_id: {
+              number: topic.number,
+              course_id: req.params.id,
+            },
+          },
+          create: { ...topic, course_id: req.params.id },
+          update: { ...topic, course_id: req.params.id },
+        }),
+      ),
+    )
+  )
+
+  const [departments, faculties, topics] = await Promise.all(promises)
 
   const course = await req.prisma.course.update({
     where: { id: req.params.id },
