@@ -189,7 +189,7 @@ model Department {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  name         String  @unique
+  name         String
   display_name String
   code         String  @unique
   is_active    Boolean
