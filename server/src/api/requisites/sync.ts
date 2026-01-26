@@ -363,11 +363,20 @@ export const toCourseSets: RequisitesSyncHandler = async (req, res) => {
 }
 
 export const toFieldsOfStudy: RequisitesSyncHandler = async (req, res) => {
-  const requisiteSets = await req.prisma.requisiteSet.findMany({
-    where: {
-      name: { startsWith: FIELD_OF_STUDY_PREFIX },
-    },
-  })
+  const [requisiteSets, courseSets] = await Promise.all([
+    req.prisma.requisiteSet.findMany({
+      where: {
+        name: { startsWith: FIELD_OF_STUDY_PREFIX },
+      },
+    }),
+    req.prisma.courseSet.findMany({
+      select: {
+        course_set_group_id: true,
+      }
+    }),
+  ])
+
+  const courseSetIds = courseSets.map((cs) => cs.course_set_group_id)
 
   const fields_of_study = requisiteSets.map(async (requisiteSet) => {
     const fieldName = requisiteSet.name.replace(FIELD_OF_STUDY_PREFIX, "").trim()
@@ -378,7 +387,7 @@ export const toFieldsOfStudy: RequisitesSyncHandler = async (req, res) => {
 
     const notes = rule.notes
     const description = rule.description
-    const values = rule.value.values.map(v => v.value).flat();
+    const values = rule.value.values.map(v => v.value).flat().filter(v => courseSetIds.includes(v));
 
     return await req.prisma.fieldOfStudy.upsert({
       where: { name: fieldName },
