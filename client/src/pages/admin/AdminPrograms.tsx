@@ -79,7 +79,7 @@ export const AdminPrograms = () => {
         {
             accessorKey: 'requisites',
             header: 'Requisites',
-            size: 2000,
+            size: 600,
             cell: ({ cell }) => {
                 const requisites = cell.getValue<string>()
                 return <div className="overflow-hidden text-wrap break-all">

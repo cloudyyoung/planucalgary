@@ -62,7 +62,7 @@ export const AdminRequisiteSets = () => {
         {
             accessorKey: "json",
             header: "JSON",
-            size: 600,
+            size: 400,
             cell: ({ cell }) => {
                 const json = cell.getValue<any>()
                 return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
