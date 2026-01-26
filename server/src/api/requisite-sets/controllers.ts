@@ -41,7 +41,7 @@ export const getRequisiteSet: RequisiteSetGetHandler = async (req, res) => {
 
 export const createRequisiteSet: RequisiteSetCreateHandler = async (req, res) => {
     const existing = await req.prisma.requisiteSet.findFirst({
-        where: { csid: req.body.csid },
+        where: { requisite_set_group_id: req.body.requisite_set_group_id },
     })
     if (existing) {
         throw new RequisiteSetAlreadyExistsError(existing.id)

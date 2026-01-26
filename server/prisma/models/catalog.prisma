@@ -121,7 +121,7 @@ model RequisiteSet {
   updated_at DateTime @default(now()) @updatedAt
 
   csid                   String  @unique
-  requisite_set_group_id String
+  requisite_set_group_id String  @unique
   version                Int
   name                   String
   description            String?

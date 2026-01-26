@@ -41,7 +41,7 @@ export const getCourseSet: CourseSetGetHandler = async (req, res) => {
 
 export const createCourseSet: CourseSetCreateHandler = async (req, res) => {
   const existing = await req.prisma.courseSet.findFirst({
-    where: { csid: req.body.csid },
+    where: { course_set_group_id: req.body.course_set_group_id },
   })
 
   if (existing) {

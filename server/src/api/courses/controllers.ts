@@ -162,6 +162,14 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
 }
 
 export const updateCourse: CourseUpdateHandler = async (req, res) => {
+  const topics = await Promise.all(req.body.topics?.map(async (topic) => {
+    return req.prisma.courseTopic.upsert({
+      where: { number_course_id: { number: topic.number, course_id: req.params.id } },
+      create: { ...topic, course_id: req.params.id },
+      update: { ...topic, course_id: req.params.id },
+    })
+  }) || [])
+
   const course = await req.prisma.course.update({
     where: { id: req.params.id },
     data: {
@@ -189,10 +197,7 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
         })),
       },
       topics: {
-        connectOrCreate: req.body.topics?.map((topic) => ({
-          where: { number_course_id: { number: topic.number, course_id: req.params.id } },
-          create: topic,
-        })),
+        set: topics,
       },
     },
   })
