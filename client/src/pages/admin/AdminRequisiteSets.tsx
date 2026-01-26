@@ -45,7 +45,7 @@ export const AdminRequisiteSets = () => {
         {
             accessorKey: "requisite_set_group_id",
             header: "Requisite Set Group ID",
-            size: 200,
+            size: 250,
             enableColumnFilter: true,
             enableSorting: true,
             cell: ({ cell }) => {
