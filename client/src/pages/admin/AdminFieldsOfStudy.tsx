@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { FieldOfStudy } from "@planucalgary/shared/prisma/client";
+import { CourseSet, FieldOfStudy } from "@planucalgary/shared/prisma/client";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useFieldsOfStudy } from "@/hooks/useFieldsOfStudy";
+import JsonView from "react18-json-view";
 
 
 export const AdminFieldsOfStudy = () => {
@@ -34,8 +35,27 @@ export const AdminFieldsOfStudy = () => {
         {
             accessorKey: "name",
             header: "Name",
+            size: 250,
             enableColumnFilter: true,
             enableSorting: true,
+        },
+        {
+            accessorKey: "course_sets",
+            header: "Course Sets",
+            size: 600,
+            enableColumnFilter: false,
+            enableSorting: false,
+            cell: ({ cell }) => {
+                const course_sets = cell.getValue<CourseSet[]>()
+                return <ul className="flex flex-col gap-3">
+                    {course_sets.map((cs) => (
+                        <li key={cs.id}>
+                            <div>{cs.name}</div>
+                            <JsonView src={cs.json} displaySize={false} displayArrayIndex={false} />
+                        </li>
+                    ))}
+                </ul>
+            },
         },
         {
             accessorKey: "description",

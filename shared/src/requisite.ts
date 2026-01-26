@@ -36,6 +36,7 @@ export enum RequisitesSyncDestination {
     REQUISITES_JSONS = "REQUISITES_JSONS",
     COURSES = "COURSES",
     COURSE_SETS = "COURSE_SETS",
+    FIELDS_OF_STUDY = "FIELDS_OF_STUDY",
 }
 export const RequisitesSyncDestinationSchema = z.enum(RequisitesSyncDestination)
 export const RequisitesSyncReqBodySchema = z.object({

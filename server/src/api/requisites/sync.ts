@@ -7,8 +7,9 @@ import { getValidator } from "../../jsonlogic/requisite_json"
 
 const TRANSACTION_MAX_WAIT = 1_200_000
 const TRANSACTION_TIMEOUT = 1_200_000
+const FIELD_OF_STUDY_PREFIX = "Courses Constituting the Field of "
 
-interface CDCourseRequisite {
+interface CDRequisite {
   id: string
   name: string
   type: string
@@ -16,6 +17,14 @@ interface CDCourseRequisite {
     id: string
     name: string
     condition: string
+    value: {
+      values: {
+        logic: string
+        value: string[]
+      }[]
+    }
+    notes?: string
+    description?: string
   }[]
 }
 
@@ -53,7 +62,7 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
 
     const requisites_jsons = []
 
-    const raw_json_array: CDCourseRequisite[] = Array.isArray(raw_json) ? raw_json as any : []
+    const raw_json_array: CDRequisite[] = Array.isArray(raw_json) ? raw_json as any : []
     const prereq_raw_json = raw_json_array.find((r) => r.type === "Prerequisite")
     const coreq_raw_json = raw_json_array.find((r) => r.type === "Corequisite")
     const antireq_raw_json = raw_json_array.find((r) => r.type === "Antirequisite")
@@ -80,7 +89,7 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
         },
       }))
     }
-    
+
     if (coreq) {
       requisites_jsons.push(req.prisma.requisiteJson.upsert({
         where: {
@@ -349,6 +358,58 @@ export const toCourseSets: RequisitesSyncHandler = async (req, res) => {
 
   return res.json({
     message: `${courseSets.length} requisites are synced to course sets.`,
+    affected_rows: count,
+  })
+}
+
+export const toFieldsOfStudy: RequisitesSyncHandler = async (req, res) => {
+  const requisiteSets = await req.prisma.requisiteSet.findMany({
+    where: {
+      name: { startsWith: FIELD_OF_STUDY_PREFIX },
+    },
+  })
+
+  const fields_of_study = requisiteSets.map(async (requisiteSet) => {
+    const fieldName = requisiteSet.name.replace(FIELD_OF_STUDY_PREFIX, "").trim()
+    const rawJson = requisiteSet.raw_json as any as CDRequisite[]
+    const rule = rawJson[0].rules[0]
+
+    if (!rule) return
+
+    const notes = rule.notes
+    const description = rule.description
+    const values = rule.value.values.map(v => v.value).flat();
+
+    return await req.prisma.fieldOfStudy.upsert({
+      where: { name: fieldName },
+      create: {
+        name: fieldName,
+        description: description,
+        notes: notes,
+        course_sets: {
+          connect: values.map((v) => ({ course_set_group_id: v })),
+        },
+      },
+      update: {
+        description: description,
+        notes: notes,
+        course_sets: {
+          set: values.map((v) => ({ course_set_group_id: v })),
+        },
+      },
+    })
+  })
+
+  const result = await req.prisma.$transaction(async () => {
+    return Promise.allSettled(fields_of_study)
+  }, {
+    timeout: TRANSACTION_TIMEOUT,
+    maxWait: TRANSACTION_MAX_WAIT,
+  })
+  const count = result.length
+
+  return res.json({
+    message: `${count} fields of study are synced from requisite sets.`,
     affected_rows: count,
   })
 }

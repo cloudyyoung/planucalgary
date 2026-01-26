@@ -3,7 +3,7 @@ import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHand
 import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
 import { getValidator } from "../../jsonlogic/requisite_json"
-import { toCourses, toCourseSets, toRequisitesJson } from "./sync"
+import { toCourses, toCourseSets, toFieldsOfStudy, toRequisitesJson } from "./sync"
 import { InvalidSyncDestinationError, RequisiteNotFoundError } from "./errors"
 
 export const listRequisites: RequisiteListHandler = async (req, res) => {
@@ -125,6 +125,8 @@ export const syncRequisites: RequisitesSyncHandler = async (req, res, next) => {
     toCourses(req, res, next)
   } else if (destination === RequisitesSyncDestination.COURSE_SETS) {
     toCourseSets(req, res, next)
+  } else if (destination === RequisitesSyncDestination.FIELDS_OF_STUDY) {
+    toFieldsOfStudy(req, res, next)
   } else {
     throw new InvalidSyncDestinationError()
   }
