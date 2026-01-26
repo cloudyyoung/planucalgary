@@ -249,7 +249,6 @@ export const AdminRequisitesJsons = () => {
       header: "Raw JSON",
       size: 600,
       enableSorting: true,
-      enableColumnFilter: true,
       cell: ({ cell }) => {
         const raw_json = cell.getValue<any>()
         return <JsonView src={raw_json} displaySize={false} displayArrayIndex={false} />
