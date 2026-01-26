@@ -1,11 +1,11 @@
 import { useMemo, useState, useEffect } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import JSONPretty from 'react-json-pretty';
 import { RequisiteJson } from "@planucalgary/shared/prisma/client"
 import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@planucalgary/shared";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
 import Editor, { useMonaco } from '@monaco-editor/react';
+import JsonView from 'react18-json-view'
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AdvancedTable from "@/components/advanced-table";
@@ -158,7 +158,7 @@ export const AdminRequisitesJsons = () => {
                         {
                           jsonChoices.map((choice, index) => (
                             <Button key={index} variant="ghost" className="h-full min-h-20 text-left justify-start w-full" onClick={() => onClickJsonChoice(choice)}>
-                              <JSONPretty data={JSON.stringify(choice)} />
+                              <JsonView src={choice} displaySize={false} displayArrayIndex={false} />
                             </Button>
                           ))
                         }
@@ -194,7 +194,7 @@ export const AdminRequisitesJsons = () => {
                 </DialogContent>
               </Dialog>
             </div>
-            <JSONPretty data={JSON.stringify(json)} />
+            <JsonView src={json} displaySize={false} displayArrayIndex={false} />
           </div>
         )
       },
@@ -215,7 +215,7 @@ export const AdminRequisitesJsons = () => {
                   {errors.map((error, index) => (
                     <li key={index} className="text-sm bg-destructive/10 text-destructive p-2">
                       <span>{error.message}</span>
-                      <JSONPretty data={JSON.stringify(error.value)} className="text-xs" />
+                      <JsonView src={error.value} displaySize={false} displayArrayIndex={false} />
                     </li>
                   ))}
                 </ul>
@@ -227,7 +227,7 @@ export const AdminRequisitesJsons = () => {
                   {warnings.map((warning, index) => (
                     <li key={index} className="text-sm bg-caution/10 text-caution p-2">
                       <span>{warning.message}</span>
-                      <JSONPretty data={JSON.stringify(warning.value)} className="text-xs" />
+                      <JsonView src={warning.value} displaySize={false} displayArrayIndex={false} />
                     </li>
                   ))}
                 </ul>
@@ -252,7 +252,7 @@ export const AdminRequisitesJsons = () => {
       enableColumnFilter: true,
       cell: ({ cell }) => {
         const raw_json = cell.getValue<any>()
-        return <JSONPretty data={JSON.stringify(raw_json)} />
+        return <JsonView src={raw_json} displaySize={false} displayArrayIndex={false} />
       },
     },
     {

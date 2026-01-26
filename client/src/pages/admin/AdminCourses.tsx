@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import JSONPretty from 'react-json-pretty';
+import JsonView from "react18-json-view";
 import { DateTime } from "luxon";
 import { Course } from "@planucalgary/shared/prisma/client";
 
@@ -39,8 +39,8 @@ export const columns: ColumnDef<Course>[] = [
     header: "Prerequisites JSON",
     size: 400,
     cell: ({ cell }) => {
-      const json = JSON.stringify(cell.getValue<any>())
-      return <JSONPretty data={json} />
+      const json = cell.getValue<any>()
+      return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
     },
   },
   {
@@ -53,8 +53,8 @@ export const columns: ColumnDef<Course>[] = [
     header: "Antirequisites JSON",
     size: 400,
     cell: ({ cell }) => {
-      const json = JSON.stringify(cell.getValue<any>())
-      return <JSONPretty data={json} />
+      const json = cell.getValue<any>()
+      return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
     },
   },
   {
@@ -67,8 +67,8 @@ export const columns: ColumnDef<Course>[] = [
     header: "Corequisites JSON",
     size: 400,
     cell: ({ cell }) => {
-      const json = JSON.stringify(cell.getValue<any>())
-      return <JSONPretty data={json} />
+      const json = cell.getValue<any>()
+      return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
     },
   },
   {

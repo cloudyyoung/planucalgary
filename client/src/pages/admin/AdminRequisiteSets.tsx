@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import { RequisiteSet } from "@planucalgary/shared/prisma/client";
-import JSONPretty from "react-json-pretty";
+import JsonView from "react18-json-view";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useRequisiteSets } from "@/hooks/useRequisiteSets";
@@ -65,7 +65,7 @@ export const AdminRequisiteSets = () => {
             size: 600,
             cell: ({ cell }) => {
                 const json = cell.getValue<any>()
-                return <JSONPretty data={JSON.stringify(json)} />
+                return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
             },
         },
         {
@@ -88,7 +88,7 @@ export const AdminRequisiteSets = () => {
             size: 600,
             cell: ({ cell }) => {
                 const raw_json = cell.getValue<any>()
-                return <JSONPretty data={JSON.stringify(raw_json)} />
+                return <JsonView src={raw_json} displaySize={false} displayArrayIndex={false} />
             },
         },
         {

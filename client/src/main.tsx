@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { QueryClientProvider } from '@tanstack/react-query';
 
+import 'react18-json-view/src/style.css'
 import './index.css'
 
 import { queryClient } from './api';
