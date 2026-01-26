@@ -16,6 +16,7 @@ import { router as departmentRouter } from "./api/departments/routes"
 import { router as programRouter } from "./api/programs/routes"
 import { router as courseSetRouter } from "./api/course-sets/routes"
 import { router as requisiteSetRouter } from "./api/requisite-sets/routes"
+import { router as FieldsOfStudyRouter } from "./api/fields-of-study/routes"
 
 import { PORT, JWT_SECRET_KEY } from "./config"
 import { auth, errors, pagination, prisma } from "./middlewares"
@@ -57,6 +58,7 @@ const load = async (app: Express) => {
   app.use("/programs", programRouter)
   app.use("/course-sets", courseSetRouter)
   app.use("/requisite-sets", requisiteSetRouter)
+  app.use("/field-of-studies", FieldsOfStudyRouter)
 
   app.get("/", (_req, res) => {
     return res.status(200).json({ message: "ok" }).end()

@@ -3,6 +3,7 @@ export * from "./course-set";
 export * from "./course";
 export * from "./department";
 export * from "./faculty";
+export * from "./fields-of-study";
 export * from "./id";
 export * from "./pagination";
 export * from "./program";
