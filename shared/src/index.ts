@@ -1,6 +1,5 @@
 export * from "./account";
 export * from "./course-set";
-export * from "./course-topic";
 export * from "./course";
 export * from "./department";
 export * from "./faculty";

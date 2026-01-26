@@ -1,17 +1,16 @@
 import z from 'zod'
 import { type RequestHandler } from 'express';
-import { CourseTopicCreateSchema } from './course-topic'
 import { PaginatedRequestSchema, PaginatedResponse } from './pagination'
 import { IdInputSchema } from './id';
 import { getSortingReqQuerySchema } from './sorting';
 import { Course } from './generated/prisma/client';
-import { CourseScalarFieldEnumSchema, CourseCreateInputObjectZodSchema, CourseUpdateInputObjectZodSchema } from './generated/zod/schemas';
+import { CourseScalarFieldEnumSchema, CourseCreateInputObjectZodSchema, CourseUpdateInputObjectZodSchema, CourseTopicCreateInputObjectSchema } from './generated/zod/schemas';
 
 const CourseRelationsSchema = z.object({
     subject: z.string(),
     departments: z.string().array().optional(),
     faculties: z.string().array().optional(),
-    topics: z.array(CourseTopicCreateSchema.omit({ course_id: true })).optional(),
+    topics: z.array(CourseTopicCreateInputObjectSchema).optional(),
 });
 
 
