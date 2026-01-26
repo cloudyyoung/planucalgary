@@ -109,8 +109,7 @@ model CourseSet {
 
   course_set_created_at      DateTime
   course_set_last_updated_at DateTime
-  fieldOfStudy               FieldOfStudy? @relation(fields: [fieldOfStudyId], references: [id])
-  fieldOfStudyId             String?
+  fieldsOfStudy              FieldOfStudy[]
 
   @@map("course_sets")
   @@schema("catalog")
