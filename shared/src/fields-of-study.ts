@@ -2,8 +2,8 @@ import * as z from "zod";
 import { RequestHandler } from "express";
 import { PaginatedRequestSchema, PaginatedResponse } from "./pagination";
 import { IdInputSchema } from "./id";
-import { FieldsOfStudy } from './generated/prisma/client';
-import { FieldsOfStudyCreateInputObjectZodSchema, FieldsOfStudyScalarFieldEnumSchema, FieldsOfStudyUpdateInputObjectZodSchema } from "./generated/zod/schemas";
+import { FieldOfStudy } from './generated/prisma/client';
+import { FieldOfStudyCreateInputObjectZodSchema, FieldOfStudyScalarFieldEnumSchema, FieldOfStudyUpdateInputObjectZodSchema } from "./generated/zod/schemas";
 import { getSortingReqQuerySchema } from "./sorting";
 
 
@@ -13,32 +13,31 @@ export const FieldsOfStudyListReqQuerySchema = z.object({
     name: z.string().optional(),
     description: z.string().optional(),
     notes: z.string().optional(),
-    sorting: getSortingReqQuerySchema(FieldsOfStudyScalarFieldEnumSchema),
+    sorting: getSortingReqQuerySchema(FieldOfStudyScalarFieldEnumSchema),
 }).extend(PaginatedRequestSchema.shape);
 export type FieldsOfStudyListReqQuery = z.infer<typeof FieldsOfStudyListReqQuerySchema>;
-export type FieldsOfStudyListResBody = PaginatedResponse<FieldsOfStudy>;
+export type FieldsOfStudyListResBody = PaginatedResponse<FieldOfStudy>;
 export type FieldsOfStudyListHandler = RequestHandler<never, FieldsOfStudyListResBody, never, FieldsOfStudyListReqQuery>;
 
 
 // Get Field Of Study
 export const FieldsOfStudyGetParamsSchema = IdInputSchema
 export type FieldsOfStudyGetParams = z.infer<typeof FieldsOfStudyGetParamsSchema>;
-export type FieldsOfStudyGetHandler = RequestHandler<FieldsOfStudyGetParams, FieldsOfStudy, never, never>;
+export type FieldsOfStudyGetHandler = RequestHandler<FieldsOfStudyGetParams, FieldOfStudy, never, never>;
 
 
 // Create Field Of Study
-export const FieldsOfStudyCreateBodySchema = FieldsOfStudyCreateInputObjectZodSchema
+export const FieldsOfStudyCreateBodySchema = FieldOfStudyCreateInputObjectZodSchema
 export type FieldsOfStudyCreateBody = z.infer<typeof FieldsOfStudyCreateBodySchema>;
-export type FieldsOfStudyCreateHandler = RequestHandler<never, FieldsOfStudy, FieldsOfStudyCreateBody, never>;
+export type FieldsOfStudyCreateHandler = RequestHandler<never, FieldOfStudy, FieldsOfStudyCreateBody, never>;
 
 
 // Update Field Of Study
 export const FieldsOfStudyUpdateParamsSchema = IdInputSchema
 export type FieldsOfStudyUpdateParams = z.infer<typeof FieldsOfStudyUpdateParamsSchema>;
-export const FieldsOfStudyUpdateBodySchema = FieldsOfStudyUpdateInputObjectZodSchema
+export const FieldsOfStudyUpdateBodySchema = FieldOfStudyUpdateInputObjectZodSchema
 export type FieldsOfStudyUpdateBody = z.infer<typeof FieldsOfStudyUpdateBodySchema>;
-export type FieldsOfStudyUpdateHandler = RequestHandler<FieldsOfStudyUpdateParams, FieldsOfStudy, FieldsOfStudyUpdateBody, never>;
-
+export type FieldsOfStudyUpdateHandler = RequestHandler<FieldsOfStudyUpdateParams, FieldOfStudy, FieldsOfStudyUpdateBody, never>;
 
 // Delete Field Of Study
 export const FieldsOfStudyDeleteParamsSchema = IdInputSchema
