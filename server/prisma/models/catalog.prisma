@@ -109,6 +109,8 @@ model CourseSet {
 
   course_set_created_at      DateTime
   course_set_last_updated_at DateTime
+  fieldOfStudy               FieldOfStudy? @relation(fields: [fieldOfStudyId], references: [id])
+  fieldOfStudyId             String?
 
   @@map("course_sets")
   @@schema("catalog")
@@ -282,5 +284,20 @@ model Program {
 
   @@index([search_vector], type: Gin, map: "program_search_vector_gin")
   @@map("programs")
+  @@schema("catalog")
+}
+
+model FieldOfStudy {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  name        String  @unique
+  description String?
+  notes       String?
+
+  course_sets CourseSet[]
+
+  @@map("fields_of_study")
   @@schema("catalog")
 }
