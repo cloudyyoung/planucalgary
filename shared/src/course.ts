@@ -48,3 +48,7 @@ export type CourseUpdateHandler = RequestHandler<CourseUpdateReqParams, Course, 
 export const CourseDeleteReqParamsSchema = IdInputSchema
 export type CourseDeleteReqParams = z.infer<typeof CourseDeleteReqParamsSchema>
 export type CourseDeleteHandler = RequestHandler<CourseDeleteReqParams, void, never, never>;
+
+
+// Crawl Courses
+export type CourseCrawlHandler = RequestHandler<never, void, never, never>;

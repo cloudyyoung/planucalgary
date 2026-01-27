@@ -4,6 +4,7 @@ import { CourseCreateReqBodySchema, CourseListReqQuerySchema, CourseGetReqParams
 import { createCourse, deleteCourse, getCourse, listCourses, updateCourse } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
+import { crawlCourses } from "./crawl"
 
 const router = Router()
 router.get("/", zod({ query: CourseListReqQuerySchema }), listCourses)
@@ -16,6 +17,8 @@ router.put(
   updateCourse,
 )
 router.delete("/:id", admin(), zod({ params: CourseDeleteReqParamsSchema }), deleteCourse)
+
+router.post("/crawl", admin(), zod({}), crawlCourses)
 
 export default router
 export { router }
