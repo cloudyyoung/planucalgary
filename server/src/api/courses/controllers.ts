@@ -121,7 +121,7 @@ export const getCourse: CourseGetHandler = async (req, res) => {
 
 export const createCourse: CourseCreateHandler = async (req, res) => {
   const existing = await req.prisma.course.findFirst({
-    where: { course_group_id: req.body.course_group_id },
+    where: { course_group_id: req.body.course_group_id, cid: req.body.cid },
   })
 
   if (existing) {
