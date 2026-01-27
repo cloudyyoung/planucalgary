@@ -90,9 +90,10 @@ export const crawlCourses: CourseCrawlHandler = async (req, res) => {
         }
 
         const courses = coursesData.map((courseData) => {
-            const facultyCode = processFacultyCode(courseData.college);
             const topics = processTopics(courseData.topics);
             const [description, prereq, coreq, antireq, notes, aka, nogpa] = processDescription(courseData.description);
+            const facultyCode = processFacultyCode(courseData.college);
+            const faculties = facultyCode ? [facultyCode] : [];
             const departments = filterDepartments(courseData.departments);
             const components = courseData.components.map(c => componentSerializer(c.code));
             const career = careerSerializer(courseData.career);
@@ -143,12 +144,12 @@ export const crawlCourses: CourseCrawlHandler = async (req, res) => {
                             create: { code, name: code, display_name: code, is_active: false },
                         })),
                     },
-                    faculties: facultyCode ? {
-                        connectOrCreate: [{
-                            where: { code: facultyCode },
-                            create: { code: facultyCode, name: facultyCode, display_name: facultyCode, is_active: false },
-                        }],
-                    } : undefined,
+                    faculties: {
+                        connectOrCreate: faculties.map(code => ({
+                            where: { code },
+                            create: { code, name: code, display_name: code, is_active: false },
+                        })),
+                    },
                     topics: { create: topics },
                 },
                 update: {
