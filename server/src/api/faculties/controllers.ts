@@ -42,8 +42,9 @@ export const createFaculty: FacultyCreateHandler = async (req, res) => {
   const existing = await req.prisma.faculty.findFirst({
     where: { code: req.body.code },
   })
+
   if (existing) {
-    throw new FacultyAlreadyExistsError()
+    throw new FacultyAlreadyExistsError(existing.id)
   }
 
   const faculty = await req.prisma.faculty.create({

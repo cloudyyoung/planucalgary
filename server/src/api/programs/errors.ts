@@ -7,9 +7,10 @@ export class ProgramNotFoundError extends Error {
 }
 
 export class ProgramAlreadyExistsError extends Error {
-    constructor() {
+    constructor(existingId: string) {
         super()
         this.name = "ProgramAlreadyExistsError"
         this.message = "A program already exists."
+        this.stack = existingId
     }
 }

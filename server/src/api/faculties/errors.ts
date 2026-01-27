@@ -7,9 +7,10 @@ export class FacultyNotFoundError extends Error {
 }
 
 export class FacultyAlreadyExistsError extends Error {
-    constructor() {
+    constructor(existingId: string) {
         super()
         this.name = "FacultyAlreadyExistsError"
         this.message = "A faculty already exists."
+        this.stack = existingId
     }
 }

@@ -42,8 +42,9 @@ export const createDepartment: DepartmentCreateHandler = async (req, res) => {
   const existing = await req.prisma.department.findFirst({
     where: { code: req.body.code },
   })
+
   if (existing) {
-    throw new DepartmentAlreadyExistsError()
+    throw new DepartmentAlreadyExistsError(existing.id)
   }
 
   const department = await req.prisma.department.create({

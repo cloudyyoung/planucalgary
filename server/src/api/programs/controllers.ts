@@ -42,8 +42,9 @@ export const createProgram: ProgramCreateHandler = async (req, res) => {
   const existing = await req.prisma.program.findFirst({
     where: { program_group_id: req.body.program_group_id as string },
   })
+
   if (existing) {
-    throw new ProgramAlreadyExistsError()
+    throw new ProgramAlreadyExistsError(existing.id)
   }
 
   const program = await req.prisma.program.create({
