@@ -163,53 +163,6 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
 }
 
 export const updateCourse: CourseUpdateHandler = async (req, res) => {
-  const promises = []
-
-  promises.push(
-    req.body.departments &&
-    Promise.all(
-      req.body.departments.map((code) =>
-        req.prisma.department.upsert({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-          update: { code, name: code, display_name: code },
-        }),
-      ),
-    ))
-
-  promises.push(
-    req.body.faculties &&
-    Promise.all(
-      req.body.faculties.map((code) =>
-        req.prisma.faculty.upsert({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-          update: { code, name: code, display_name: code },
-        }),
-      ),
-    )
-  )
-
-  promises.push(
-    req.body.topics &&
-    Promise.all(
-      req.body.topics.map((topic) =>
-        req.prisma.courseTopic.upsert({
-          where: {
-            number_course_id: {
-              number: topic.number,
-              course_id: req.params.id,
-            },
-          },
-          create: { ...topic, course_id: req.params.id },
-          update: { ...topic, course_id: req.params.id },
-        }),
-      ),
-    )
-  )
-
-  const [departments, faculties, topics] = await Promise.all(promises)
-
   const course = await req.prisma.course.update({
     where: { id: req.params.id },
     data: {
@@ -224,9 +177,32 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
       prereq_json: req.body.prereq_json as any,
       antireq_json: req.body.antireq_json as any,
       coreq_json: req.body.coreq_json as any,
-      departments: { set: departments },
-      faculties: { set: faculties },
-      topics: { set: topics },
+      departments: {
+        connectOrCreate: req.body.departments?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+        set: req.body.departments?.map((code) => ({ code })),
+      },
+      faculties: {
+        connectOrCreate: req.body.faculties?.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+        set: req.body.faculties?.map((code) => ({ code }))
+      },
+      topics: {
+        connectOrCreate: req.body.topics?.map((topic) => ({
+          where: {
+            number_course_id: {
+              number: topic.number,
+              course_id: req.params.id,
+            },
+          },
+          create: { ...topic, course_id: req.params.id },
+        })),
+        set: req.body.topics?.map((topic) => ({ id: topic.id })),
+      },
     },
   })
 
