@@ -57,7 +57,7 @@ interface CoursesResponse {
     [key: string]: CourseData;
 }
 
-const LIMIT = 100;
+const LIMIT = 500;
 const PREREQ_TEXT = "Prerequisite(s): "
 const COREQ_TEXT = "Corequisite(s): "
 const ANTIREQ_TEXT = "Antirequisite(s): "
@@ -175,7 +175,10 @@ export const crawlCourses: CourseCrawlHandler = async (req, res) => {
             });
         })
 
-        const transaction = await req.prisma.$transaction(courses);
+        const transaction = await req.prisma.$transaction(async () => await Promise.all(courses), {
+            maxWait: 60000,
+            timeout: 60000,
+        });
         console.log(`Processed ${transaction.length} courses.`)
     }
 
