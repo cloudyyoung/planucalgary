@@ -201,7 +201,12 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
           },
           create: topic,
         })),
-        set: req.body.topics?.map((topic) => ({ id: topic.id })),
+        set: req.body.topics?.map((topic) => ({
+          number_course_id: {
+            number: topic.number,
+            course_id: req.params.id,
+          }
+        })),
       },
     },
   })
