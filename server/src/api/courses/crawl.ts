@@ -176,7 +176,7 @@ export const crawlCourses: CourseCrawlHandler = async (req, res) => {
             });
         })
 
-        const transaction = await req.prisma.$transaction(async () => await Promise.all(courses), {
+        const transaction = await req.prisma.$transaction(async () => await Promise.allSettled(courses), {
             maxWait: 60000,
             timeout: 60000,
         });
