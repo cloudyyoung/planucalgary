@@ -68,7 +68,7 @@ const AKA_TEXT = "Also known as: "
 
 
 export const crawlCourses: CourseCrawlHandler = async (req, res) => {
-    for (let t = 0; t <= 99; t++) {
+    for (let t = 0; t <= 99999; t++) {
         const limit = LIMIT
         const skip = t * LIMIT
         const url = `https://app.coursedog.com/api/v1/cm/ucalgary_peoplesoft/courses?skip=${skip}&limit=${limit}`
