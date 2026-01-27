@@ -57,7 +57,7 @@ interface CoursesResponse {
     [key: string]: CourseData;
 }
 
-const LIMIT = 500;
+const LIMIT = 100;
 const PREREQ_TEXT = "Prerequisite(s): "
 const COREQ_TEXT = "Corequisite(s): "
 const ANTIREQ_TEXT = "Antirequisite(s): "
