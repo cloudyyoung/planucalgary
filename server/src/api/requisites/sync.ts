@@ -187,7 +187,7 @@ export const toRequisitesJson: RequisitesSyncHandler = async (req, res, next) =>
   })
 
   await req.prisma.$transaction(async (tx) => {
-    await Promise.all([
+    await Promise.allSettled([
       ...courses_requisites_jsons,
       ...course_sets_requisites_json,
       ...requisite_sets_requisites_json,
