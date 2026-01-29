@@ -6,6 +6,13 @@ import { Program } from './generated/prisma/client'
 import { CareerSchema, ProgramCreateInputObjectZodSchema, ProgramScalarFieldEnumSchema, ProgramUpdateInputObjectZodSchema } from "./generated/zod/schemas"
 import { getSortingReqQuerySchema } from "./sorting"
 
+
+const ProgramRelationsSchema = z.object({
+    faculties: z.string().array(),
+    departments: z.string().array(),
+})
+
+
 // List Programs
 export const ProgramListReqQuerySchema = z.object({
     id: z.string().optional(),
@@ -27,7 +34,7 @@ export type ProgramGetHandler = RequestHandler<ProgramGetParams, Program, never,
 
 
 // Create Program
-export const ProgramCreateBodySchema = ProgramCreateInputObjectZodSchema
+export const ProgramCreateBodySchema = ProgramCreateInputObjectZodSchema.extend(ProgramRelationsSchema.shape)
 export type ProgramCreateBody = z.infer<typeof ProgramCreateBodySchema>;
 export type ProgramCreateHandler = RequestHandler<never, Program, ProgramCreateBody, never>;
 
@@ -35,7 +42,7 @@ export type ProgramCreateHandler = RequestHandler<never, Program, ProgramCreateB
 // Update Program
 export const ProgramUpdateParamsSchema = IdInputSchema
 export type ProgramUpdateParams = z.infer<typeof ProgramUpdateParamsSchema>;
-export const ProgramUpdateBodySchema = ProgramUpdateInputObjectZodSchema
+export const ProgramUpdateBodySchema = ProgramUpdateInputObjectZodSchema.extend(ProgramRelationsSchema.loose().shape)
 export type ProgramUpdateBody = z.infer<typeof ProgramUpdateBodySchema>;
 export type ProgramUpdateHandler = RequestHandler<ProgramUpdateParams, Program, ProgramUpdateBody, never>;
 

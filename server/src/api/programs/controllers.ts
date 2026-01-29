@@ -48,7 +48,23 @@ export const createProgram: ProgramCreateHandler = async (req, res) => {
   }
 
   const program = await req.prisma.program.create({
-    data: req.body as any,
+    data: {
+      ...req.body,
+      faculties: {
+        connectOrCreate: req.body.faculties?.map(code => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+      },
+      departments: {
+        connectOrCreate: req.body.departments?.map(code => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+      },
+      requisites: req.body.requisites as any,
+      start_term: req.body.start_term as any,
+    },
   })
 
   return res.json(program)
@@ -57,7 +73,25 @@ export const createProgram: ProgramCreateHandler = async (req, res) => {
 export const updateProgram: ProgramUpdateHandler = async (req, res) => {
   const program = await req.prisma.program.update({
     where: { id: req.params.id },
-    data: req.body as any,
+    data: {
+      ...req.body,
+      faculties: {
+        set: [],
+        connectOrCreate: req.body.faculties?.map(code => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+      },
+      departments: {
+        set: [],
+        connectOrCreate: req.body.departments?.map(code => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+      },
+      requisites: req.body.requisites as any,
+      start_term: req.body.start_term as any,
+    },
   })
   return res.json(program)
 }
