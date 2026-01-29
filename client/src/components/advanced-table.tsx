@@ -317,7 +317,7 @@ const AdvancedTable = <T,>({ table, className, header, isLoading = false, isFetc
   }, [currentFiltering]);
 
   return (
-    <div className="flex flex-col w-full h-screen overflow-hidden">
+    <div className="flex flex-col w-full h-screen overflow-hidden relative">
       {header && (
         <div className="p-2 bg-muted flex flex-row gap-2">
           {header}
