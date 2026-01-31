@@ -1,8 +1,8 @@
 import { Router } from "express"
-import { catalogQueue } from "@/queue"
 import { getQueueStatus } from "./controllers"
 
-export const router: Router = Router()
+const router = Router()
+router.get("/catalog", getQueueStatus)
 
-
-router.get(`/${catalogQueue.name}`, getQueueStatus)
+export default router
+export { router }
