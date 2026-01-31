@@ -42,11 +42,15 @@ export const defaultWorkerOptions: WorkerOptions = {
  * Create a new queue with default options
  */
 export function createQueue<T = any>(name: string, options?: Partial<QueueOptions>): Queue<T> {
-  return new Queue<T>(name, {
+  const queue = new Queue<T>(name, {
     ...defaultQueueOptions,
     ...options,
   })
+  queues.push(queue)
+  return queue
 }
+
+export const queues: Queue[] = []
 
 /**
  * Create a new worker with default options
@@ -60,17 +64,17 @@ export function createWorker<T = any>(
     ...defaultWorkerOptions,
     ...options,
   })
-  activeWorkers.push(worker)
+  workers.push(worker)
   return worker
 }
 
 // Export active workers for graceful shutdown
-export const activeWorkers: Worker[] = []
+export const workers: Worker[] = []
 
 /**
  * Gracefully close all workers and Redis connection
  */
 export async function closeQueues(): Promise<void> {
-  await Promise.all(activeWorkers.map((worker) => worker.close()))
+  await Promise.all(workers.map((worker) => worker.close()))
   await redisConnection.quit()
 }

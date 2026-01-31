@@ -1,7 +1,7 @@
 import { CourseListHandler, CourseGetHandler, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCrawlHandler, getSortings } from "@planucalgary/shared"
 import { Course, Prisma } from "@planucalgary/shared/prisma/client"
 import { CourseAlreadyExistsError, CourseNotFoundError } from "./errors"
-import { courseCrawlQueue } from "@/queue"
+import { catalogQueue } from "@/queue"
 
 export const listCourses: CourseListHandler = async (req, res) => {
   const keywords = req.query.keywords
@@ -223,8 +223,7 @@ export const deleteCourse: CourseDeleteHandler = async (req, res) => {
 }
 
 export const crawlCourses: CourseCrawlHandler = async (req, res) => {
-  const jobId = await courseCrawlQueue.add("crawl-courses", {}, {
-    priority: 1,
+  const jobId = await catalogQueue.add("crawl-courses", {}, {
     attempts: 3,
     backoff: {
       type: "exponential",

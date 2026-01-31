@@ -17,7 +17,7 @@ import { router as programRouter } from "./api/programs/routes"
 import { router as courseSetRouter } from "./api/course-sets/routes"
 import { router as requisiteSetRouter } from "./api/requisite-sets/routes"
 import { router as FieldsOfStudyRouter } from "./api/fields-of-study/routes"
-import { router as queueRouter } from "./api/queue/routes"
+import { router as queuesRouter } from "./api/queues/routes"
 import { PORT, JWT_SECRET_KEY } from "./config"
 import { auth, errors, pagination, prisma } from "./middlewares"
 import { emptyget } from "./middlewares/empty-get"
@@ -60,7 +60,7 @@ const load = async (app: Express) => {
   app.use("/course-sets", courseSetRouter)
   app.use("/requisite-sets", requisiteSetRouter)
   app.use("/field-of-studies", FieldsOfStudyRouter)
-  app.use("/queue", queueRouter)
+  app.use("/queues", queuesRouter)
 
   app.get("/", (_req, res) => {
     return res.status(200).json({ message: "ok" }).end()

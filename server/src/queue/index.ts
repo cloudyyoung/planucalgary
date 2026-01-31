@@ -9,4 +9,4 @@ export function initWorkers() {
 
 export * from "./queues"
 
-export { closeQueues } from "./config"
+export { closeQueues, workers, queues } from "./config"

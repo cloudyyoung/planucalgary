@@ -1,3 +1,3 @@
 import { createQueue } from "./config";
 
-export const courseCrawlQueue = createQueue("course-crawl")
+export const catalogQueue = createQueue("catalog")
