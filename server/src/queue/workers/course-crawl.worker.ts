@@ -1,6 +1,5 @@
 import { Job } from "bullmq"
 import { createWorker, activeWorkers } from "../config"
-import { CourseCrawlJobData } from "../queues/course-crawl.queue"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { PrismaClient, Career, CourseComponent } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
@@ -296,7 +295,7 @@ async function processSingleCourse(
 /**
  * Process course crawl jobs
  */
-async function processCourseCrawlJob(job: Job<CourseCrawlJobData>) {
+async function processCourseCrawlJob(job: Job) {
   const adapter = new PrismaPg({ connectionString: DATABASE_URL })
   const prisma = new PrismaClient({ adapter })
 
@@ -367,11 +366,11 @@ async function processCourseCrawlJob(job: Job<CourseCrawlJobData>) {
  * Initialize course crawl worker
  */
 export function initCourseCrawlWorker() {
-  const courseCrawlWorker = createWorker<CourseCrawlJobData>(
+  const courseCrawlWorker = createWorker(
     "course-crawl",
     processCourseCrawlJob,
     {
-      concurrency: 1, // Process one crawl at a time to avoid rate limiting
+      concurrency: 1,
     }
   )
 
