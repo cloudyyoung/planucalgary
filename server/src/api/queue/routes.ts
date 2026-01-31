@@ -1,6 +1,6 @@
 import express, { Router } from "express"
 import asyncHandler from "express-async-handler"
-import { courseCrawlQueue, CourseCrawlJobData } from "@/queue"
+import { courseCrawlQueue } from "@/queue"
 import { Job } from "bullmq"
 
 export const router: Router = express.Router()
@@ -18,15 +18,9 @@ router.get(
         res.json({
             counts,
             recentJobs: await Promise.all(
-                jobs.map(async (job: Job<CourseCrawlJobData>) => ({
-                    id: job.id,
-                    name: job.name,
-                    data: job.data,
+                jobs.map(async (job: Job) => ({
                     state: await job.getState(),
-                    progress: job.progress,
-                    attemptsMade: job.attemptsMade,
-                    timestamp: job.timestamp,
-                    returnvalue: job.returnvalue,
+                    ...job,
                 }))
             ),
         })

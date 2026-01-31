@@ -225,10 +225,7 @@ export const deleteCourse: CourseDeleteHandler = async (req, res) => {
 export const crawlCourses: CourseCrawlHandler = async (req, res) => {
   const { startBatch, endBatch } = req.query
 
-  const jobId = await startCourseCrawl({
-    startBatch: startBatch ? Number(startBatch) : undefined,
-    endBatch: endBatch ? Number(endBatch) : undefined,
-  })
+  const jobId = await startCourseCrawl()
 
   if (!jobId) {
     res.sendStatus(500)
