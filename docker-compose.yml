@@ -13,7 +13,7 @@ services:
       POSTGRES_DB: root
 
   redis:
-    image: redis:7-alpine
+    image: redis
     restart: always
     ports:
       - 6412:6379
