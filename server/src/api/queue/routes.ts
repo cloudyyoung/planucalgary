@@ -1,6 +1,6 @@
 import express, { Router } from "express"
 import asyncHandler from "express-async-handler"
-import { courseCrawlQueue, CourseCrawlJobData } from "../../queue"
+import { courseCrawlQueue, CourseCrawlJobData } from "@/queue"
 import { Job } from "bullmq"
 
 export const router: Router = express.Router()
