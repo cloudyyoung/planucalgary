@@ -21,7 +21,7 @@ import { router as queuesRouter } from "./api/queues/routes"
 import { PORT, JWT_SECRET_KEY } from "./config"
 import { auth, errors, pagination, prisma } from "./middlewares"
 import { emptyget } from "./middlewares/empty-get"
-import { initWorkers, closeQueues } from "./queue"
+import { closeWorkers } from "./queue"
 
 const load = async (app: Express) => {
   process.on("uncaughtException", async (error) => {
@@ -68,9 +68,6 @@ const load = async (app: Express) => {
 
   app.use(errors())
 
-  // Initialize BullMQ workers
-  initWorkers()
-
   app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`)
   })
@@ -78,13 +75,13 @@ const load = async (app: Express) => {
   // Graceful shutdown
   process.on("SIGTERM", async () => {
     console.log("SIGTERM signal received: closing HTTP server and queues")
-    await closeQueues()
+    await closeWorkers()
     process.exit(0)
   })
 
   process.on("SIGINT", async () => {
     console.log("SIGINT signal received: closing HTTP server and queues")
-    await closeQueues()
+    await closeWorkers()
     process.exit(0)
   })
 }

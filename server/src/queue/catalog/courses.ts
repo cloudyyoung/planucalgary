@@ -1,5 +1,4 @@
 import { Job } from "bullmq"
-import { createWorker } from "../config"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { PrismaClient, Career, CourseComponent } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
@@ -191,7 +190,7 @@ function careerSerializer(career: string): Career {
 /**
  * Process a single course upsert
  */
-async function processSingleCourse(
+async function processCourse(
   courseData: CourseData,
   prisma: PrismaClient
 ): Promise<void> {
@@ -295,13 +294,11 @@ async function processSingleCourse(
 /**
  * Process course crawl jobs
  */
-async function processCourseCrawlJob(job: Job) {
+export async function crawlCourses(job: Job) {
   const adapter = new PrismaPg({ connectionString: DATABASE_URL })
   const prisma = new PrismaClient({ adapter })
 
   try {
-    await job.updateProgress(5)
-
     const url = `https://app.coursedog.com/api/v1/cm/ucalgary_peoplesoft/courses`
     const response = await axios.get<{ [key: string]: CourseData }>(url, {
       headers: {
@@ -327,7 +324,7 @@ async function processCourseCrawlJob(job: Job) {
 
       // Process batch in parallel
       const results = await Promise.allSettled(
-        batch.map(courseData => processSingleCourse(courseData, prisma))
+        batch.map(courseData => processCourse(courseData, prisma))
       )
 
       // Count successes and failures
@@ -362,37 +359,3 @@ async function processCourseCrawlJob(job: Job) {
   }
 }
 
-/**
- * Initialize course crawl worker
- */
-export function initCourseCrawlWorker() {
-  const courseCrawlWorker = createWorker(
-    "catalog",
-    processCourseCrawlJob,
-    {
-      concurrency: 1,
-    }
-  )
-
-  // Event listeners
-  courseCrawlWorker.on("completed", (job) => {
-    console.log(`✓ Course crawl job ${job.id} completed`)
-  })
-
-  courseCrawlWorker.on("failed", (job, err) => {
-    console.error(`✗ Course crawl job ${job?.id} failed:`, err.message)
-  })
-
-  courseCrawlWorker.on("error", (err) => {
-    console.error("Course crawl worker error:", err)
-  })
-
-  courseCrawlWorker.on("progress", (job, progress) => {
-    const progressValue = typeof progress === 'number' ? progress : 0
-    console.log(`Course crawl job ${job.id} progress: ${progressValue.toFixed(1)}%`)
-  })
-
-  console.log("Course crawl worker initialized")
-
-  return courseCrawlWorker
-}

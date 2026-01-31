@@ -12,7 +12,7 @@ export const redisConnection = new IORedis(REDIS_URL, {
 })
 
 // Default queue options
-const defaultQueueOptions: QueueOptions = {
+export const defaultQueueOptions: QueueOptions = {
   connection: redisConnection,
   defaultJobOptions: {
     attempts: 3,
@@ -36,45 +36,4 @@ export const defaultWorkerOptions: WorkerOptions = {
   concurrency: 5,
   removeOnComplete: { count: 1000 },
   removeOnFail: { count: 5000 },
-}
-
-/**
- * Create a new queue with default options
- */
-export function createQueue<T = any>(name: string, options?: Partial<QueueOptions>): Queue<T> {
-  const queue = new Queue<T>(name, {
-    ...defaultQueueOptions,
-    ...options,
-  })
-  queues.push(queue)
-  return queue
-}
-
-export const queues: Queue[] = []
-
-/**
- * Create a new worker with default options
- */
-export function createWorker<T = any>(
-  name: string,
-  processor: (job: any) => Promise<any>,
-  options?: Partial<WorkerOptions>
-): Worker<T> {
-  const worker = new Worker<T>(name, processor, {
-    ...defaultWorkerOptions,
-    ...options,
-  })
-  workers.push(worker)
-  return worker
-}
-
-// Export active workers for graceful shutdown
-export const workers: Worker[] = []
-
-/**
- * Gracefully close all workers and Redis connection
- */
-export async function closeQueues(): Promise<void> {
-  await Promise.all(workers.map((worker) => worker.close()))
-  await redisConnection.quit()
 }
