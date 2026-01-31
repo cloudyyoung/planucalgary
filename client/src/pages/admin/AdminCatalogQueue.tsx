@@ -142,7 +142,7 @@ const QueueStats = ({ counts }: { counts: QueueCounts }) => {
   )
 }
 
-export default function AdminQueue() {
+export default function AdminCatalogQueue() {
   const { data, isLoading } = useQueueStatus()
 
   const table = useReactTable({
@@ -152,5 +152,7 @@ export default function AdminQueue() {
     enableColumnFilters: false,
   })
 
-  return <AdvancedTable table={table} header={data && <QueueStats counts={data.counts} />} isLoading={isLoading} />
+  return (
+    <AdvancedTable table={table} header={data && <QueueStats counts={data.counts} />} isLoading={isLoading} />
+  )
 }

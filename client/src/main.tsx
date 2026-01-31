@@ -21,7 +21,7 @@ import { AdminFaculties } from './pages/admin/AdminFaculties';
 import { AdminPrograms } from './pages/admin/AdminPrograms';
 import { AdminRequisiteSets } from './pages/admin/AdminRequisiteSets';
 import { AdminFieldsOfStudy } from './pages/admin/AdminFieldsOfStudy';
-import AdminQueue from './pages/admin/AdminQueue';
+import AdminCatalogQueue from './pages/admin/AdminCatalogQueue';
 
 
 const router = createBrowserRouter([
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
       { path: "/admin/faculties", element: <AdminFaculties /> },
       { path: "/admin/programs", element: <AdminPrograms /> },
       { path: "/admin/requisites-jsons", element: <AdminRequisitesJsons /> },
-      { path: "/admin/queue", element: <AdminQueue /> },
+      { path: "/admin/queues/catalog", element: <AdminCatalogQueue /> },
     ],
   }
 ]);

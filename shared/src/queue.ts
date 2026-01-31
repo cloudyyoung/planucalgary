@@ -33,4 +33,7 @@ export interface QueueStatusResBody {
   jobs: QueueJob[]
 }
 
-export type QueueStatusHandler = RequestHandler<never, QueueStatusResBody, never, never>
+export type CatalogQueueStatusHandler = RequestHandler<never, QueueStatusResBody, never, never>
+
+// Alias for backwards compatibility
+export type QueueStatusHandler = CatalogQueueStatusHandler

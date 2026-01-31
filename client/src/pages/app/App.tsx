@@ -76,8 +76,8 @@ const adminMenuItems = [
     url: "admin/requisites-jsons",
   },
   {
-    title: "Queue",
-    url: "admin/queue",
+    title: "Catalog Queue",
+    url: "admin/queues/catalog",
   },
 ]
 
