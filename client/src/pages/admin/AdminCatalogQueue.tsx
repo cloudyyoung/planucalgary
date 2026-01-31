@@ -81,7 +81,8 @@ const JobColumns: ColumnDef<QueueJob>[] = [
     header: "Created At",
     size: 90,
     cell: ({ cell }) => {
-      const time = DateTime.fromMillis(cell.getValue<number>())
+      const timestamp = cell.getValue<number>()
+      const time = DateTime.fromMillis(timestamp)
       return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
     },
   },
@@ -90,7 +91,9 @@ const JobColumns: ColumnDef<QueueJob>[] = [
     header: "Processed At",
     size: 90,
     cell: ({ cell }) => {
-      const time = DateTime.fromMillis(cell.getValue<number>())
+      const timestamp = cell.getValue<number | undefined>()
+      if (!timestamp) return
+      const time = DateTime.fromMillis(timestamp)
       return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
     },
   },
@@ -99,7 +102,9 @@ const JobColumns: ColumnDef<QueueJob>[] = [
     header: "Finished At",
     size: 90,
     cell: ({ cell }) => {
-      const time = DateTime.fromMillis(cell.getValue<number>())
+      const timestamp = cell.getValue<number | undefined>()
+      if (!timestamp) return
+      const time = DateTime.fromMillis(timestamp)
       return time.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
     },
   },
