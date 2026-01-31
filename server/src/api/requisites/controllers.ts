@@ -3,7 +3,7 @@ import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHand
 import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"
 import { getValidator } from "../../jsonlogic/requisite_json"
-import { toCourses, toCourseSets, toFieldsOfStudy, toRequisitesJson } from "./sync"
+import { catalogQueue } from "../../queue/queues"
 import { InvalidSyncDestinationError, RequisiteNotFoundError } from "./errors"
 
 export const listRequisites: RequisiteListHandler = async (req, res) => {
@@ -120,13 +120,17 @@ export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (
 export const syncRequisites: RequisitesSyncHandler = async (req, res, next) => {
   const destination = req.body.destination
   if (destination === RequisitesSyncDestination.REQUISITES_JSONS) {
-    toRequisitesJson(req, res, next)
+    await catalogQueue.add("sync-requisites-jsons", {})
+    return res.sendStatus(202)
   } else if (destination === RequisitesSyncDestination.COURSES) {
-    toCourses(req, res, next)
+    await catalogQueue.add("sync-courses", {})
+    return res.sendStatus(202)
   } else if (destination === RequisitesSyncDestination.COURSE_SETS) {
-    toCourseSets(req, res, next)
+    await catalogQueue.add("sync-course-sets", {})
+    return res.sendStatus(202)
   } else if (destination === RequisitesSyncDestination.FIELDS_OF_STUDY) {
-    toFieldsOfStudy(req, res, next)
+    await catalogQueue.add("sync-fields-of-study", {})
+    return res.sendStatus(202)
   } else {
     throw new InvalidSyncDestinationError()
   }
