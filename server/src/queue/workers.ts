@@ -4,6 +4,7 @@ import { crawlCourses } from "./catalog/courses";
 import { crawlDepartments } from "./catalog/departments";
 import { crawlCourseSets } from "./catalog/course-sets";
 import { crawlPrograms } from "./catalog/programs";
+import { crawlRequisiteSets } from "./catalog/requisite-sets";
 
 export const cataloglWorker = new Worker(
     "catalog",
@@ -16,6 +17,8 @@ export const cataloglWorker = new Worker(
             await crawlCourseSets(job)
         } else if (job.name === "programs") {
             await crawlPrograms(job)
+        } else if (job.name === "requisite-sets") {
+            await crawlRequisiteSets(job)
         }
     },
     defaultWorkerOptions,

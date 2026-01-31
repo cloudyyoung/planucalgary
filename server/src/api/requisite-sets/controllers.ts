@@ -1,5 +1,6 @@
-import { RequisiteSetCreateHandler, RequisiteSetDeleteHandler, RequisiteSetGetHandler, RequisiteSetListHandler, RequisiteSetUpdateHandler, getSortings } from "@planucalgary/shared"
+import { RequisiteSetCreateHandler, RequisiteSetDeleteHandler, RequisiteSetGetHandler, RequisiteSetListHandler, RequisiteSetUpdateHandler, RequisiteSetCrawlHandler, getSortings } from "@planucalgary/shared"
 import { RequisiteSetAlreadyExistsError, RequisiteSetNotFoundError } from "./errors";
+import { catalogQueue } from "../../queue/queues";
 
 export const listRequisiteSets: RequisiteSetListHandler = async (req, res) => {
     const { id, csid, requisite_set_group_id, version, name, description, sorting } = req.query;
@@ -43,7 +44,7 @@ export const createRequisiteSet: RequisiteSetCreateHandler = async (req, res) =>
     const existing = await req.prisma.requisiteSet.findFirst({
         where: { requisite_set_group_id: req.body.requisite_set_group_id },
     })
-    
+
     if (existing) {
         throw new RequisiteSetAlreadyExistsError(existing.id)
     }
@@ -76,4 +77,9 @@ export const deleteRequisiteSet: RequisiteSetDeleteHandler = async (req, res) =>
         where: { id: req.params.id },
     })
     return res.sendStatus(204)
+}
+
+export const crawlRequisiteSets: RequisiteSetCrawlHandler = async (req, res) => {
+    await catalogQueue.add("requisite-sets", {})
+    return res.sendStatus(202)
 }

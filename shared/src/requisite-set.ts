@@ -46,3 +46,7 @@ export type RequisiteSetUpdateHandler = RequestHandler<RequisiteSetUpdateParams,
 export const RequisiteSetDeleteParamsSchema = IdInputSchema
 export type RequisiteSetDeleteParams = z.infer<typeof RequisiteSetDeleteParamsSchema>;
 export type RequisiteSetDeleteHandler = RequestHandler<RequisiteSetDeleteParams, void, never, never>;
+
+
+// Crawl Requisite Sets
+export type RequisiteSetCrawlHandler = RequestHandler<never, void, never, never>;
