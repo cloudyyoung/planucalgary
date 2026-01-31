@@ -2,7 +2,7 @@ import axios from 'axios';
 import { CourseCrawlHandler } from "@planucalgary/shared";
 import { Career, GradeMode, CourseComponent } from "@planucalgary/shared/prisma/client";
 
-interface CourseData {
+export interface CourseData {
     _id: string;
     id: string;
     career: string;
@@ -186,7 +186,7 @@ export const crawlCourses: CourseCrawlHandler = async (req, res) => {
     return res.sendStatus(200);
 }
 
-const processFacultyCode = (college: string) => {
+export const processFacultyCode = (college: string) => {
     if (!college) return null;
 
     if (!college.includes(" - ")) {
@@ -196,7 +196,7 @@ const processFacultyCode = (college: string) => {
     return college.split(" - ")[0].trim();
 }
 
-const processTopics = (topics: CourseData["topics"]) => {
+export const processTopics = (topics: CourseData["topics"]) => {
     return topics.map(topic => ({
         number: topic.code,
         name: topic.name,
@@ -208,13 +208,13 @@ const processTopics = (topics: CourseData["topics"]) => {
     }));
 }
 
-function filterDepartments(departments: CourseData["departments"]): string[] {
+export function filterDepartments(departments: CourseData["departments"]): string[] {
     return departments.filter(
         (d) => d.length > 2 && d !== "UCALG",
     )
 }
 
-function processDescription(descriptionParagraph: CourseData["description"]) {
+export function processDescription(descriptionParagraph: CourseData["description"]) {
     let description: string | null = null
     let prereq: string | null = null
     let coreq: string | null = null

@@ -4,10 +4,19 @@ services:
     image: postgres
     restart: always
     ports:
-      - 5817:5432
+      - 5818:5432
     expose:
-      - "5817"
+      - "5818"
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       POSTGRES_DB: root
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - 6412:6379
+    expose:
+      - "6412"
+    command: redis-server --appendonly yes
