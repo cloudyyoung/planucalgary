@@ -51,3 +51,7 @@ export type ProgramUpdateHandler = RequestHandler<ProgramUpdateParams, Program, 
 export const ProgramDeleteParamsSchema = IdInputSchema
 export type ProgramDeleteParams = z.infer<typeof ProgramDeleteParamsSchema>;
 export type ProgramDeleteHandler = RequestHandler<ProgramDeleteParams, void, never, never>;
+
+
+// Crawl Programs
+export type ProgramCrawlHandler = RequestHandler<never, void, never, never>;

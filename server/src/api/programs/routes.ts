@@ -1,6 +1,6 @@
 import { Router } from "express"
 
-import { createProgram, deleteProgram, getProgram, listPrograms, updateProgram } from "./controllers"
+import { createProgram, deleteProgram, getProgram, listPrograms, updateProgram, crawlPrograms } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
 import { ProgramCreateBodySchema, ProgramDeleteParamsSchema, ProgramGetParamsSchema, ProgramUpdateBodySchema, ProgramUpdateParamsSchema, ProgramListReqQuerySchema } from "@planucalgary/shared"
@@ -11,6 +11,7 @@ router.get("/:id", zod({ params: ProgramGetParamsSchema }), getProgram)
 router.post("/", admin(), zod({ body: ProgramCreateBodySchema }), createProgram)
 router.put("/:id", admin(), zod({ params: ProgramUpdateParamsSchema, body: ProgramUpdateBodySchema }), updateProgram)
 router.delete("/:id", admin(), zod({ params: ProgramDeleteParamsSchema }), deleteProgram)
+router.post("/crawl", admin(), zod({}), crawlPrograms)
 
 export default router
 export { router }

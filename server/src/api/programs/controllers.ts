@@ -1,5 +1,6 @@
-import { ProgramCreateHandler, ProgramDeleteHandler, ProgramGetHandler, ProgramListHandler, ProgramListReqQuerySchema, ProgramUpdateHandler, getSortings } from "@planucalgary/shared"
+import { ProgramCreateHandler, ProgramDeleteHandler, ProgramGetHandler, ProgramListHandler, ProgramListReqQuerySchema, ProgramUpdateHandler, ProgramCrawlHandler, getSortings } from "@planucalgary/shared"
 import { ProgramAlreadyExistsError, ProgramNotFoundError } from "./errors"
+import { catalogQueue } from "../../queue/queues"
 
 export const listPrograms: ProgramListHandler = async (req, res) => {
   const { id, code, name, pid, is_active, sorting } = ProgramListReqQuerySchema.parse(req.query);
@@ -101,5 +102,10 @@ export const deleteProgram: ProgramDeleteHandler = async (req, res) => {
     where: { id: req.params.id },
   })
   return res.sendStatus(204)
+}
+
+export const crawlPrograms: ProgramCrawlHandler = async (req, res) => {
+  await catalogQueue.add("programs", {})
+  return res.sendStatus(202)
 }
 

@@ -3,6 +3,7 @@ import { defaultWorkerOptions, redisConnection } from "./config";
 import { crawlCourses } from "./catalog/courses";
 import { crawlDepartments } from "./catalog/departments";
 import { crawlCourseSets } from "./catalog/course-sets";
+import { crawlPrograms } from "./catalog/programs";
 
 export const cataloglWorker = new Worker(
     "catalog",
@@ -13,6 +14,8 @@ export const cataloglWorker = new Worker(
             await crawlDepartments(job)
         } else if (job.name === "course-sets") {
             await crawlCourseSets(job)
+        } else if (job.name === "programs") {
+            await crawlPrograms(job)
         }
     },
     defaultWorkerOptions,
