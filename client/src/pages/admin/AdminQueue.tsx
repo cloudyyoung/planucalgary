@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import AdvancedTable from "@/components/advanced-table"
 import { useQueueStatus } from "@/hooks/useQueueStatus"
 import { Progress } from "@/components/ui/progress"
+import { cn } from "@/lib/utils"
 
 const JobColumns: ColumnDef<QueueJob>[] = [
   {
@@ -57,8 +58,8 @@ const JobColumns: ColumnDef<QueueJob>[] = [
     header: "Attempts",
     size: 50,
     cell: ({ row }) => {
-      const started = row.getValue<number>("attempts_started")
-      const made = row.getValue<number>("attempts_made")
+      const started = row.original.attempts_started
+      const made = row.original.attempts_made
       return (
         <span>
           {made} / {started}
@@ -115,21 +116,21 @@ const JobColumns: ColumnDef<QueueJob>[] = [
 
 const QueueStats = ({ counts }: { counts: QueueCounts }) => {
   const stats = [
-    { label: "Waiting", value: counts.waiting, color: "bg-blue-500" },
-    { label: "Active", value: counts.active, color: "bg-yellow-500" },
-    { label: "Completed", value: counts.completed, color: "bg-green-500" },
-    { label: "Failed", value: counts.failed, color: "bg-red-500" },
-    { label: "Delayed", value: counts.delayed, color: "bg-purple-500" },
-    { label: "Paused", value: counts.paused, color: "bg-gray-500" },
+    { label: "Waiting", value: counts.waiting, color: "bg-blue-600" },
+    { label: "Active", value: counts.active, color: "bg-yellow-600" },
+    { label: "Completed", value: counts.completed, color: "bg-green-600" },
+    { label: "Failed", value: counts.failed, color: "bg-red-600" },
+    { label: "Delayed", value: counts.delayed, color: "bg-purple-600" },
+    { label: "Paused", value: counts.paused, color: "bg-gray-600" },
   ]
 
   return (
-    <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+    <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-1">
       {stats.map((stat) => (
         <Card key={stat.label}>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className={`${stat.color} text-white rounded px-3 py-1 inline-block text-xl font-bold`}>
+              <div className={cn("rounded-full px-3 py-1 min-w-[3.4rem] inline-block text-xl font-bold text-white", stat.color)}>
                 {stat.value}
               </div>
               <p className="text-sm text-gray-600 mt-2">{stat.label}</p>
