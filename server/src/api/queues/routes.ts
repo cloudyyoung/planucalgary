@@ -1,9 +1,9 @@
-import express, { Router } from "express"
+import { Router } from "express"
 import asyncHandler from "express-async-handler"
 import { catalogQueue } from "@/queue"
 import { Job } from "bullmq"
 
-export const router: Router = express.Router()
+export const router: Router = Router()
 
 
 router.get(
