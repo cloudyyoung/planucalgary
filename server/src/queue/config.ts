@@ -71,8 +71,6 @@ export const activeWorkers: Worker[] = []
  * Gracefully close all workers and Redis connection
  */
 export async function closeQueues(): Promise<void> {
-  console.log("Closing queue workers...")
   await Promise.all(activeWorkers.map((worker) => worker.close()))
   await redisConnection.quit()
-  console.log("All queue workers closed")
 }

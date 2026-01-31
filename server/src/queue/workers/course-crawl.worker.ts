@@ -1,5 +1,5 @@
 import { Job } from "bullmq"
-import { createWorker, activeWorkers } from "../config"
+import { createWorker } from "../config"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { PrismaClient, Career, CourseComponent } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
@@ -392,6 +392,5 @@ export function initCourseCrawlWorker() {
     console.log(`Course crawl job ${job.id} progress: ${progressValue.toFixed(1)}%`)
   })
 
-  activeWorkers.push(courseCrawlWorker)
   console.log("Course crawl worker initialized")
 }

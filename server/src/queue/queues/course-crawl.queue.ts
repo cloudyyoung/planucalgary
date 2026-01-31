@@ -15,6 +15,5 @@ export async function startCourseCrawl() {
       delay: 5000,
     },
   })
-  console.log(`Course crawl job ${job.id} added to queue`)
   return job.id
 }

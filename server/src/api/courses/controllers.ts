@@ -223,8 +223,6 @@ export const deleteCourse: CourseDeleteHandler = async (req, res) => {
 }
 
 export const crawlCourses: CourseCrawlHandler = async (req, res) => {
-  const { startBatch, endBatch } = req.query
-
   const jobId = await startCourseCrawl()
 
   if (!jobId) {
