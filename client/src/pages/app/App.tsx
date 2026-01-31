@@ -75,6 +75,10 @@ const adminMenuItems = [
     title: "Requisites Jsons",
     url: "admin/requisites-jsons",
   },
+  {
+    title: "Queue",
+    url: "admin/queue",
+  },
 ]
 
 export const AppSidebar = () => {

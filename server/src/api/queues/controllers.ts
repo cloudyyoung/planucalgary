@@ -24,9 +24,14 @@ export const getQueueStatus: QueueStatusHandler = async (_req, res) => {
         data: job.data,
         state: await job.getState(),
         progress: job.progress,
-        attemptsMade: job.attemptsMade,
-        timestamp: job.timestamp,
-        returnvalue: job.returnvalue,
+        attempts_started: job.attemptsStarted,
+        attempts_made: job.attemptsMade,
+        return_value: job.returnvalue,
+        created_at: job.timestamp,
+        processed_at: job.processedOn,
+        finished_at: job.finishedOn,
+        failed_reason: job.failedReason,
+        stacktrace: job.stacktrace,
       }))
     ),
   })
