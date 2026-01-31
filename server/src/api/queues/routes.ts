@@ -17,8 +17,14 @@ router.get(
             counts,
             jobs: await Promise.all(
                 jobs.map(async (job: Job) => ({
+                    id: job.id,
+                    name: job.name,
+                    data: job.data,
                     state: await job.getState(),
-                    ...job,
+                    progress: job.progress,
+                    attemptsMade: job.attemptsMade,
+                    timestamp: job.timestamp,
+                    returnvalue: job.returnvalue,
                 }))
             ),
         })

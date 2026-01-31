@@ -367,7 +367,7 @@ async function processCourseCrawlJob(job: Job) {
  */
 export function initCourseCrawlWorker() {
   const courseCrawlWorker = createWorker(
-    "course-crawl",
+    "catalog",
     processCourseCrawlJob,
     {
       concurrency: 1,
