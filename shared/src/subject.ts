@@ -47,3 +47,7 @@ export type SubjectUpdateHandler = RequestHandler<SubjectUpdateParams, Subject, 
 export const SubjectDeleteParamsSchema = IdInputSchema
 export type SubjectDeleteParams = z.infer<typeof SubjectDeleteParamsSchema>;
 export type SubjectDeleteHandler = RequestHandler<SubjectDeleteParams, void, never, never>;
+
+
+// Crawl Subjects
+export type SubjectCrawlHandler = RequestHandler<never, void, never, never>;
