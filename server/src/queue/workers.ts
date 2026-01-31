@@ -2,6 +2,7 @@ import { Worker } from "bullmq"
 import { defaultWorkerOptions, redisConnection } from "./config";
 import { crawlCourses } from "./catalog/courses";
 import { crawlDepartments } from "./catalog/departments";
+import { crawlCourseSets } from "./catalog/course-sets";
 
 export const cataloglWorker = new Worker(
     "catalog",
@@ -10,6 +11,8 @@ export const cataloglWorker = new Worker(
             await crawlCourses(job)
         } else if (job.name === "departments") {
             await crawlDepartments(job)
+        } else if (job.name === "course-sets") {
+            await crawlCourseSets(job)
         }
     },
     defaultWorkerOptions,

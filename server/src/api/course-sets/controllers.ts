@@ -1,5 +1,6 @@
-import { CourseSetCreateHandler, CourseSetDeleteHandler, CourseSetGetHandler, CourseSetListHandler, CourseSetUpdateHandler, getSortings } from "@planucalgary/shared"
+import { CourseSetCreateHandler, CourseSetDeleteHandler, CourseSetGetHandler, CourseSetListHandler, CourseSetUpdateHandler, CourseSetCrawlHandler, getSortings } from "@planucalgary/shared"
 import { CourseSetAlreadyExistsError, CourseSetNotFoundError } from "./errors";
+import { catalogQueue } from "../../queue/queues";
 
 export const listCourseSets: CourseSetListHandler = async (req, res) => {
   const { type, id, course_set_group_id, name, description, csid, sorting } = req.query;
@@ -76,4 +77,9 @@ export const deleteCourseSet: CourseSetDeleteHandler = async (req, res) => {
     where: { id: req.params.id },
   })
   return res.sendStatus(204)
+}
+
+export const crawlCourseSets: CourseSetCrawlHandler = async (req, res) => {
+  await catalogQueue.add("course-sets", {})
+  return res.sendStatus(202)
 }
