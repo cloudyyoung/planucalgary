@@ -7,8 +7,6 @@ import axios from "axios"
 import { GradeMode } from "@planucalgary/shared/prisma/client"
 import { DATABASE_URL } from "../../config"
 
-const LIMIT = 100
-
 interface CourseData {
   _id: string
   id: string
@@ -192,154 +190,184 @@ function careerSerializer(career: string): Career {
 }
 
 /**
+ * Process a single course upsert
+ */
+async function processSingleCourse(
+  courseData: CourseData,
+  prisma: PrismaClient
+): Promise<void> {
+  const topics = processTopics(courseData.topics)
+  const [description, prereq, coreq, antireq, notes, aka, nogpa] = processDescription(
+    courseData.description
+  )
+  const facultyCode = processFacultyCode(courseData.college)
+  const faculties = facultyCode ? [facultyCode] : []
+  const departments = filterDepartments(courseData.departments)
+  const components = courseData.components.map((c) => componentSerializer(c.code))
+  const career = careerSerializer(courseData.career)
+  const rawJson = convertDictKeysCamelToSnake(courseData.requisites)
+
+  const data = {
+    cid: courseData.courseGroupId,
+    code: courseData.code,
+    course_number: courseData.courseNumber,
+    subject: {
+      connectOrCreate: {
+        where: { code: courseData.subjectCode },
+        create: { code: courseData.subjectCode, title: courseData.subjectCode },
+      },
+    },
+    description: description,
+    name: courseData.name,
+    long_name: courseData.longName,
+    notes: notes,
+    version: courseData.version,
+    units: courseData.credits.numberOfCredits,
+    aka: aka,
+    prereq: prereq,
+    coreq: coreq,
+    antireq: antireq,
+    is_active: courseData.status === "Active",
+    is_multi_term: courseData.customFields.lastMultiTermCourse,
+    is_no_gpa: nogpa,
+    is_repeatable: courseData.credits.repeatable,
+    components: components,
+    course_group_id: courseData.customFields.rawCourseId,
+    coursedog_id: courseData._id,
+    course_created_at: new Date(courseData.createdAt),
+    course_effective_start_date: new Date(courseData.effectiveStartDate),
+    course_last_updated_at: new Date(courseData.lastEditedAt),
+    grade_mode: GradeMode.CRF,
+    career: career,
+    raw_json: rawJson,
+  }
+
+  await prisma.course.upsert({
+    where: { course_group_id: data.course_group_id, cid: data.cid },
+    create: {
+      ...data,
+      departments: {
+        connectOrCreate: departments.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+      },
+      faculties: {
+        connectOrCreate: faculties.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+      },
+      topics: { create: topics },
+    },
+    update: {
+      ...data,
+      departments: {
+        connectOrCreate: departments.map((code) => ({
+          where: { code },
+          create: { code, name: code, display_name: code, is_active: false },
+        })),
+        set: departments.map((code) => ({ code })),
+      },
+      faculties: {
+        connectOrCreate: facultyCode
+          ? [
+            {
+              where: { code: facultyCode },
+              create: {
+                code: facultyCode,
+                name: facultyCode,
+                display_name: facultyCode,
+                is_active: false,
+              },
+            },
+          ]
+          : [],
+        set: facultyCode ? [{ code: facultyCode }] : [],
+      },
+      topics: {
+        deleteMany: {},
+        create: topics,
+      },
+    },
+  })
+}
+
+/**
  * Process course crawl jobs
  */
 async function processCourseCrawlJob(job: Job<CourseCrawlJobData>) {
-  const { startBatch = 0, endBatch = 99999 } = job.data
   const adapter = new PrismaPg({ connectionString: DATABASE_URL })
   const prisma = new PrismaClient({ adapter })
 
   try {
-    console.log(`Starting course crawl job ${job.id} (batches ${startBatch} to ${endBatch})`)
+    console.log(`Starting course crawl job ${job.id}`)
 
-    let totalProcessed = 0
+    // Fetch all courses in a single request
+    const url = `https://app.coursedog.com/api/v1/cm/ucalgary_peoplesoft/courses?skip=0&limit=99999`
 
-    for (let t = startBatch; t <= endBatch; t++) {
-      const limit = LIMIT
-      const skip = t * LIMIT
-      const url = `https://app.coursedog.com/api/v1/cm/ucalgary_peoplesoft/courses?skip=${skip}&limit=${limit}`
+    console.log(`Fetching all courses from API...`)
+    await job.updateProgress(5)
 
-      await job.updateProgress(((t - startBatch) / (endBatch - startBatch + 1)) * 100)
+    const response = await axios.get<{ [key: string]: CourseData }>(url, {
+      headers: {
+        Accept: "application/json",
+        Origin: "https://calendar.ucalgary.ca",
+      },
+    })
 
-      const response = await axios.get<{ [key: string]: CourseData }>(url, {
-        headers: {
-          Accept: "application/json",
-          Origin: "https://calendar.ucalgary.ca",
-        },
-      })
+    const coursesData = Object.values(response.data)
+    console.log(`Fetched ${coursesData.length} courses from API`)
 
-      const coursesData = Object.values(response.data)
-      console.log(`Batch ${t}: Fetched ${coursesData.length} courses`)
+    await job.updateProgress(10)
 
-      if (coursesData.length === 0) {
-        console.log("No more courses to process, exiting loop")
-        break
-      }
+    // Process courses in parallel batches
+    const BATCH_SIZE = 50 // Number of concurrent database operations
+    const totalBatches = Math.ceil(coursesData.length / BATCH_SIZE)
+    let totalSucceeded = 0
+    let totalFailed = 0
 
-      const courses = coursesData.map((courseData) => {
-        const topics = processTopics(courseData.topics)
-        const [description, prereq, coreq, antireq, notes, aka, nogpa] = processDescription(
-          courseData.description
-        )
-        const facultyCode = processFacultyCode(courseData.college)
-        const faculties = facultyCode ? [facultyCode] : []
-        const departments = filterDepartments(courseData.departments)
-        const components = courseData.components.map((c) => componentSerializer(c.code))
-        const career = careerSerializer(courseData.career)
-        const rawJson = convertDictKeysCamelToSnake(courseData.requisites)
+    for (let i = 0; i < coursesData.length; i += BATCH_SIZE) {
+      const batch = coursesData.slice(i, i + BATCH_SIZE)
+      const currentBatch = Math.floor(i / BATCH_SIZE) + 1
 
-        const data = {
-          cid: courseData.courseGroupId,
-          code: courseData.code,
-          course_number: courseData.courseNumber,
-          subject: {
-            connectOrCreate: {
-              where: { code: courseData.subjectCode },
-              create: { code: courseData.subjectCode, title: courseData.subjectCode },
-            },
-          },
-          description: description,
-          name: courseData.name,
-          long_name: courseData.longName,
-          notes: notes,
-          version: courseData.version,
-          units: courseData.credits.numberOfCredits,
-          aka: aka,
-          prereq: prereq,
-          coreq: coreq,
-          antireq: antireq,
-          is_active: courseData.status === "Active",
-          is_multi_term: courseData.customFields.lastMultiTermCourse,
-          is_no_gpa: nogpa,
-          is_repeatable: courseData.credits.repeatable,
-          components: components,
-          course_group_id: courseData.customFields.rawCourseId,
-          coursedog_id: courseData._id,
-          course_created_at: new Date(courseData.createdAt),
-          course_effective_start_date: new Date(courseData.effectiveStartDate),
-          course_last_updated_at: new Date(courseData.lastEditedAt),
-          grade_mode: GradeMode.CRF,
-          career: career,
-          raw_json: rawJson,
-        }
+      console.log(`Processing batch ${currentBatch}/${totalBatches} (${batch.length} courses)`)
 
-        return prisma.course.upsert({
-          where: { course_group_id: data.course_group_id, cid: data.cid },
-          create: {
-            ...data,
-            departments: {
-              connectOrCreate: departments.map((code) => ({
-                where: { code },
-                create: { code, name: code, display_name: code, is_active: false },
-              })),
-            },
-            faculties: {
-              connectOrCreate: faculties.map((code) => ({
-                where: { code },
-                create: { code, name: code, display_name: code, is_active: false },
-              })),
-            },
-            topics: { create: topics },
-          },
-          update: {
-            ...data,
-            departments: {
-              connectOrCreate: departments.map((code) => ({
-                where: { code },
-                create: { code, name: code, display_name: code, is_active: false },
-              })),
-              set: departments.map((code) => ({ code })),
-            },
-            faculties: {
-              connectOrCreate: facultyCode
-                ? [
-                  {
-                    where: { code: facultyCode },
-                    create: {
-                      code: facultyCode,
-                      name: facultyCode,
-                      display_name: facultyCode,
-                      is_active: false,
-                    },
-                  },
-                ]
-                : [],
-              set: facultyCode ? [{ code: facultyCode }] : [],
-            },
-            topics: {
-              deleteMany: {},
-              create: topics,
-            },
-          },
-        })
-      })
-
-      const transaction = await prisma.$transaction(
-        async () => await Promise.allSettled(courses),
-        {
-          maxWait: 60000,
-          timeout: 60000,
-        }
+      // Process batch in parallel
+      const results = await Promise.allSettled(
+        batch.map(courseData => processSingleCourse(courseData, prisma))
       )
 
-      totalProcessed += transaction.length
-      console.log(`Batch ${t}: Processed ${transaction.length} courses (total: ${totalProcessed})`)
+      // Count successes and failures
+      const succeeded = results.filter(r => r.status === 'fulfilled').length
+      const failed = results.filter(r => r.status === 'rejected').length
+
+      totalSucceeded += succeeded
+      totalFailed += failed
+
+      // Log any failures
+      results.forEach((result, idx) => {
+        if (result.status === 'rejected') {
+          const courseCode = batch[idx]?.code || 'unknown'
+          console.error(`Failed to process course ${courseCode}:`, result.reason)
+        }
+      })
+
+      // Update progress (10% to 100%)
+      const progress = 10 + ((currentBatch / totalBatches) * 90)
+      await job.updateProgress(progress)
+
+      console.log(`Batch ${currentBatch}/${totalBatches} completed: ${succeeded} succeeded, ${failed} failed (total: ${totalSucceeded} processed, ${totalFailed} failed)`)
     }
 
     await job.updateProgress(100)
-    console.log(`Course crawl job ${job.id} completed. Total courses processed: ${totalProcessed}`)
+    console.log(`Course crawl job ${job.id} completed. Total courses succeeded: ${totalSucceeded}, failed: ${totalFailed}`)
 
-    return { success: true, totalProcessed, completedAt: new Date().toISOString() }
+    return {
+      total: totalSucceeded + totalFailed,
+      totalSucceeded,
+      totalFailed,
+    }
   } finally {
     await prisma.$disconnect()
   }
