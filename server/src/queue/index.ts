@@ -7,8 +7,6 @@ export function initWorkers() {
   initCourseCrawlWorker()
 }
 
-// Export queues
-export { courseCrawlQueue, startCourseCrawl } from "./queues/course-crawl.queue"
+export * from "./queues"
 
-// Export config utilities
 export { closeQueues } from "./config"

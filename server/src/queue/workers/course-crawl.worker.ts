@@ -393,4 +393,6 @@ export function initCourseCrawlWorker() {
   })
 
   console.log("Course crawl worker initialized")
+
+  return courseCrawlWorker
 }
