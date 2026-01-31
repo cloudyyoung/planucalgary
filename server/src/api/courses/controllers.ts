@@ -226,9 +226,8 @@ export const crawlCourses: CourseCrawlHandler = async (req, res) => {
   const jobId = await catalogQueue.add("crawl-courses", {})
 
   if (!jobId) {
-    res.sendStatus(500)
-    return
+    return res.sendStatus(500)
   }
 
-  res.sendStatus(202)
+  return res.sendStatus(202)
 }
