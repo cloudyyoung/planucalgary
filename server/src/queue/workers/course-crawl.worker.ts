@@ -301,28 +301,23 @@ async function processCourseCrawlJob(job: Job<CourseCrawlJobData>) {
   const prisma = new PrismaClient({ adapter })
 
   try {
-    console.log(`Starting course crawl job ${job.id}`)
-
-    // Fetch all courses in a single request
-    const url = `https://app.coursedog.com/api/v1/cm/ucalgary_peoplesoft/courses?skip=0&limit=99999`
-
-    console.log(`Fetching all courses from API...`)
     await job.updateProgress(5)
 
+    const url = `https://app.coursedog.com/api/v1/cm/ucalgary_peoplesoft/courses`
     const response = await axios.get<{ [key: string]: CourseData }>(url, {
       headers: {
         Accept: "application/json",
         Origin: "https://calendar.ucalgary.ca",
       },
+      timeout: 60000,
     })
 
     const coursesData = Object.values(response.data)
-    console.log(`Fetched ${coursesData.length} courses from API`)
 
     await job.updateProgress(10)
 
     // Process courses in parallel batches
-    const BATCH_SIZE = 50 // Number of concurrent database operations
+    const BATCH_SIZE = 50
     const totalBatches = Math.ceil(coursesData.length / BATCH_SIZE)
     let totalSucceeded = 0
     let totalFailed = 0
@@ -330,8 +325,6 @@ async function processCourseCrawlJob(job: Job<CourseCrawlJobData>) {
     for (let i = 0; i < coursesData.length; i += BATCH_SIZE) {
       const batch = coursesData.slice(i, i + BATCH_SIZE)
       const currentBatch = Math.floor(i / BATCH_SIZE) + 1
-
-      console.log(`Processing batch ${currentBatch}/${totalBatches} (${batch.length} courses)`)
 
       // Process batch in parallel
       const results = await Promise.allSettled(
@@ -356,12 +349,9 @@ async function processCourseCrawlJob(job: Job<CourseCrawlJobData>) {
       // Update progress (10% to 100%)
       const progress = 10 + ((currentBatch / totalBatches) * 90)
       await job.updateProgress(progress)
-
-      console.log(`Batch ${currentBatch}/${totalBatches} completed: ${succeeded} succeeded, ${failed} failed (total: ${totalSucceeded} processed, ${totalFailed} failed)`)
     }
 
     await job.updateProgress(100)
-    console.log(`Course crawl job ${job.id} completed. Total courses succeeded: ${totalSucceeded}, failed: ${totalFailed}`)
 
     return {
       total: totalSucceeded + totalFailed,
