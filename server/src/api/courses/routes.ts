@@ -1,10 +1,9 @@
 import { Router } from "express"
 import { CourseCreateReqBodySchema, CourseListReqQuerySchema, CourseGetReqParamsSchema, CourseUpdateReqBodySchema, CourseUpdateReqParamsSchema, CourseDeleteReqParamsSchema } from "@planucalgary/shared"
 
-import { createCourse, deleteCourse, getCourse, listCourses, updateCourse } from "./controllers"
+import { createCourse, deleteCourse, getCourse, listCourses, updateCourse, crawlCourses } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
-import { crawlCourses } from "./crawl"
 
 const router = Router()
 router.get("/", zod({ query: CourseListReqQuerySchema }), listCourses)
