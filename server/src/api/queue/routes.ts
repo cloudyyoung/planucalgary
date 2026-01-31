@@ -6,11 +6,11 @@ import { Job } from "bullmq"
 export const router: Router = express.Router()
 
 /**
- * GET /queue/course-crawl/status
+ * GET /queue/course-crawl
  * Get course crawl queue statistics
  */
 router.get(
-    "/course-crawl/status",
+    "/course-crawl",
     asyncHandler(async (_req, res) => {
         const counts = await courseCrawlQueue.getJobCounts()
         const jobs = await courseCrawlQueue.getJobs(["waiting", "active", "completed", "failed"], 0, 10)
