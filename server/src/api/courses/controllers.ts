@@ -223,13 +223,7 @@ export const deleteCourse: CourseDeleteHandler = async (req, res) => {
 }
 
 export const crawlCourses: CourseCrawlHandler = async (req, res) => {
-  const jobId = await catalogQueue.add("crawl-courses", {}, {
-    attempts: 3,
-    backoff: {
-      type: "exponential",
-      delay: 5000,
-    },
-  })
+  const jobId = await catalogQueue.add("crawl-courses", {})
 
   if (!jobId) {
     res.sendStatus(500)
