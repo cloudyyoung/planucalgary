@@ -6,6 +6,7 @@ import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
 
 const router = Router()
+
 router.get("/", zod({ query: CourseListReqQuerySchema }), listCourses)
 router.get("/:id", zod({ params: CourseGetReqParamsSchema }), getCourse)
 router.post("/", admin(), zod({ body: CourseCreateReqBodySchema }), createCourse)

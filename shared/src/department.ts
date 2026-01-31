@@ -45,3 +45,7 @@ export type DepartmentUpdateHandler = RequestHandler<DepartmentUpdateParams, Dep
 export const DepartmentDeleteParamsSchema = IdInputSchema
 export type DepartmentDeleteParams = z.infer<typeof DepartmentDeleteParamsSchema>;
 export type DepartmentDeleteHandler = RequestHandler<DepartmentDeleteParams, void, never, never>;
+
+
+// Crawl Departments
+export type DepartmentCrawlHandler = RequestHandler<never, void, never, never>;

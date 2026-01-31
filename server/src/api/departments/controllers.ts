@@ -1,5 +1,6 @@
-import { DepartmentCreateHandler, DepartmentDeleteHandler, DepartmentGetHandler, DepartmentListHandler, DepartmentUpdateHandler, getSortings } from "@planucalgary/shared"
+import { DepartmentCrawlHandler, DepartmentCreateHandler, DepartmentDeleteHandler, DepartmentGetHandler, DepartmentListHandler, DepartmentUpdateHandler, getSortings } from "@planucalgary/shared"
 import { DepartmentAlreadyExistsError, DepartmentNotFoundError } from "./errors";
+import { catalogQueue } from "@/queue/queues";
 
 export const listDepartments: DepartmentListHandler = async (req, res) => {
   const { id, name, display_name, code, is_active, sorting } = req.query;
@@ -67,4 +68,10 @@ export const deleteDepartment: DepartmentDeleteHandler = async (req, res) => {
     where: { id: req.params.id },
   })
   return res.sendStatus(204)
+}
+
+
+export const crawlDepartments: DepartmentCrawlHandler = async (req, res) => {
+  await catalogQueue.add("departments", {})
+  return res.sendStatus(202)
 }
