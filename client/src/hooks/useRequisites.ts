@@ -8,7 +8,7 @@ export const useRequisites = (props: RequisiteListReqQuery) => {
     queryFn: async () => {
       const response = await api.get<RequisiteListResBody>('/requisites', {
         params: props,
-        timeout: 10000,
+        timeout: 6000,
       })
       return response.data
     },
@@ -21,7 +21,7 @@ export const useRequisites = (props: RequisiteListReqQuery) => {
 export const useRequisitesGenerateChoices = (props: RequisiteListReqQuery) => {
   const mutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await api.post<RequisiteGenerateChoicesResBody>(`/requisites/${id}/`, {}, { timeout: 20000 })
+      const response = await api.post<RequisiteGenerateChoicesResBody>(`/requisites/${id}/`, {})
       return response.data
     },
     onSuccess: () => {
@@ -35,7 +35,7 @@ export const useRequisitesGenerateChoices = (props: RequisiteListReqQuery) => {
 export const useRequisitesUpdate = (props: RequisiteListReqQuery) => {
   const mutation = useMutation({
     mutationFn: async (data: RequisiteUpdateReqBody) => {
-      const response = await api.put<RequisiteUpdateResBody>(`/requisites/${data.id}/`, data, { timeout: 20000 })
+      const response = await api.put<RequisiteUpdateResBody>(`/requisites/${data.id}/`, data)
       return response.data
     },
     onSuccess: () => {
@@ -51,7 +51,7 @@ export const useRequisitesSync = () => {
     mutationFn: async (destination: RequisitesSyncDestination) => {
       const response = await api.post<RequisitesSyncResBody>('/requisites/sync', {
         destination,
-      }, { timeout: 1_200_000 })
+      })
       return response.data
     },
     onSuccess: () => {
