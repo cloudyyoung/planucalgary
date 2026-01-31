@@ -50,18 +50,6 @@ router.get(
 
         const state = await job.getState()
 
-        res.json({
-            id: job.id,
-            name: job.name,
-            data: job.data,
-            state,
-            progress: job.progress,
-            attemptsMade: job.attemptsMade,
-            timestamp: job.timestamp,
-            processedOn: job.processedOn,
-            finishedOn: job.finishedOn,
-            returnvalue: job.returnvalue,
-            failedReason: job.failedReason,
-        })
+        res.json(job)
     })
 )
