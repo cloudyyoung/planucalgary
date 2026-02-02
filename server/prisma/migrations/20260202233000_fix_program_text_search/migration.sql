@@ -11,7 +11,7 @@ BEGIN
         setweight(to_tsvector('english', coalesce(NEW.general_info, '')), 'C') ||
         setweight(to_tsvector('english', coalesce(NEW.admission_info, '')), 'C') ||
         setweight(to_tsvector('english', coalesce(NEW.transcript_description, '')), 'D') ||
-        setweight(to_tsvector('english', coalesce(NEW.description, '')), 'D');
+        setweight(to_tsvector('english', coalesce(NEW.notes, '')), 'D');
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
