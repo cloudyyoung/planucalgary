@@ -71,6 +71,14 @@ interface CourseData {
         grade?: string
         grade_type?: string
         sub_rules: any[]
+        value: {
+          id: string
+          condition: string
+          values: (string | {
+            logic: string
+            value: string[]
+          })[]
+        }
       }[]
     }[]
   }
@@ -250,22 +258,51 @@ function processRequisites(requisites: CourseData["requisites"]) {
       name: req.name.trim(),
       type: req.type,
       raw_rules: req.rules,
-      rules: req.rules.map((r) => ({
-        id: r.id,
-        name: r.name?.trim(),
-        description: r.description?.trim(),
-        notes: r.notes?.trim(),
-        condition: r.condition,
-        min_courses: r.min_courses,
-        max_courses: r.max_courses,
-        min_credits: r.min_credits,
-        max_credits: r.max_credits,
-        credits: r.credits,
-        number: r.number,
-        restriction: r.restriction,
-        grade: r.grade,
-        grade_type: r.grade_type,
-      }))
+      rules: req.rules.map((r) => {
+        const rq = {
+          id: r.id,
+          name: r.name?.trim(),
+          description: r.description?.trim(),
+          notes: r.notes?.trim(),
+          condition: r.condition,
+          min_courses: r.min_courses,
+          max_courses: r.max_courses,
+          min_credits: r.min_credits,
+          max_credits: r.max_credits,
+          credits: r.credits,
+          number: r.number,
+          restriction: r.restriction,
+          grade: r.grade,
+          grade_type: r.grade_type,
+          courses: [] as string[],
+          programs: [] as string[],
+          course_sets: [] as string[],
+          requisite_sets: [] as string[],
+        }
+
+        const relationType = r.value.condition // courses, programs, courseSets or requisiteSets
+        const values = r.value.values.flatMap((v) => {
+          if (typeof v === "string") {
+            return v
+          } else {
+            return v.value
+          }
+        })
+
+        if (relationType === "courses") {
+          rq.courses = values
+        } else if (relationType === "programs") {
+          rq.programs = values
+        } else if (relationType === "courseSets") {
+          rq.course_sets = values
+        } else if (relationType === "courseSets") {
+          rq.course_sets = values
+        } else if (relationType === "requisiteSets") {
+          rq.requisite_sets = values
+        }
+
+        return rq
+      })
     }
 
     if (req.type === "Prerequisite") {
@@ -369,7 +406,23 @@ async function processCourse(
         name: prereqReq.name,
         type: prereqReq.type,
         raw_rules: prereqReq.raw_rules,
-        rules: { create: prereqReq.rules },
+        rules: {
+          create: prereqReq.rules.map((r) => ({
+            ...r,
+            courses: {
+              connect: r.courses.map((courseId) => ({ id: courseId }))
+            },
+            programs: {
+              connect: r.programs.map((programId) => ({ id: programId }))
+            },
+            course_sets: {
+              connect: r.course_sets.map((courseSetId) => ({ id: courseSetId }))
+            },
+            requisite_sets: {
+              connect: r.requisite_sets.map((requisiteSetId) => ({ id: requisiteSetId }))
+            },
+          }))
+        },
       },
       update: {
         name: prereqReq.name,
@@ -377,7 +430,21 @@ async function processCourse(
         raw_rules: prereqReq.raw_rules,
         rules: {
           deleteMany: {},
-          create: prereqReq.rules,
+          create: prereqReq.rules.map((r) => ({
+            ...r,
+            courses: {
+              connect: r.courses.map((courseId) => ({ id: courseId }))
+            },
+            programs: {
+              connect: r.programs.map((programId) => ({ id: programId }))
+            },
+            course_sets: {
+              connect: r.course_sets.map((courseSetId) => ({ id: courseSetId }))
+            },
+            requisite_sets: {
+              connect: r.requisite_sets.map((requisiteSetId) => ({ id: requisiteSetId }))
+            },
+          })),
         },
       },
     }),
@@ -388,7 +455,23 @@ async function processCourse(
         name: coreqReq.name,
         type: coreqReq.type,
         raw_rules: coreqReq.raw_rules,
-        rules: { create: coreqReq.rules },
+        rules: {
+          create: coreqReq.rules.map((r) => ({
+            ...r,
+            courses: {
+              connect: r.courses.map((courseId) => ({ id: courseId }))
+            },
+            programs: {
+              connect: r.programs.map((programId) => ({ id: programId }))
+            },
+            course_sets: {
+              connect: r.course_sets.map((courseSetId) => ({ id: courseSetId }))
+            },
+            requisite_sets: {
+              connect: r.requisite_sets.map((requisiteSetId) => ({ id: requisiteSetId }))
+            },
+          }))
+        },
       },
       update: {
         name: coreqReq.name,
@@ -396,7 +479,21 @@ async function processCourse(
         raw_rules: coreqReq.raw_rules,
         rules: {
           deleteMany: {},
-          create: coreqReq.rules,
+          create: coreqReq.rules.map((r) => ({
+            ...r,
+            courses: {
+              connect: r.courses.map((courseId) => ({ id: courseId }))
+            },
+            programs: {
+              connect: r.programs.map((programId) => ({ id: programId }))
+            },
+            course_sets: {
+              connect: r.course_sets.map((courseSetId) => ({ id: courseSetId }))
+            },
+            requisite_sets: {
+              connect: r.requisite_sets.map((requisiteSetId) => ({ id: requisiteSetId }))
+            },
+          })),
         },
       },
     }),
@@ -407,7 +504,23 @@ async function processCourse(
         name: antireqReq.name,
         type: antireqReq.type,
         raw_rules: antireqReq.raw_rules,
-        rules: { create: antireqReq.rules },
+        rules: {
+          create: antireqReq.rules.map((r) => ({
+            ...r,
+            courses: {
+              connect: r.courses.map((courseId) => ({ id: courseId }))
+            },
+            programs: {
+              connect: r.programs.map((programId) => ({ id: programId }))
+            },
+            course_sets: {
+              connect: r.course_sets.map((courseSetId) => ({ id: courseSetId }))
+            },
+            requisite_sets: {
+              connect: r.requisite_sets.map((requisiteSetId) => ({ id: requisiteSetId }))
+            },
+          }))
+        },
       },
       update: {
         name: antireqReq.name,
@@ -415,7 +528,21 @@ async function processCourse(
         raw_rules: antireqReq.raw_rules,
         rules: {
           deleteMany: {},
-          create: antireqReq.rules,
+          create: antireqReq.rules.map((r) => ({
+            ...r,
+            courses: {
+              connect: r.courses.map((courseId) => ({ id: courseId }))
+            },
+            programs: {
+              connect: r.programs.map((programId) => ({ id: programId }))
+            },
+            course_sets: {
+              connect: r.course_sets.map((courseSetId) => ({ id: courseSetId }))
+            },
+            requisite_sets: {
+              connect: r.requisite_sets.map((requisiteSetId) => ({ id: requisiteSetId }))
+            },
+          }))
         },
       },
     }),
