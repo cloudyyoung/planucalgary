@@ -54,7 +54,9 @@ function camelToSnake(key: string): string {
   return key.replace(/(?<!^)(?=[A-Z])/g, "_").toLowerCase()
 }
 
-function convertDictKeysCamelToSnake<T extends Record<string, any>>(d: T): any {
+function convertDictKeysCamelToSnake<T extends Record<string, any>>(d: T | undefined): any {
+  if (!d) return d
+
   const e: Record<string, any> = {}
 
   for (const [k, v] of Object.entries(d)) {
@@ -141,6 +143,7 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
               restriction: rule.restriction,
               grade: rule.grade,
               grade_type: rule.gradeType,
+              raw_json: convertDictKeysCamelToSnake(rule.value),
             })),
           },
         },
@@ -166,6 +169,7 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
               restriction: rule.restriction,
               grade: rule.grade,
               grade_type: rule.gradeType,
+              raw_json: convertDictKeysCamelToSnake(rule.value),
             })),
           },
         },

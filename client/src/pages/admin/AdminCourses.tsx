@@ -7,6 +7,7 @@ import { Course } from "@planucalgary/shared/prisma/client";
 import { useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
 import { Input } from "@/components/ui/input";
+import { RequisiteViewer } from "@/components/requisite-viewer";
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -35,12 +36,12 @@ export const columns: ColumnDef<Course>[] = [
     size: 300,
   },
   {
-    accessorKey: "prereq_json",
-    header: "Prerequisites JSON",
+    accessorKey: "prereq_requisite",
+    header: "Prerequisites",
     size: 400,
     cell: ({ cell }) => {
-      const json = cell.getValue<any>()
-      return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
+      const requisite = cell.getValue<any>()
+      return <RequisiteViewer requisite={requisite} />
     },
   },
   {
@@ -49,12 +50,12 @@ export const columns: ColumnDef<Course>[] = [
     size: 300,
   },
   {
-    accessorKey: "antireq_json",
-    header: "Antirequisites JSON",
+    accessorKey: "antireq_requisite",
+    header: "Antirequisites",
     size: 400,
     cell: ({ cell }) => {
-      const json = cell.getValue<any>()
-      return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
+      const requisite = cell.getValue<any>()
+      return <RequisiteViewer requisite={requisite} />
     },
   },
   {
@@ -63,17 +64,17 @@ export const columns: ColumnDef<Course>[] = [
     size: 300,
   },
   {
-    accessorKey: "coreq_json",
-    header: "Corequisites JSON",
+    accessorKey: "coreq_requisite",
+    header: "Corequisites",
     size: 400,
     cell: ({ cell }) => {
-      const json = cell.getValue<any>()
-      return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
+      const requisite = cell.getValue<any>()
+      return <RequisiteViewer requisite={requisite} />
     },
   },
   {
-    accessorKey: 'raw_json',
-    header: 'Raw JSON',
+    accessorKey: 'raw_requisites',
+    header: 'Raw Requisites',
     size: 600,
     cell: ({ cell }) => {
       const raw_json = cell.getValue<any>()
