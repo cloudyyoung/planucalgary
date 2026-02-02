@@ -305,6 +305,9 @@ export async function crawlCourses(job: Job) {
         Accept: "application/json",
         Origin: "https://calendar.ucalgary.ca",
       },
+      params: {
+        effectiveDatesRange: "2026-06-21,2099-01-01",
+      },
       timeout: 60000,
     })
 

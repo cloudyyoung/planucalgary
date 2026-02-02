@@ -99,6 +99,9 @@ async function fetchCourseSetPage(skip: number, limit: number): Promise<CourseSe
     headers: {
       Origin: "https://calendar.ucalgary.ca",
     },
+    params: {
+      effectiveDatesRange: "2026-06-21,2099-01-01",
+    },
     timeout: 60000,
   })
 
