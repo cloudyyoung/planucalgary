@@ -2,10 +2,13 @@ import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { PrismaClient, Career } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
+import { DateTime } from "luxon"
 import { DATABASE_URL } from "../../config"
+import { processRequisite, RequisiteData } from "./requisite-sets"
+import { ProgramCreateArgs } from "../../../../shared/dist/generated/prisma/models"
 
 interface ProgramData {
-  id: string
+  _id: string
   programGroupId: string
   code: string
   name: string
@@ -18,18 +21,26 @@ interface ProgramData {
   customFields?: {
     programAdmissionsInfo?: string
     generalProgramInfo?: string
+    aSfCl?: string
   }
   transcriptLevel?: string
   transcriptDescription?: string
-  requisites?: any
+  requisites?: {
+    requisitesSimple?: RequisiteData[]
+  }
   status: string
   startTerm?: {
-    year: number
+    year: number | string
     semester: number
-  }
-  createdAt?: number
-  lastEditedAt?: number
-  effectiveStartDate?: string
+  } | Record<string, never>
+  endTerm?: {
+    year: number | string
+    semester: number
+  } | Record<string, never>
+  createdAt: number
+  lastEditedAt: number
+  lastSyncedAt: number
+  effectiveStartDate: string
   effectiveEndDate?: string
   version: number
 }
@@ -88,18 +99,7 @@ function careerSerializer(career: string): Career {
 }
 
 function processDepartments(input: string[]): { departments: string[]; faculties: string[] } {
-  const departments: string[] = []
-  const faculties: string[] = []
-
-  for (const item of input) {
-    if (item.length === 2 || item === "UCALG") {
-      faculties.push(item)
-    } else {
-      departments.push(item)
-    }
-  }
-
-  return { departments, faculties }
+  return { departments: input, faculties: [] }
 }
 
 function processDegreeDesignation(designation: string | undefined): {
@@ -118,27 +118,13 @@ function processDegreeDesignation(designation: string | undefined): {
   return { code, name }
 }
 
-function processStartTerm(startTerm: { year: number; semester: number } | undefined): any {
-  if (!startTerm) {
-    return null
-  }
 
-  const year = startTerm.year
-  const term = TERMS[startTerm.semester]
-
-  return {
-    year,
-    term,
-  }
-}
-
-function processRequisites(requisites: any): any[] {
+function processRequisites(requisites: ProgramData["requisites"]): RequisiteData[] {
   if (!requisites || !requisites.requisitesSimple) {
     return []
   }
 
-  const requisitesSimple = requisites.requisitesSimple
-  return convertListCamelToSnake(requisitesSimple)
+  return requisites.requisitesSimple
 }
 
 /**
@@ -171,23 +157,24 @@ async function processProgram(programData: ProgramData, prisma: PrismaClient): P
     finalTranscriptDescription = null
   }
 
+  const rawRequisites = programData.requisites && convertDictKeysCamelToSnake(programData.requisites)
   const requisites = processRequisites(programData.requisites)
-  const startTerm = processStartTerm(programData.startTerm)
 
-  const createdAt = programData.createdAt ? new Date(programData.createdAt) : new Date()
-  const lastEditedAt = programData.lastEditedAt ? new Date(programData.lastEditedAt) : new Date()
-  const effectiveStartDate = programData.effectiveStartDate
-    ? new Date(programData.effectiveStartDate)
-    : new Date()
+  const startTerm = programData.startTerm && Object.keys(programData.startTerm).length > 0
+    ? programData.startTerm
+    : undefined
+  const endTerm = programData.endTerm && Object.keys(programData.endTerm).length > 0
+    ? programData.endTerm
+    : undefined
 
-  const data = {
-    pid: programData.programGroupId,
-    coursedog_id: programData.id,
+  const data: ProgramCreateArgs["data"] = {
+    id: programData._id,
     program_group_id: programData.programGroupId,
     code: programData.code,
     name: programData.name,
     long_name: programData.longName,
     display_name: displayName,
+    notes: programData.customFields?.aSfCl,
     type: programData.type,
     degree_designation_code: degreeDesignationCode,
     degree_designation_name: degreeDesignationName,
@@ -196,48 +183,51 @@ async function processProgram(programData: ProgramData, prisma: PrismaClient): P
     general_info: customFields.generalProgramInfo || null,
     transcript_level: transcriptLevel,
     transcript_description: finalTranscriptDescription,
-    requisites,
+    raw_requisites: rawRequisites as any,
     is_active: programData.status === "Active",
     start_term: startTerm,
-    program_created_at: createdAt,
-    program_last_updated_at: lastEditedAt,
-    program_effective_start_date: effectiveStartDate,
+    end_term: endTerm,
+    program_created_at: new Date(programData.createdAt),
+    program_last_updated_at: new Date(programData.lastEditedAt),
+    program_last_synced_at: new Date(programData.lastSyncedAt),
+    program_effective_start_date: DateTime.fromJSDate(new Date(programData.effectiveStartDate)).toJSDate(),
+    program_effective_end_date: programData.effectiveEndDate
+      ? DateTime.fromJSDate(new Date(programData.effectiveEndDate)).toJSDate()
+      : null,
     version: programData.version,
   }
 
+  await Promise.all([
+    ...departments.map((code) =>
+      prisma.department.upsert({
+        where: { code },
+        create: { code, name: code, display_name: code, is_active: false },
+        update: {},
+      })
+    ),
+    ...faculties.map((code) =>
+      prisma.faculty.upsert({
+        where: { code },
+        create: { code, name: code, display_name: code, is_active: false },
+        update: {},
+      })
+    ),
+    ...requisites.map((req) => processRequisite(req, prisma)),
+  ])
+
   await prisma.program.upsert({
-    where: { pid: data.pid },
+    where: { id: data.id },
     create: {
       ...data,
-      departments: {
-        connectOrCreate: departments.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
-      },
-      faculties: {
-        connectOrCreate: faculties.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
-      },
+      departments: { connect: departments.map((code) => ({ code })) },
+      faculties: { connect: faculties.map((code) => ({ code })) },
+      requisites: { connect: requisites.map((req) => ({ id: req.id })) },
     },
     update: {
       ...data,
-      departments: {
-        connectOrCreate: departments.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
-        set: departments.map((code) => ({ code })),
-      },
-      faculties: {
-        connectOrCreate: faculties.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
-        set: faculties.map((code) => ({ code })),
-      },
+      departments: { set: departments.map((code) => ({ code })) },
+      faculties: { set: faculties.map((code) => ({ code })) },
+      requisites: { set: requisites.map((req) => ({ id: req.id })) },
     },
   })
 }
@@ -272,8 +262,12 @@ export async function crawlPrograms(job: Job) {
       const batch = programsData.slice(i, i + BATCH_SIZE)
       const currentBatch = Math.floor(i / BATCH_SIZE) + 1
 
-      // Process batch in parallel
-      const results = await Promise.allSettled(batch.map((program) => processProgram(program, prisma)))
+      // Process batch in parallel within a transaction
+      const results = await prisma.$transaction((tx) => {
+        return Promise.allSettled(
+          batch.map((program) => processProgram(program, tx as PrismaClient))
+        )
+      })
 
       // Count successes and failures
       const succeeded = results.filter((r) => r.status === "fulfilled").length

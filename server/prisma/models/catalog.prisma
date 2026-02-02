@@ -248,7 +248,7 @@ enum TermName {
 }
 
 model Program {
-  id         String   @id @default(uuid())
+  id         String   @id
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
@@ -257,14 +257,13 @@ model Program {
   requisites      Requisite[]
   requisite_rules RequisiteRule[]
 
-  pid              String @unique
-  coursedog_id     String
-  program_group_id String
+  program_group_id String @unique
 
-  code         String @unique
+  code         String  @unique
   name         String
   long_name    String
   display_name String
+  notes        String?
 
   type                    String
   degree_designation_code String?
@@ -279,10 +278,13 @@ model Program {
 
   is_active  Boolean
   start_term Json?
+  end_term   Json?
 
   program_created_at           DateTime
   program_last_updated_at      DateTime
-  program_effective_start_date DateTime
+  program_last_synced_at       DateTime
+  program_effective_start_date DateTime?
+  program_effective_end_date   DateTime?
 
   version Int
 

@@ -1,8 +1,18 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { PrismaClient, Requisite } from "@planucalgary/shared/prisma/client"
+import { Course, CourseSet, PrismaClient, Program, RequisiteRule, RequisiteSet } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
 import { DATABASE_URL } from "../../config"
+import { JsonNull } from "@prisma/client/runtime/client"
+
+interface RequisiteRuleValue {
+  id: string
+  condition: string
+  values: (string | {
+    logic: string
+    value: string[]
+  })[]
+}
 
 export interface RequisiteRuleData {
   id: string
@@ -20,14 +30,7 @@ export interface RequisiteRuleData {
   grade?: string
   gradeType?: string
   subRules: RequisiteRuleData[]
-  value: {
-    id: string
-    condition: string
-    values: (string | {
-      logic: string
-      value: string[]
-    })[]
-  }
+  value: RequisiteRuleValue
 }
 
 export interface RequisiteData {
@@ -169,7 +172,7 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
 
   const data = {
     id: requisiteSetData._id,
-    requisite_set_group_id: requisiteSetData._id,
+    requisite_set_group_id: requisiteSetData.requisiteSetGroupId,
     version: requisiteSetData.version,
     name,
     description,
@@ -209,65 +212,103 @@ export async function crawlRequisiteSets(job: Job) {
   const adapter = new PrismaPg({ connectionString: DATABASE_URL })
   const prisma = new PrismaClient({ adapter })
 
-  try {
-    // This endpoint does not support limit and skip
-    const url = "https://app.coursedog.com/api/v1/ucalgary_peoplesoft/requisite-sets"
-    const response = await axios.get<RequisiteSetData[]>(url, {
-      headers: {
-        Origin: "https://calendar.ucalgary.ca",
-      },
-      params: {},
-      timeout: 60000,
+  // This endpoint does not support limit and skip
+  const url = "https://app.coursedog.com/api/v1/ucalgary_peoplesoft/requisite-sets"
+  const response = await axios.get<RequisiteSetData[]>(url, {
+    headers: {
+      Origin: "https://calendar.ucalgary.ca",
+    },
+    params: {},
+    timeout: 60000,
+  })
+
+  const requisiteSetsData = response.data
+
+  await job.updateProgress(10)
+
+  // Process requisite sets in parallel batches
+  const BATCH_SIZE = 50
+  const totalBatches = Math.ceil(requisiteSetsData.length / BATCH_SIZE)
+  let totalSucceeded = 0
+  let totalFailed = 0
+
+  for (let i = 0; i < requisiteSetsData.length; i += BATCH_SIZE) {
+    const batch = requisiteSetsData.slice(i, i + BATCH_SIZE)
+    const currentBatch = Math.floor(i / BATCH_SIZE) + 1
+
+    const results = await prisma.$transaction((tx) => {
+      return Promise.allSettled(
+        batch.map(requisiteSetData => processRequisiteSet(requisiteSetData, tx as PrismaClient))
+      )
     })
 
-    const requisiteSetsData = response.data
+    // Count successes and failures
+    const succeeded = results.filter((r) => r.status === "fulfilled").length
+    const failed = results.filter((r) => r.status === "rejected").length
 
-    await job.updateProgress(10)
+    totalSucceeded += succeeded
+    totalFailed += failed
 
-    // Process requisite sets in parallel batches
-    const BATCH_SIZE = 50
-    const totalBatches = Math.ceil(requisiteSetsData.length / BATCH_SIZE)
-    let totalSucceeded = 0
-    let totalFailed = 0
+    // Log any failures
+    results.forEach((result, idx) => {
+      if (result.status === "rejected") {
+        const csid = batch[idx]?._id || "unknown"
+        console.error(`Failed to process requisite set ${csid}:`, result.reason)
+      }
+    })
 
-    for (let i = 0; i < requisiteSetsData.length; i += BATCH_SIZE) {
-      const batch = requisiteSetsData.slice(i, i + BATCH_SIZE)
-      const currentBatch = Math.floor(i / BATCH_SIZE) + 1
-
-      const results = await prisma.$transaction((tx) => {
-        return Promise.allSettled(
-          batch.map(requisiteSetData => processRequisiteSet(requisiteSetData, tx as PrismaClient))
-        )
-      })
-
-      // Count successes and failures
-      const succeeded = results.filter((r) => r.status === "fulfilled").length
-      const failed = results.filter((r) => r.status === "rejected").length
-
-      totalSucceeded += succeeded
-      totalFailed += failed
-
-      // Log any failures
-      results.forEach((result, idx) => {
-        if (result.status === "rejected") {
-          const csid = batch[idx]?._id || "unknown"
-          console.error(`Failed to process requisite set ${csid}:`, result.reason)
-        }
-      })
-
-      // Update progress (10% to 100%)
-      const progress = 10 + (currentBatch / totalBatches) * 90
-      await job.updateProgress(progress)
-    }
-
-    await job.updateProgress(100)
-
-    return {
-      total: totalSucceeded + totalFailed,
-      totalSucceeded,
-      totalFailed,
-    }
-  } finally {
-    await prisma.$disconnect()
+    // Update progress (10% to 90%)
+    const progress = 10 + (currentBatch / totalBatches) * 80
+    await job.updateProgress(progress)
   }
+
+  // build relations for all requisite rules
+  await prisma.$transaction(async (tx) => {
+    const allRules = await tx.requisiteRule.findMany()
+    await Promise.all(
+      allRules.map((rule) => buildRequisiteRuleRelations(rule, tx as PrismaClient))
+    )
+  })
+
+  await job.updateProgress(100)
+  await prisma.$disconnect()
+
+  return {
+    total: totalSucceeded + totalFailed,
+    totalSucceeded,
+    totalFailed,
+  }
+}
+
+export function buildRequisiteRuleRelations(rule: RequisiteRule, prisma: PrismaClient) {
+  if (!rule.raw_json) return
+
+  const rawJson = rule.raw_json as any as RequisiteRuleValue
+  const values = rawJson.values
+  const flattenedValues: string[] = values.flatMap((v) => {
+    if (typeof v === "string") {
+      return [v]
+    } else if (typeof v === "object" && v.logic && Array.isArray(v.value)) {
+      return v.value
+    }
+    return []
+  })
+
+  return prisma.requisiteRule.update({
+    where: { id: rule.id },
+    data: {
+      courses: {
+        set: flattenedValues.map(id => ({ course_group_id: id })),
+      },
+      programs: {
+        set: flattenedValues.map(id => ({ id })),
+      },
+      course_sets: {
+        set: flattenedValues.map(id => ({ course_set_group_id: id })),
+      },
+      requisite_sets: {
+        set: flattenedValues.map(id => ({ requisite_set_group_id: id })),
+      },
+    },
+  })
 }
