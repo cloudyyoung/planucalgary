@@ -107,7 +107,7 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
 
   const data = {
     id: requisiteSetData._id,
-    requisite_set_group_id: requisiteSetData.requisiteSetGroupId,
+    requisite_set_group_id: requisiteSetData._id,
     version: requisiteSetData.version,
     name,
     description,
@@ -118,33 +118,43 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
     requisite_set_effective_end_date: effectiveEndDate,
   }
 
+  await prisma.requisiteSet.upsert({
+    where: { id: data.id },
+    create: data,
+    update: data,
+  })
+
+  if (!requisiteSetData.requisites) {
+    return
+  }
+
   await Promise.all(
-    requisiteSetData.requisites?.map((r) => {
+    requisiteSetData.requisites.map((req) => {
       return prisma.requisite.upsert({
-        where: { id: r.id },
+        where: { id: req.id },
         create: {
-          id: r.id,
-          name: r.name,
-          type: r.type,
-          raw_rules: processRequisites(r.rules),
+          id: req.id,
+          name: req.name,
+          type: req.type,
+          raw_rules: processRequisites(req.rules),
         },
         update: {
-          name: r.name,
-          type: r.type,
-          raw_rules: processRequisites(r.rules),
+          name: req.name,
+          type: req.type,
+          raw_rules: processRequisites(req.rules),
         },
       })
     }) || []
   )
 
   await Promise.all(
-    (requisiteSetData.requisites?.flatMap((r) => {
-      return r.rules.flatMap(rule => {
+    (requisiteSetData.requisites.flatMap((req) => {
+      return req.rules.flatMap(rule => {
         return prisma.requisiteRule.upsert({
           where: { id: rule.id },
           create: {
             id: rule.id,
-            requisite_id: r.id,
+            requisite_id: req.id,
             name: rule.name,
             description: rule.description,
             notes: rule.notes,
@@ -181,18 +191,11 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
     }) ?? [])
   )
 
-  await prisma.requisiteSet.upsert({
+  await prisma.requisiteSet.update({
     where: { id: data.id },
-    create: {
-      ...data,
+    data: {
       requisites: {
-        connect: requisiteSetData.requisites?.map((r) => ({ id: r.id })),
-      },
-    },
-    update: {
-      ...data,
-      requisites: {
-        set: requisiteSetData.requisites?.map((r) => ({ id: r.id })) || [],
+        set: requisiteSetData.requisites.map((r) => ({ id: r.id })) || [],
       },
     },
   })
@@ -212,9 +215,7 @@ export async function crawlRequisiteSets(job: Job) {
       headers: {
         Origin: "https://calendar.ucalgary.ca",
       },
-      params: {
-        effectiveDatesRange: "2026-06-21,2099-01-01",
-      },
+      params: {},
       timeout: 60000,
     })
 
@@ -232,18 +233,10 @@ export async function crawlRequisiteSets(job: Job) {
       const batch = requisiteSetsData.slice(i, i + BATCH_SIZE)
       const currentBatch = Math.floor(i / BATCH_SIZE) + 1
 
-      // Process batch sequentially within a transaction
-      const results = await prisma.$transaction(async (tx) => {
-        const batchResults: Array<{ status: "fulfilled" | "rejected"; reason?: any }> = []
-        for (const requisiteSet of batch) {
-          try {
-            await processRequisiteSet(requisiteSet, tx as PrismaClient)
-            batchResults.push({ status: "fulfilled" })
-          } catch (error) {
-            batchResults.push({ status: "rejected", reason: error })
-          }
-        }
-        return batchResults
+      const results = await prisma.$transaction((tx) => {
+        return Promise.allSettled(
+          batch.map(requisiteSetData => processRequisiteSet(requisiteSetData, tx as PrismaClient))
+        )
       })
 
       // Count successes and failures
