@@ -22,7 +22,7 @@ model Course {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  course_id       String @unique
+  course_id       String
   course_group_id String
 
   code          String

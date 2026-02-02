@@ -348,21 +348,32 @@ async function processCourse(
     raw_requisites: rawRequisites,
   }
 
+  await Promise.allSettled([
+    departments.map((code) =>
+      prisma.department.upsert({
+        where: { code },
+        create: { code, name: code, display_name: code, is_active: false },
+        update: {},
+      })
+    ),
+    faculties.map((code) =>
+      prisma.faculty.upsert({
+        where: { code },
+        create: { code, name: code, display_name: code, is_active: false },
+        update: {},
+      })
+    ),
+  ])
+
   await prisma.course.upsert({
     where: { id: data.id },
     create: {
       ...data,
       departments: {
-        connectOrCreate: departments.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
+        connect: departments.map((code) => ({ code })),
       },
       faculties: {
-        connectOrCreate: faculties.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
+        connect: faculties.map((code) => ({ code })),
       },
       topics: { create: topics },
       prereq_requisite: prereqReq
@@ -385,27 +396,10 @@ async function processCourse(
     update: {
       ...data,
       departments: {
-        connectOrCreate: departments.map((code) => ({
-          where: { code },
-          create: { code, name: code, display_name: code, is_active: false },
-        })),
         set: departments.map((code) => ({ code })),
       },
       faculties: {
-        connectOrCreate: facultyCode
-          ? [
-            {
-              where: { code: facultyCode },
-              create: {
-                code: facultyCode,
-                name: facultyCode,
-                display_name: facultyCode,
-                is_active: false,
-              },
-            },
-          ]
-          : [],
-        set: facultyCode ? [{ code: facultyCode }] : [],
+        set: faculties.map((code) => ({ code })),
       },
       topics: {
         deleteMany: {},
@@ -456,7 +450,7 @@ export async function crawlCourses(job: Job) {
       },
       params: {
         effectiveDatesRange: "2026-06-21,2099-01-01",
-        skip: 500,
+        skip: 2300,
         limit: 10,
       },
       timeout: 60000,
