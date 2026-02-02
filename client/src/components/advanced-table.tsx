@@ -193,7 +193,7 @@ const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
               <td
                 key={cell.id}
                 className={cn(
-                  "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-wrap break-all",
+                  "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-wrap break-words",
                 )}
                 style={{
                   width: cell.column.getSize(),
