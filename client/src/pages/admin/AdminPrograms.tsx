@@ -44,13 +44,6 @@ export const AdminPrograms = () => {
             },
         },
         {
-            accessorKey: "name",
-            header: "Name",
-            size: 300,
-            enableColumnFilter: true,
-            enableSorting: true,
-        },
-        {
             accessorKey: "pid",
             header: "PID",
             enableColumnFilter: true,
@@ -59,6 +52,26 @@ export const AdminPrograms = () => {
                 const pid = cell.getValue<string>()
                 return <span className="font-mono">{pid}</span>
             },
+        },
+        {
+            accessorKey: "name",
+            header: "Name",
+            enableColumnFilter: true,
+            enableSorting: true,
+        },
+        {
+            accessorKey: 'long_name',
+            header: 'Long Name',
+            size: 200,
+            enableSorting: true,
+            enableColumnFilter: true,
+        },
+        {
+            accessorKey: 'display_name',
+            header: 'Display Name',
+            size: 200,
+            enableSorting: true,
+            enableColumnFilter: true,
         },
         {
             accessorKey: "is_active",
@@ -87,6 +100,12 @@ export const AdminPrograms = () => {
                     <JsonView src={requisites} displaySize={false} displayArrayIndex={false} />
                 </div>
             },
+        },
+        {
+            accessorKey: 'degree_designation_code',
+            header: 'Degree Designation Code',
+            enableSorting: true,
+            enableColumnFilter: true,
         },
         {
             accessorKey: 'updated_at',

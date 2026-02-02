@@ -7,7 +7,7 @@ import { DATABASE_URL } from "../../config"
 interface RequisiteSetData {
   _id: string
   requisiteSetGroupId: string
-  name?: string
+  name: string
   description?: string
   requisites?: any[]
   effectiveStartDate?: string
@@ -57,7 +57,7 @@ function processRequisites(requisites: any[] | undefined): any[] {
  * Process a single requisite set upsert
  */
 async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: PrismaClient): Promise<void> {
-  const name = requisiteSetData.name ? requisiteSetData.name.trim() : null
+  const name = requisiteSetData.name.trim()
   const description = requisiteSetData.description || null
   const rawJson = processRequisites(requisiteSetData.requisites)
 
@@ -68,7 +68,7 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
     csid: requisiteSetData._id,
     requisite_set_group_id: requisiteSetData.requisiteSetGroupId,
     version: requisiteSetData.version,
-    name: name || "",
+    name,
     description,
     raw_json: rawJson,
     requisite_set_created_at: createdAt,
@@ -95,6 +95,9 @@ export async function crawlRequisiteSets(job: Job) {
     const response = await axios.get<RequisiteSetData[]>(url, {
       headers: {
         Origin: "https://calendar.ucalgary.ca",
+      },
+      params: {
+        effectiveDatesRange: "2026-06-21,2099-01-01",
       },
       timeout: 60000,
     })
