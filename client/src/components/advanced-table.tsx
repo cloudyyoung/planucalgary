@@ -237,7 +237,6 @@ const TableBodyRow = ({ row, virtualRow, rowVirtualizer }: TableBodyRowProps) =>
 };
 
 const AdvancedTableBody = <T,>({ table, scrollContainerRef }: AdvancedTableBodyProps<T>) => {
-  const columns = table.getAllColumns();
   const rows = table.getRowModel().rows;
 
   const rowVirtualizer = useVirtualizer({

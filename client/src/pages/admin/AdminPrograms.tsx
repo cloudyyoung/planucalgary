@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { Program } from "@planucalgary/shared/prisma/client";
+import { Department, Faculty, Program } from "@planucalgary/shared/prisma/client";
 import JsonView from "react18-json-view";
 import { Check, X } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { usePrograms } from "@/hooks/usePrograms";
+import { FacultyPills } from "@/components/faculty-pills";
+import { DepartmentPills } from "@/components/department-pills";
 
 
 export const AdminPrograms = () => {
@@ -95,14 +97,8 @@ export const AdminPrograms = () => {
             header: 'Faculties',
             size: 200,
             cell: ({ cell }) => {
-                const faculties = cell.getValue<any[]>()
-                return <div className="flex flex-col gap-1">
-                    {faculties.map(faculty => (
-                        <div key={faculty.code} className="font-mono">
-                            {faculty.code}
-                        </div>
-                    ))}
-                </div>
+                const faculties = cell.getValue<Faculty[]>()
+                return <FacultyPills faculties={faculties} />
             },
         },
         {
@@ -110,14 +106,8 @@ export const AdminPrograms = () => {
             header: 'Departments',
             size: 200,
             cell: ({ cell }) => {
-                const departments = cell.getValue<any[]>()
-                return <div className="flex flex-col gap-1">
-                    {departments.map(department => (
-                        <div key={department.code} className="font-mono">
-                            {department.code}
-                        </div>
-                    ))}
-                </div>
+                const departments = cell.getValue<Department[]>()
+                return <DepartmentPills departments={departments} />
             },
         },
         {

@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import { RequisiteJson } from "@planucalgary/shared/prisma/client"
+import { Department, Faculty, RequisiteJson } from "@planucalgary/shared/prisma/client"
 import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@planucalgary/shared";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DepartmentPills } from "@/components/department-pills";
+import { FacultyPills } from "@/components/faculty-pills";
 
 
 export const AdminRequisitesJsons = () => {
@@ -88,14 +90,22 @@ export const AdminRequisitesJsons = () => {
       }
     },
     {
-      accessorKey: "departments",
-      header: "Departments",
-      enableSorting: true,
-    },
-    {
       accessorKey: "faculties",
       header: "Faculties",
       enableSorting: true,
+      cell: ({ cell }) => {
+        const faculties = cell.getValue<string[]>()
+        return <FacultyPills faculties={faculties} />
+      },
+    },
+    {
+      accessorKey: "departments",
+      header: "Departments",
+      enableSorting: true,
+      cell: ({ cell }) => {
+        const departments = cell.getValue<string[]>()
+        return <DepartmentPills departments={departments} />
+      },
     },
     {
       accessorKey: "json_valid",
