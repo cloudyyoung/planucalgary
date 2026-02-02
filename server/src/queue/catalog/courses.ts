@@ -52,7 +52,7 @@ interface CourseData {
   name: string
   notes: string
   requisites: {
-    requisites_simple: RequisiteData[]
+    requisitesSimple: RequisiteData[]
   }
   schedulePrint: boolean
   sisId: string
@@ -218,7 +218,7 @@ function processRequisites(requisites: CourseData["requisites"]) {
     return { prereq, coreq, antireq }
   }
 
-  const array = requisites.requisites_simple
+  const array = requisites.requisitesSimple
   if (!array || !Array.isArray(array)) {
     return { prereq, coreq, antireq }
   }
