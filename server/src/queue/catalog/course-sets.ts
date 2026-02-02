@@ -7,7 +7,7 @@ import { DATABASE_URL } from "../../config"
 interface CourseSetData {
   id: string
   courseSetGroupId: string
-  name?: string
+  name: string
   description?: string
   type: string // "static" or "dynamic"
   structure?: any
@@ -62,7 +62,7 @@ function processStructure(structure: any): any {
  * Process a single course set upsert
  */
 async function processCourseSet(courseSetData: CourseSetData, prisma: PrismaClient): Promise<void> {
-  const name = (courseSetData.name || "").trim()
+  const name = courseSetData.name.trim()
   const description = courseSetData.description || null
   const rawJson = processStructure(courseSetData.structure)
 
@@ -90,17 +90,7 @@ async function processCourseSet(courseSetData: CourseSetData, prisma: PrismaClie
     course_set_last_updated_at: lastEditedAt,
     course_set_effective_start_date: effectiveStartDate,
     course_set_effective_end_date: effectiveEndDate,
-    courses: {}
-  }
-
-  if (data.type === "static" && courseSetData.courseList) {
-    data.courses = {
-      connect: courseSetData.courseList.map((courseId) => ({ id: courseId })),
-    }
-  } else if (data.type === "dynamic" && courseSetData.dynamicCourseList) {
-    data.courses = {
-      connect: courseSetData.dynamicCourseList.map((courseId) => ({ id: courseId })),
-    }
+    course_list: courseSetData.courseList || courseSetData.dynamicCourseList || [],
   }
 
   await prisma.courseSet.upsert({

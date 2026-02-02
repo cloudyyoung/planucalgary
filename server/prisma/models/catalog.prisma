@@ -127,10 +127,11 @@ model CourseSet {
   requisite_rules RequisiteRule[]
   courses         Course[]
 
-  course_set_group_id String  @unique
+  course_set_group_id String   @unique
   type                String
   name                String
   description         String?
+  course_list         String[]
 
   json     Json?
   raw_json Json?
@@ -372,22 +373,24 @@ model RequisiteRule {
 }
 
 model RequisiteSet {
-  id         String   @id @default(uuid())
+  id         String   @id
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
   requisite_rules RequisiteRule[]
 
-  csid                   String  @unique
   requisite_set_group_id String  @unique
   version                Int
   name                   String
   description            String?
-  json                   Json?
-  raw_json               Json?
 
-  requisite_set_created_at      DateTime
-  requisite_set_last_updated_at DateTime
+  json     Json?
+  raw_json Json?
+
+  requisite_set_created_at           DateTime
+  requisite_set_last_updated_at      DateTime
+  requisite_set_effective_start_date DateTime?
+  requisite_set_effective_end_date   DateTime?
 
   @@map("requisite_sets")
   @@schema("catalog")
