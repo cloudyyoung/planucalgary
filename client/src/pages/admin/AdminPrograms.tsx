@@ -91,6 +91,36 @@ export const AdminPrograms = () => {
             },
         },
         {
+            accessorKey: 'faculties',
+            header: 'Faculties',
+            size: 200,
+            cell: ({ cell }) => {
+                const faculties = cell.getValue<any[]>()
+                return <div className="flex flex-col gap-1">
+                    {faculties.map(faculty => (
+                        <div key={faculty.code} className="font-mono">
+                            {faculty.code}
+                        </div>
+                    ))}
+                </div>
+            },
+        },
+        {
+            accessorKey: 'departments',
+            header: 'Departments',
+            size: 200,
+            cell: ({ cell }) => {
+                const departments = cell.getValue<any[]>()
+                return <div className="flex flex-col gap-1">
+                    {departments.map(department => (
+                        <div key={department.code} className="font-mono">
+                            {department.code}
+                        </div>
+                    ))}
+                </div>
+            },
+        },
+        {
             accessorKey: 'requisites',
             header: 'Requisites',
             size: 600,
@@ -104,6 +134,7 @@ export const AdminPrograms = () => {
         {
             accessorKey: 'degree_designation_code',
             header: 'Degree Designation Code',
+            size: 200,
             enableSorting: true,
             enableColumnFilter: true,
         },

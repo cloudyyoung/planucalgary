@@ -13,8 +13,12 @@ export const listPrograms: ProgramListHandler = async (req, res) => {
   }
   const [programs, total] = await Promise.all([
     req.prisma.program.findMany({
+      include: {
+        faculties: true,
+        departments: true,
+      },
       where: whereConditions,
-      orderBy: getSortings(sorting),
+      orderBy: [...getSortings(sorting), { is_active: "desc" }, { code: "desc" }],
       skip: req.pagination.offset,
       take: req.pagination.limit,
     }),
@@ -29,6 +33,10 @@ export const listPrograms: ProgramListHandler = async (req, res) => {
 export const getProgram: ProgramGetHandler = async (req, res) => {
   const { id } = req.params;
   const program = await req.prisma.program.findUnique({
+    include: {
+      faculties: true,
+      departments: true,
+    },
     where: { id },
   })
 
