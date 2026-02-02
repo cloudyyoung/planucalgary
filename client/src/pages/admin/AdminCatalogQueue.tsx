@@ -56,7 +56,7 @@ const JobColumns: ColumnDef<QueueJob>[] = [
   {
     id: "attempts",
     header: "Attempts",
-    size: 50,
+    size: 100,
     cell: ({ row }) => {
       const started = row.original.attempts_started
       const made = row.original.attempts_made
@@ -79,7 +79,7 @@ const JobColumns: ColumnDef<QueueJob>[] = [
   {
     accessorKey: "created_at",
     header: "Created At",
-    size: 90,
+    size: 150,
     cell: ({ cell }) => {
       const timestamp = cell.getValue<number>()
       const time = DateTime.fromMillis(timestamp)
@@ -89,7 +89,7 @@ const JobColumns: ColumnDef<QueueJob>[] = [
   {
     accessorKey: "processed_at",
     header: "Processed At",
-    size: 90,
+    size: 150,
     cell: ({ cell }) => {
       const timestamp = cell.getValue<number | undefined>()
       if (!timestamp) return
@@ -100,7 +100,7 @@ const JobColumns: ColumnDef<QueueJob>[] = [
   {
     accessorKey: "finished_at",
     header: "Finished At",
-    size: 90,
+    size: 150,
     cell: ({ cell }) => {
       const timestamp = cell.getValue<number | undefined>()
       if (!timestamp) return
