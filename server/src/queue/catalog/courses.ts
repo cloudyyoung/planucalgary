@@ -432,9 +432,7 @@ export async function crawlCourses(job: Job) {
         Origin: "https://calendar.ucalgary.ca",
       },
       params: {
-        effectiveDatesRange: "2026-06-21,2099-01-01",
-        skip: 28134,
-        limit: 1000,
+        // effectiveDatesRange: "1901-01-01,2099-01-01",
       },
       timeout: 60000,
     })
