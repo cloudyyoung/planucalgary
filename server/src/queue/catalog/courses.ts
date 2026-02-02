@@ -261,7 +261,6 @@ async function processCourse(
   const components = courseData.components.map((c) => componentSerializer(c.code))
   const career = careerSerializer(courseData.career)
   const rawRequisites = convertDictKeysCamelToSnake(courseData.requisites)
-  const { prereq: prereqReq, coreq: coreqReq, antireq: antireqReq } = processRequisites(rawRequisites)
 
   const data = {
     id: courseData.id,
@@ -337,15 +336,6 @@ async function processCourse(
       departments: { connect: departments.map((code) => ({ code })), },
       faculties: { connect: faculties.map((code) => ({ code })), },
       topics: { create: topics },
-      prereq_requisite: prereqReq
-        ? { connect: { id: prereqReq.id } }
-        : undefined,
-      coreq_requisite: coreqReq
-        ? { connect: { id: coreqReq.id } }
-        : undefined,
-      antireq_requisite: antireqReq
-        ? { connect: { id: antireqReq.id } }
-        : undefined,
     },
     update: {
       ...data,
@@ -356,15 +346,6 @@ async function processCourse(
         deleteMany: {},
         create: topics,
       },
-      prereq_requisite: prereqReq
-        ? { connect: { id: prereqReq.id } }
-        : { disconnect: true },
-      coreq_requisite: coreqReq
-        ? { connect: { id: coreqReq.id } }
-        : { disconnect: true },
-      antireq_requisite: antireqReq
-        ? { connect: { id: antireqReq.id } }
-        : { disconnect: true },
     },
   })
 }
