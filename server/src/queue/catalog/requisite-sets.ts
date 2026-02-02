@@ -1,15 +1,48 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { PrismaClient } from "@planucalgary/shared/prisma/client"
+import { PrismaClient, Requisite } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
 import { DATABASE_URL } from "../../config"
+
+interface RequisiteRuleData {
+  id: string
+  name?: string
+  description?: string
+  notes?: string
+  condition: string
+  minCourses?: number
+  maxCourses?: number
+  minCredits?: number
+  maxCredits?: number
+  credits?: number
+  number?: number
+  restriction?: number
+  grade?: string
+  gradeType?: string
+  subRules: RequisiteRuleData[]
+  value: {
+    id: string
+    condition: string
+    values: (string | {
+      logic: string
+      value: string[]
+    })[]
+  }
+}
+
+interface RequisiteData {
+  id: string
+  name: string
+  type: string
+  rules: RequisiteRuleData[]
+}
 
 interface RequisiteSetData {
   _id: string
   requisiteSetGroupId: string
   name: string
   description?: string
-  requisites?: any[]
+  requisites?: RequisiteData[]
   effectiveStartDate?: string
   effectiveEndDate?: string
   createdAt?: number
@@ -63,9 +96,15 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
 
   const createdAt = requisiteSetData.createdAt ? new Date(requisiteSetData.createdAt) : new Date()
   const lastEditedAt = requisiteSetData.lastEditedAt ? new Date(requisiteSetData.lastEditedAt) : new Date()
+  const effectiveStartDate = requisiteSetData.effectiveStartDate
+    ? new Date(requisiteSetData.effectiveStartDate)
+    : null
+  const effectiveEndDate = requisiteSetData.effectiveEndDate
+    ? new Date(requisiteSetData.effectiveEndDate)
+    : null
 
   const data = {
-    csid: requisiteSetData._id,
+    id: requisiteSetData._id,
     requisite_set_group_id: requisiteSetData.requisiteSetGroupId,
     version: requisiteSetData.version,
     name,
@@ -73,12 +112,83 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
     raw_json: rawJson,
     requisite_set_created_at: createdAt,
     requisite_set_last_updated_at: lastEditedAt,
+    requisite_set_effective_start_date: effectiveStartDate,
+    requisite_set_effective_end_date: effectiveEndDate,
   }
 
+  // First, upsert all requisites and their rules
+  for (const r of requisiteSetData.requisites || []) {
+    await prisma.requisite.upsert({
+      where: { id: r.id },
+      create: {
+        id: r.id,
+        name: r.name,
+        type: r.type,
+        rules: {
+          createMany: {
+            data: r.rules.map((rule) => ({
+              id: rule.id,
+              name: rule.name,
+              description: rule.description,
+              notes: rule.notes,
+              condition: rule.condition,
+              min_courses: rule.minCourses,
+              max_courses: rule.maxCourses,
+              min_credits: rule.minCredits,
+              max_credits: rule.maxCredits,
+              credits: rule.credits,
+              number: rule.number,
+              restriction: rule.restriction,
+              grade: rule.grade,
+              grade_type: rule.gradeType,
+            })),
+          },
+        },
+      },
+      update: {
+        name: r.name,
+        type: r.type,
+        rules: {
+          deleteMany: {},
+          createMany: {
+            data: r.rules.map((rule) => ({
+              id: rule.id,
+              name: rule.name,
+              description: rule.description,
+              notes: rule.notes,
+              condition: rule.condition,
+              min_courses: rule.minCourses,
+              max_courses: rule.maxCourses,
+              min_credits: rule.minCredits,
+              max_credits: rule.maxCredits,
+              credits: rule.credits,
+              number: rule.number,
+              restriction: rule.restriction,
+              grade: rule.grade,
+              grade_type: rule.gradeType,
+            })),
+          },
+        },
+      },
+    })
+  }
+
+  // Then upsert the requisite set and connect only the new requisites
   await prisma.requisiteSet.upsert({
-    where: { requisite_set_group_id: data.requisite_set_group_id },
-    create: data,
-    update: data,
+    where: { id: data.id },
+    create: {
+      ...data,
+      requisites: {
+        connect: requisiteSetData.requisites?.map((r) => ({ id: r.id })) || [],
+      },
+    },
+    update: {
+      ...data,
+      requisites: {
+        set: [],
+        connect: requisiteSetData.requisites?.map((r) => ({ id: r.id })) || [],
+      },
+    },
   })
 }
 
@@ -116,10 +226,19 @@ export async function crawlRequisiteSets(job: Job) {
       const batch = requisiteSetsData.slice(i, i + BATCH_SIZE)
       const currentBatch = Math.floor(i / BATCH_SIZE) + 1
 
-      // Process batch in parallel
-      const results = await Promise.allSettled(
-        batch.map((requisiteSet) => processRequisiteSet(requisiteSet, prisma))
-      )
+      // Process batch sequentially within a transaction
+      const results = await prisma.$transaction(async (tx) => {
+        const batchResults: Array<{ status: "fulfilled" | "rejected"; reason?: any }> = []
+        for (const requisiteSet of batch) {
+          try {
+            await processRequisiteSet(requisiteSet, tx as PrismaClient)
+            batchResults.push({ status: "fulfilled" })
+          } catch (error) {
+            batchResults.push({ status: "rejected", reason: error })
+          }
+        }
+        return batchResults
+      })
 
       // Count successes and failures
       const succeeded = results.filter((r) => r.status === "fulfilled").length

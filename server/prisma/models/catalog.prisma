@@ -329,6 +329,8 @@ model Requisite {
   raw_rules Json?
   rules     RequisiteRule[]
 
+  requisite_sets RequisiteSet[]
+
   @@map("requisites")
   @@schema("catalog")
 }
@@ -377,6 +379,7 @@ model RequisiteSet {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
+  requisites      Requisite[]
   requisite_rules RequisiteRule[]
 
   requisite_set_group_id String  @unique
