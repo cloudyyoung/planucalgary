@@ -261,25 +261,17 @@ const AdvancedTableBody = <T,>({ table, scrollContainerRef }: AdvancedTableBodyP
         position: 'relative',
       }}
     >
-      {rows?.length ? (
-        rowVirtualizer.getVirtualItems().map((virtualRow) => {
-          const row = rows[virtualRow.index];
-          return (
-            <TableBodyRow
-              key={row.id}
-              row={row}
-              virtualRow={virtualRow}
-              rowVirtualizer={rowVirtualizer}
-            />
-          );
-        })
-      ) : (
-        <tr style={{ display: 'flex', width: '100%' }}>
-          <td colSpan={columns.length} className="h-24 text-center">
-            No results.
-          </td>
-        </tr>
-      )}
+      {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+        const row = rows[virtualRow.index];
+        return (
+          <TableBodyRow
+            key={row.id}
+            row={row}
+            virtualRow={virtualRow}
+            rowVirtualizer={rowVirtualizer}
+          />
+        );
+      })}
     </tbody>
   )
 }
