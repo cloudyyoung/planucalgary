@@ -118,79 +118,81 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
     requisite_set_effective_end_date: effectiveEndDate,
   }
 
-  // First, upsert all requisites and their rules
-  for (const r of requisiteSetData.requisites || []) {
-    await prisma.requisite.upsert({
-      where: { id: r.id },
-      create: {
-        id: r.id,
-        name: r.name,
-        type: r.type,
-        rules: {
-          createMany: {
-            data: r.rules.map((rule) => ({
-              id: rule.id,
-              name: rule.name,
-              description: rule.description,
-              notes: rule.notes,
-              condition: rule.condition,
-              min_courses: rule.minCourses,
-              max_courses: rule.maxCourses,
-              min_credits: rule.minCredits,
-              max_credits: rule.maxCredits,
-              credits: rule.credits,
-              number: rule.number,
-              restriction: rule.restriction,
-              grade: rule.grade,
-              grade_type: rule.gradeType,
-              raw_json: convertDictKeysCamelToSnake(rule.value),
-            })),
-          },
+  await Promise.all(
+    requisiteSetData.requisites?.map((r) => {
+      return prisma.requisite.upsert({
+        where: { id: r.id },
+        create: {
+          id: r.id,
+          name: r.name,
+          type: r.type,
+          raw_rules: processRequisites(r.rules),
         },
-      },
-      update: {
-        name: r.name,
-        type: r.type,
-        rules: {
-          deleteMany: {},
-          createMany: {
-            data: r.rules.map((rule) => ({
-              id: rule.id,
-              name: rule.name,
-              description: rule.description,
-              notes: rule.notes,
-              condition: rule.condition,
-              min_courses: rule.minCourses,
-              max_courses: rule.maxCourses,
-              min_credits: rule.minCredits,
-              max_credits: rule.maxCredits,
-              credits: rule.credits,
-              number: rule.number,
-              restriction: rule.restriction,
-              grade: rule.grade,
-              grade_type: rule.gradeType,
-              raw_json: convertDictKeysCamelToSnake(rule.value),
-            })),
-          },
+        update: {
+          name: r.name,
+          type: r.type,
+          raw_rules: processRequisites(r.rules),
         },
-      },
-    })
-  }
+      })
+    }) || []
+  )
 
-  // Then upsert the requisite set and connect only the new requisites
+  await Promise.all(
+    (requisiteSetData.requisites?.flatMap((r) => {
+      return r.rules.flatMap(rule => {
+        return prisma.requisiteRule.upsert({
+          where: { id: rule.id },
+          create: {
+            id: rule.id,
+            requisite_id: r.id,
+            name: rule.name,
+            description: rule.description,
+            notes: rule.notes,
+            condition: rule.condition,
+            min_courses: rule.minCourses,
+            max_courses: rule.maxCourses,
+            min_credits: rule.minCredits,
+            max_credits: rule.maxCredits,
+            credits: rule.credits,
+            number: rule.number,
+            restriction: rule.restriction,
+            grade: rule.grade,
+            grade_type: rule.gradeType,
+            raw_json: convertDictKeysCamelToSnake(rule.value),
+          },
+          update: {
+            name: rule.name,
+            description: rule.description,
+            notes: rule.notes,
+            condition: rule.condition,
+            min_courses: rule.minCourses,
+            max_courses: rule.maxCourses,
+            min_credits: rule.minCredits,
+            max_credits: rule.maxCredits,
+            credits: rule.credits,
+            number: rule.number,
+            restriction: rule.restriction,
+            grade: rule.grade,
+            grade_type: rule.gradeType,
+            raw_json: convertDictKeysCamelToSnake(rule.value),
+          },
+        })
+      })
+    }) ?? [])
+  )
+
   await prisma.requisiteSet.upsert({
     where: { id: data.id },
     create: {
       ...data,
       requisites: {
-        connect: requisiteSetData.requisites?.map((r) => ({ id: r.id })) || [],
+        connect: requisiteSetData.requisites?.map((r) => ({ id: r.id })),
       },
     },
     update: {
       ...data,
       requisites: {
-        set: [],
-        connect: requisiteSetData.requisites?.map((r) => ({ id: r.id })) || [],
+        set: requisiteSetData.requisites?.map((r) => ({ id: r.id })) || [],
       },
     },
   })

@@ -24,6 +24,7 @@ export const RequisiteViewer = ({ requisite }: { requisite?: Requisite & { rules
             <ItemContent>
               <ItemTitle>{rule.name}</ItemTitle>
               <ItemDescription>{rule.description}</ItemDescription>
+              <ItemDescription>{rule.condition}: {rule.credits}</ItemDescription>
             </ItemContent>
           </Item>
         ))}
