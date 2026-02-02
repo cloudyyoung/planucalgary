@@ -23,7 +23,7 @@ model Course {
   updated_at DateTime @default(now()) @updatedAt
 
   course_id       String
-  course_group_id String
+  course_group_id String @unique
 
   code          String
   course_number String
@@ -90,6 +90,7 @@ model Course {
   search_vector Unsupported("tsvector")? @default(dbgenerated())
 
   requisite_rules RequisiteRule[]
+  course_sets     CourseSet[]
 
   @@index([search_vector], type: Gin, map: "course_search_vector_gin")
   @@map("courses")
@@ -118,23 +119,26 @@ model CourseTopic {
 }
 
 model CourseSet {
-  id         String   @id @default(uuid())
+  id         String   @id
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
   fields_of_study FieldOfStudy[]
   requisite_rules RequisiteRule[]
+  courses         Course[]
 
-  csid                String  @unique
   course_set_group_id String  @unique
   type                String
   name                String
   description         String?
-  json                Json?
-  raw_json            Json?
 
-  course_set_created_at      DateTime
-  course_set_last_updated_at DateTime
+  json     Json?
+  raw_json Json?
+
+  course_set_created_at           DateTime
+  course_set_last_updated_at      DateTime
+  course_set_effective_start_date DateTime?
+  course_set_effective_end_date   DateTime?
 
   @@map("course_sets")
   @@schema("catalog")

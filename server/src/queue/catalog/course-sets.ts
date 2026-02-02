@@ -11,10 +11,12 @@ interface CourseSetData {
   description?: string
   type: string // "static" or "dynamic"
   structure?: any
-  courseList?: any[]
-  dynamicCourseList?: any[]
+  courseList?: string[]
+  dynamicCourseList?: string[]
   createdAt?: number
   lastEditedAt?: number
+  effectiveStartDate?: string
+  effectiveEndDate?: string
 }
 
 interface PaginatedResponse {
@@ -70,9 +72,15 @@ async function processCourseSet(courseSetData: CourseSetData, prisma: PrismaClie
   const lastEditedAt = courseSetData.lastEditedAt
     ? new Date(courseSetData.lastEditedAt)
     : new Date()
+  const effectiveStartDate = courseSetData.effectiveStartDate
+    ? new Date(courseSetData.effectiveStartDate)
+    : null
+  const effectiveEndDate = courseSetData.effectiveEndDate
+    ? new Date(courseSetData.effectiveEndDate)
+    : null
 
   const data = {
-    csid: courseSetData.id,
+    id: courseSetData.id,
     course_set_group_id: courseSetData.courseSetGroupId,
     type: courseSetData.type,
     name,
@@ -80,10 +88,23 @@ async function processCourseSet(courseSetData: CourseSetData, prisma: PrismaClie
     raw_json: rawJson,
     course_set_created_at: createdAt,
     course_set_last_updated_at: lastEditedAt,
+    course_set_effective_start_date: effectiveStartDate,
+    course_set_effective_end_date: effectiveEndDate,
+    courses: {}
+  }
+
+  if (data.type === "static" && courseSetData.courseList) {
+    data.courses = {
+      connect: courseSetData.courseList.map((courseId) => ({ id: courseId })),
+    }
+  } else if (data.type === "dynamic" && courseSetData.dynamicCourseList) {
+    data.courses = {
+      connect: courseSetData.dynamicCourseList.map((courseId) => ({ id: courseId })),
+    }
   }
 
   await prisma.courseSet.upsert({
-    where: { course_set_group_id: data.course_set_group_id },
+    where: { id: data.id },
     create: data,
     update: data,
   })
@@ -100,7 +121,7 @@ async function fetchCourseSetPage(skip: number, limit: number): Promise<CourseSe
       Origin: "https://calendar.ucalgary.ca",
     },
     params: {
-      effectiveDatesRange: "2026-06-21,2099-01-01",
+      // effectiveDatesRange: "2026-06-21,2099-01-01",
     },
     timeout: 60000,
   })
