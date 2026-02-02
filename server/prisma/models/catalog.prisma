@@ -111,7 +111,7 @@ model CourseTopic {
   link          String
 
   course_id String
-  course    Course @relation(fields: [course_id], references: [id])
+  course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
 
   @@unique([number, course_id], map: "course_topic_number_course_unique")
   @@map("courses_topics")
@@ -171,13 +171,12 @@ model RequisiteJson {
 }
 
 model Faculty {
-  id         String   @id @default(uuid())
+  code       String   @id
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
   name         String
   display_name String
-  code         String  @unique
   is_active    Boolean
 
   departments Department[]
@@ -191,13 +190,12 @@ model Faculty {
 }
 
 model Department {
-  id         String   @id @default(uuid())
+  code       String   @id
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
   name         String
   display_name String
-  code         String  @unique
   is_active    Boolean
 
   faculties Faculty[]
@@ -339,10 +337,10 @@ model RequisiteRule {
   updated_at DateTime @default(now()) @updatedAt
 
   requisite_id String
-  requisite    Requisite @relation(fields: [requisite_id], references: [id])
+  requisite    Requisite @relation(fields: [requisite_id], references: [id], onDelete: Cascade)
 
   parent_rule_id String?
-  parent_rule    RequisiteRule?  @relation("RequisiteRuleToRequisiteRule", fields: [parent_rule_id], references: [id])
+  parent_rule    RequisiteRule?  @relation("RequisiteRuleToRequisiteRule", fields: [parent_rule_id], references: [id], onDelete: Cascade)
   sub_rules      RequisiteRule[] @relation("RequisiteRuleToRequisiteRule")
 
   name        String

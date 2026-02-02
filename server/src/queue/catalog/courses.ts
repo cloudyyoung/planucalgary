@@ -305,12 +305,6 @@ async function processCourse(
     course_group_id: courseData.courseGroupId,
     code: courseData.code,
     course_number: courseData.courseNumber,
-    subject: {
-      connectOrCreate: {
-        where: { code: courseData.subjectCode },
-        create: { code: courseData.subjectCode, title: courseData.subjectCode },
-      },
-    },
     description: description,
     name: courseData.name,
     long_name: courseData.longName,
@@ -348,88 +342,66 @@ async function processCourse(
     raw_requisites: rawRequisites,
   }
 
-  await Promise.allSettled([
-    departments.map((code) =>
-      prisma.department.upsert({
+  const a = await Promise.allSettled([
+    await prisma.subject.upsert({
+      where: { code: courseData.subjectCode },
+      create: { code: courseData.subjectCode, title: courseData.subjectCode },
+      update: {},
+    }),
+    await departments.map(async (code) =>
+      await prisma.department.upsert({
         where: { code },
         create: { code, name: code, display_name: code, is_active: false },
         update: {},
       })
     ),
-    faculties.map((code) =>
-      prisma.faculty.upsert({
+    await faculties.map(async (code) =>
+      await prisma.faculty.upsert({
         where: { code },
         create: { code, name: code, display_name: code, is_active: false },
         update: {},
       })
     ),
+    prereqReq && await prisma.requisite.upsert({
+      where: { id: prereqReq.id },
+      create: {
+        ...prereqReq,
+        rules: { create: prereqReq.rules, },
+      },
+      update: {
+        ...prereqReq,
+        rules: {
+          deleteMany: {},
+          create: prereqReq.rules,
+        },
+      },
+    }),
   ])
 
   await prisma.course.upsert({
     where: { id: data.id },
     create: {
       ...data,
-      departments: {
-        connect: departments.map((code) => ({ code })),
-      },
-      faculties: {
-        connect: faculties.map((code) => ({ code })),
-      },
+      subject: { connect: { code: courseData.subjectCode } },
+      departments: { connect: departments.map((code) => ({ code })), },
+      faculties: { connect: faculties.map((code) => ({ code })), },
       topics: { create: topics },
       prereq_requisite: prereqReq
-        ? {
-          connectOrCreate: {
-            where: { id: prereqReq.id },
-            create: {
-              id: prereqReq.id,
-              name: prereqReq.name,
-              type: prereqReq.type,
-              raw_rules: prereqReq.raw_rules,
-              rules: {
-                create: prereqReq.rules,
-              },
-            },
-          },
-        }
+        ? { connect: { id: prereqReq.id } }
         : undefined,
     },
     update: {
       ...data,
-      departments: {
-        set: departments.map((code) => ({ code })),
-      },
-      faculties: {
-        set: faculties.map((code) => ({ code })),
-      },
+      subject: { connect: { code: courseData.subjectCode } },
+      departments: { set: departments.map((code) => ({ code })), },
+      faculties: { set: faculties.map((code) => ({ code })), },
       topics: {
         deleteMany: {},
         create: topics,
       },
       prereq_requisite: prereqReq
-        ? {
-          connectOrCreate: {
-            where: { id: prereqReq.id },
-            create: {
-              id: prereqReq.id,
-              name: prereqReq.name,
-              type: prereqReq.type,
-              raw_rules: prereqReq.raw_rules,
-              rules: { create: prereqReq.rules },
-            },
-          },
-          update: {
-            name: prereqReq.name,
-            type: prereqReq.type,
-            raw_rules: prereqReq.raw_rules,
-            rules: {
-              deleteMany: {},
-              create: prereqReq.rules,
-            },
-          },
-        }
-        : {
-          disconnect: true,
-        },
+        ? { connect: { id: prereqReq.id } }
+        : { disconnect: true },
     },
   })
 }
