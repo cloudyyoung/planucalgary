@@ -1,4 +1,5 @@
 import { flexRender, type Table as TanStackTable, type Header, RowData } from "@tanstack/react-table"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import { useRef, useEffect, useState } from "react"
 import { useDebounce } from "react-use"
 import {
@@ -35,7 +36,12 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
   return (
     <th
       key={header.id}
-      style={{ width: header.getSize(), minWidth: header.getSize(), maxWidth: header.getSize() }}
+      style={{
+        display: 'flex',
+        width: header.getSize(),
+        minWidth: header.getSize(),
+        maxWidth: header.getSize(),
+      }}
       className={cn(
         "h-10 px-2 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       )}
@@ -72,20 +78,33 @@ interface AdvancedTableHeaderProps<T> {
 
 const AdvancedTableHeader = <T,>({ table, isFetching }: AdvancedTableHeaderProps<T>) => {
   return (
-    <thead className={cn("bg-muted sticky top-0 z-10", "h-10 px-2 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",)}>
+    <thead
+      className={cn("bg-muted sticky top-0 z-10")}
+      style={{ display: 'grid', position: 'sticky', top: 0, zIndex: 10 }}
+    >
       {table.getHeaderGroups().map((headerGroup) => (
         <>
           <tr
             className={cn("transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",)}
             key={headerGroup.id}
+            style={{ display: 'flex', width: '100%' }}
           >
             {headerGroup.headers.map((header) => (
               <TableHeaderCell key={header.id} header={header} />
             ))}
           </tr>
-          <tr key={`${headerGroup.id}-filters`}>
+          <tr key={`${headerGroup.id}-filters`} style={{ display: 'flex', width: '100%' }}>
             {headerGroup.headers.map((header) => (
-              <th key={`${header.id}-filter`} className={cn(header.column.getCanFilter() && "px-2 pb-2")}>
+              <th
+                key={`${header.id}-filter`}
+                className={cn(header.column.getCanFilter() && "px-2 pb-2")}
+                style={{
+                  display: 'flex',
+                  width: header.getSize(),
+                  minWidth: header.getSize(),
+                  maxWidth: header.getSize(),
+                }}
+              >
                 {header.column.getCanFilter() ? (
                   <ColumnFilter header={header} />
                 ) : null}
@@ -96,7 +115,7 @@ const AdvancedTableHeader = <T,>({ table, isFetching }: AdvancedTableHeaderProps
       ))}
       {
         isFetching && (
-          <tr>
+          <tr style={{ display: 'flex', width: '100%' }}>
             <td className="absolute bottom-0 w-full">
               <IndeterminateProgress />
             </td>
@@ -109,6 +128,7 @@ const AdvancedTableHeader = <T,>({ table, isFetching }: AdvancedTableHeaderProps
 
 interface AdvancedTableBodyProps<T> {
   table: TanStackTable<T>;
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const ColumnFilter = <T, TValue>({ header }: { header: Header<T, unknown> }) => {
@@ -174,40 +194,87 @@ const ColumnFilter = <T, TValue>({ header }: { header: Header<T, unknown> }) => 
   return null;
 }
 
-const AdvancedTableBody = <T,>({ table }: AdvancedTableBodyProps<T>) => {
+interface TableBodyRowProps {
+  row: any;
+  virtualRow: any;
+  rowVirtualizer: any;
+}
+
+const TableBodyRow = ({ row, virtualRow, rowVirtualizer }: TableBodyRowProps) => {
+  return (
+    <tr
+      data-index={virtualRow.index}
+      ref={(node) => rowVirtualizer.measureElement(node)}
+      key={row.id}
+      data-state={row.getIsSelected() && "selected"}
+      className={cn(
+        "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      )}
+      style={{
+        display: 'flex',
+        position: 'absolute',
+        transform: `translateY(${virtualRow.start}px)`,
+        width: '100%',
+      }}
+    >
+      {row.getVisibleCells().map((cell: any) => (
+        <td
+          key={cell.id}
+          className={cn(
+            "flex items-center p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-wrap break-words",
+          )}
+          style={{
+            width: cell.column.getSize(),
+            minWidth: cell.column.getSize(),
+            maxWidth: cell.column.getSize(),
+          }}
+        >
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </td>
+      ))}
+    </tr>
+  );
+};
+
+const AdvancedTableBody = <T,>({ table, scrollContainerRef }: AdvancedTableBodyProps<T>) => {
   const columns = table.getAllColumns();
   const rows = table.getRowModel().rows;
 
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => 44,
+    measureElement:
+      typeof window !== 'undefined' &&
+        navigator.userAgent.indexOf('Firefox') === -1
+        ? (element) => element?.getBoundingClientRect().height
+        : undefined,
+    overscan: 5,
+  });
+
   return (
-    <tbody className={cn("[&_tr:last-child]:border-0")}>
+    <tbody
+      className={cn("[&_tr:last-child]:border-0")}
+      style={{
+        display: 'grid',
+        height: `${rowVirtualizer.getTotalSize()}px`,
+        position: 'relative',
+      }}
+    >
       {rows?.length ? (
-        rows.map((row) => (
-          <tr
-            key={row.id}
-            data-state={row.getIsSelected() && "selected"}
-            className={cn(
-              "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-            )}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <td
-                key={cell.id}
-                className={cn(
-                  "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-wrap break-words",
-                )}
-                style={{
-                  width: cell.column.getSize(),
-                  minWidth: cell.column.getSize(),
-                  maxWidth: cell.column.getSize(),
-                }}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))
+        rowVirtualizer.getVirtualItems().map((virtualRow) => {
+          const row = rows[virtualRow.index];
+          return (
+            <TableBodyRow
+              key={row.id}
+              row={row}
+              virtualRow={virtualRow}
+              rowVirtualizer={rowVirtualizer}
+            />
+          );
+        })
       ) : (
-        <tr>
+        <tr style={{ display: 'flex', width: '100%' }}>
           <td colSpan={columns.length} className="h-24 text-center">
             No results.
           </td>
@@ -329,9 +396,9 @@ const AdvancedTable = <T,>({ table, className, header, isLoading = false, isFetc
         </div>
       )}
       <div ref={scrollContainerRef} className="overflow-x-auto overflow-y-auto flex-1 relative">
-        <table className={cn("text-sm w-full", className)}>
+        <table className={cn("text-sm w-full", className)} style={{ display: 'grid' }}>
           <AdvancedTableHeader table={table} isFetching={isFetching} />
-          <AdvancedTableBody table={table} />
+          <AdvancedTableBody table={table} scrollContainerRef={scrollContainerRef} />
         </table>
       </div>
       <div className="bg-muted text-muted-foreground text-sm p-2 shrink-0">
