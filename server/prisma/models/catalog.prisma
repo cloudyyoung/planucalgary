@@ -52,11 +52,11 @@ model Course {
   raw_requisites      Json?
   requisites          Requisite[]
   prereq_id           String?
-  prereq_requisite    Requisite?  @relation("course_prereq", fields: [prereq_id], references: [id], onDelete: Cascade)
+  prereq_requisite    Requisite?  @relation("course_prereq", fields: [prereq_id], references: [id], onDelete: SetNull)
   coreq_id            String?
-  coreq_requisite     Requisite?  @relation("course_coreq", fields: [coreq_id], references: [id], onDelete: Cascade)
+  coreq_requisite     Requisite?  @relation("course_coreq", fields: [coreq_id], references: [id], onDelete: SetNull)
   antireq_id          String?
-  antireq_requisite   Requisite?  @relation("course_antireq", fields: [antireq_id], references: [id], onDelete: Cascade)
+  antireq_requisite   Requisite?  @relation("course_antireq", fields: [antireq_id], references: [id], onDelete: SetNull)
   is_archived         Boolean
   is_can_schedule     Boolean
   is_catalog_print    Boolean

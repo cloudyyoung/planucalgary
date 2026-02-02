@@ -15,7 +15,7 @@ export const redisConnection = new IORedis(REDIS_URL, {
 export const defaultQueueOptions: QueueOptions = {
   connection: redisConnection,
   defaultJobOptions: {
-    attempts: 3,
+    attempts: 1,
     backoff: {
       type: "exponential",
       delay: 2000,
