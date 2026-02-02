@@ -3,6 +3,7 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import { DateTime } from "luxon"
 import { Program } from "@planucalgary/shared/prisma/client";
 import JsonView from "react18-json-view";
+import { Check, X } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { usePrograms } from "@/hooks/usePrograms";
@@ -66,7 +67,7 @@ export const AdminPrograms = () => {
             enableColumnFilter: true,
             cell: ({ cell }) => {
                 const isActive = cell.getValue<boolean>()
-                return <span>{isActive ? "Yes" : "No"}</span>
+                return <span>{isActive ? <Check className="text-success" /> : <X className="text-destructive" />}</span>
             },
             meta: {
                 filterVariant: "select",

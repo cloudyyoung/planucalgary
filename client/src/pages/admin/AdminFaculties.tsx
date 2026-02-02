@@ -2,6 +2,7 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import { Faculty } from "@planucalgary/shared/prisma/client";
+import { Check, X } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useFaculties } from "@/hooks/useFaculties";
@@ -61,7 +62,7 @@ export const AdminFaculties = () => {
             enableSorting: true,
             cell: ({ cell }) => {
                 const isActive = cell.getValue<boolean>()
-                return <span>{isActive ? "Yes" : "No"}</span>
+                return <span>{isActive ? <Check className="text-success" /> : <X className="text-destructive" />}</span>
             },
         },
         {
