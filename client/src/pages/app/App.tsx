@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 
 import {
   Sidebar,
@@ -12,7 +12,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
 
 
@@ -31,10 +30,6 @@ const menuItems = [
   {
     title: "Courses",
     url: "courses",
-  },
-  {
-    title: "Requisite Sets",
-    url: "requisite-sets",
   },
 ]
 
@@ -82,6 +77,8 @@ const adminMenuItems = [
 ]
 
 export const AppSidebar = () => {
+  const location = useLocation();
+
   return (
     <Sidebar>
       <SidebarHeader />
@@ -92,7 +89,7 @@ export const AppSidebar = () => {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={location.pathname.startsWith(item.url, 1)} className='data-[active=true]:bg-green-600/10 data-[active=true]:text-green-800'>
                     <Link to={item.url}>
                       <span>{item.title}</span>
                     </Link>
@@ -108,7 +105,7 @@ export const AppSidebar = () => {
             <SidebarMenu>
               {adminMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={location.pathname.startsWith(item.url, 1)} className='data-[active=true]:bg-green-600/10 data-[active=true]:text-green-800'>
                     <Link to={item.url}>
                       <span>{item.title}</span>
                     </Link>
