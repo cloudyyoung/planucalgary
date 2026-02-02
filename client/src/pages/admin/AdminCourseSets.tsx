@@ -36,6 +36,7 @@ export const AdminCourseSets = () => {
     {
       accessorKey: "csid",
       header: "CSID",
+      size: 200,
       enableColumnFilter: true,
       enableSorting: true,
       cell: ({ cell }) => {
