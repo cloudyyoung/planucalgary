@@ -29,7 +29,7 @@ model Course {
   course_number String
 
   subject_code String
-  subject      Subject @relation(fields: [subject_code], references: [code])
+  subject      Subject @relation(fields: [subject_code], references: [code], onDelete: Cascade)
 
   description String?
   name        String
@@ -49,15 +49,14 @@ model Course {
   antireq      String?
   antireq_json Json?
 
-  raw_requisites    Json?
-  requisites        Requisite[]
-  prereq_id         String?
-  prereq_requisite  Requisite?  @relation("course_prereq", fields: [prereq_id], references: [id])
-  coreq_id          String?
-  coreq_requisite   Requisite?  @relation("course_coreq", fields: [coreq_id], references: [id])
-  antireq_id        String?
-  antireq_requisite Requisite?  @relation("course_antireq", fields: [antireq_id], references: [id])
-
+  raw_requisites      Json?
+  requisites          Requisite[]
+  prereq_id           String?
+  prereq_requisite    Requisite?  @relation("course_prereq", fields: [prereq_id], references: [id], onDelete: Cascade)
+  coreq_id            String?
+  coreq_requisite     Requisite?  @relation("course_coreq", fields: [coreq_id], references: [id], onDelete: Cascade)
+  antireq_id          String?
+  antireq_requisite   Requisite?  @relation("course_antireq", fields: [antireq_id], references: [id], onDelete: Cascade)
   is_archived         Boolean
   is_can_schedule     Boolean
   is_catalog_print    Boolean
@@ -342,7 +341,7 @@ model RequisiteRule {
   parent_rule    RequisiteRule?  @relation("RequisiteRuleToRequisiteRule", fields: [parent_rule_id], references: [id], onDelete: Cascade)
   sub_rules      RequisiteRule[] @relation("RequisiteRuleToRequisiteRule")
 
-  name        String
+  name        String?
   description String?
   notes       String?
   condition   String

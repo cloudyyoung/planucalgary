@@ -57,9 +57,9 @@ interface CourseData {
       type: string
       rules: {
         id: string
-        name: string
-        description: string
-        notes: string
+        name?: string
+        description?: string
+        notes?: string
         condition: string
         min_courses?: number
         max_courses?: number
@@ -262,7 +262,7 @@ function processRequisites(requisites: CourseData["requisites"]) {
         max_credits: r.max_credits ?? null,
         credits: r.credits ?? null,
         number: r.number ?? null,
-        restriction: r.restriction ?? null,
+        restriction: r.restriction,
         grade: r.grade ?? null,
         grade_type: r.grade_type ?? null,
       }))
@@ -342,42 +342,53 @@ async function processCourse(
     raw_requisites: rawRequisites,
   }
 
-  const a = await Promise.allSettled([
-    await prisma.subject.upsert({
+  // Ensure related entities exist first
+  await Promise.all([
+    prisma.subject.upsert({
       where: { code: courseData.subjectCode },
       create: { code: courseData.subjectCode, title: courseData.subjectCode },
       update: {},
     }),
-    await departments.map(async (code) =>
-      await prisma.department.upsert({
+    ...departments.map((code) =>
+      prisma.department.upsert({
         where: { code },
         create: { code, name: code, display_name: code, is_active: false },
         update: {},
       })
     ),
-    await faculties.map(async (code) =>
-      await prisma.faculty.upsert({
+    ...faculties.map((code) =>
+      prisma.faculty.upsert({
         where: { code },
         create: { code, name: code, display_name: code, is_active: false },
         update: {},
       })
     ),
-    prereqReq && await prisma.requisite.upsert({
+  ])
+
+  // Create requisite separately to ensure it exists before connecting
+  if (prereqReq) {
+    await prisma.requisite.upsert({
       where: { id: prereqReq.id },
       create: {
-        ...prereqReq,
-        rules: { create: prereqReq.rules, },
+        id: prereqReq.id,
+        name: prereqReq.name,
+        type: prereqReq.type,
+        raw_rules: prereqReq.raw_rules,
+        rules: { create: prereqReq.rules },
       },
       update: {
-        ...prereqReq,
+        name: prereqReq.name,
+        type: prereqReq.type,
+        raw_rules: prereqReq.raw_rules,
         rules: {
           deleteMany: {},
           create: prereqReq.rules,
         },
       },
-    }),
-  ])
+    })
+  }
 
+  // Now create/update the course with all connections
   await prisma.course.upsert({
     where: { id: data.id },
     create: {
@@ -422,8 +433,8 @@ export async function crawlCourses(job: Job) {
       },
       params: {
         effectiveDatesRange: "2026-06-21,2099-01-01",
-        skip: 3200,
-        limit: 10,
+        skip: 28134,
+        limit: 1000,
       },
       timeout: 60000,
     })
