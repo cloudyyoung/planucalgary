@@ -2,6 +2,7 @@ import { useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JsonView from "react18-json-view";
 import { DateTime } from "luxon";
+import { Check, X } from "lucide-react";
 import { Course } from "@planucalgary/shared/prisma/client";
 
 import { useCourses } from "@/hooks/useCourses"
@@ -28,6 +29,15 @@ export const columns: ColumnDef<Course>[] = [
     cell: ({ cell }) => {
       const number = cell.getValue<string>()
       return <span className="font-mono">{number}</span>
+    },
+  },
+  {
+    accessorKey: "is_active",
+    header: "Active",
+    size: 100,
+    cell: ({ cell }) => {
+      const isActive = cell.getValue<boolean>()
+      return <span>{isActive ? <Check className="text-success" /> : <X className="text-destructive" />}</span>
     },
   },
   {
