@@ -219,11 +219,10 @@ enum GradeMode {
 }
 
 model Subject {
-  id         String   @id @default(uuid())
+  code       String   @id
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  code  String @unique
   title String
 
   faculties   Faculty[]
