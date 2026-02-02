@@ -18,11 +18,13 @@ enum Career {
 }
 
 model Course {
-  id         String   @id @default(uuid())
+  id         String   @id
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  cid           String @unique
+  course_id       String @unique
+  course_group_id String
+
   code          String
   course_number String
 
@@ -37,6 +39,9 @@ model Course {
   units       Int?
   aka         String?
 
+  consent      String?
+  drop_consent String?
+
   prereq       String?
   prereq_json  Json?
   coreq        String?
@@ -44,18 +49,37 @@ model Course {
   antireq      String?
   antireq_json Json?
 
+  raw_requisites    Json?
+  requisites        Requisite[]
+  prereq_id         String?
+  prereq_requisite  Requisite?  @relation("course_prereq", fields: [prereq_id], references: [id])
+  coreq_id          String?
+  coreq_requisite   Requisite?  @relation("course_coreq", fields: [coreq_id], references: [id])
+  antireq_id        String?
+  antireq_requisite Requisite?  @relation("course_antireq", fields: [antireq_id], references: [id])
+
+  is_archived         Boolean
+  is_can_schedule     Boolean
+  is_catalog_print    Boolean
+  is_blind_grading    Boolean
+  is_course_approved  Boolean
+  is_exam_only_course Boolean
+
   is_active     Boolean
   is_multi_term Boolean
   is_no_gpa     Boolean
   is_repeatable Boolean
 
-  components      CourseComponent[]
-  course_group_id String
-  coursedog_id    String
+  components CourseComponent[]
 
   course_created_at           DateTime
-  course_effective_start_date DateTime
+  course_effective_start_date DateTime?
+  course_effective_end_date   DateTime?
   course_last_updated_at      DateTime
+  course_last_synced_at       DateTime
+
+  start_term Json?
+  end_term   Json?
 
   departments Department[]
   faculties   Faculty[]
@@ -64,9 +88,9 @@ model Course {
   topics     CourseTopic[]
   grade_mode GradeMode
 
-  raw_json Json?
-
   search_vector Unsupported("tsvector")? @default(dbgenerated())
+
+  requisite_rules RequisiteRule[]
 
   @@index([search_vector], type: Gin, map: "course_search_vector_gin")
   @@map("courses")
@@ -74,7 +98,7 @@ model Course {
 }
 
 model CourseTopic {
-  id         String   @id @default(uuid())
+  id         String   @id
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
@@ -227,9 +251,10 @@ model Program {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  departments Department[]
-  faculties   Faculty[]
-  requisites  Requisite[]
+  departments     Department[]
+  faculties       Faculty[]
+  requisites      Requisite[]
+  requisite_rules RequisiteRule[]
 
   pid              String @unique
   coursedog_id     String
@@ -290,8 +315,11 @@ model Requisite {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  program_id String
-  program    Program @relation(fields: [program_id], references: [id])
+  courses         Course[]
+  prereq_courses  Course[]  @relation("course_prereq")
+  coreq_courses   Course[]  @relation("course_coreq")
+  antireq_courses Course[]  @relation("course_antireq")
+  programs        Program[]
 
   type  String
   name  String
@@ -334,6 +362,8 @@ model RequisiteRule {
   // Simplify the Coursedog `value` structure, currently `condition` is only valued with `courseSets` or `requisiteSets`
   course_sets    CourseSet[]
   requisite_sets RequisiteSet[]
+  courses        Course[]
+  programs       Program[]
 
   raw_json Json?
 

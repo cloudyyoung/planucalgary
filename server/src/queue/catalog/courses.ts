@@ -7,12 +7,17 @@ import { DATABASE_URL } from "../../config"
 
 interface CourseData {
   _id: string
+  archived: boolean
+  blindGrading: boolean
+  canSchedule: boolean
   id: string
   career: string
+  catalogPrint: boolean
   code: string
   college: string
   components: { code: string }[]
-  departments: string[]
+  consent: string | null
+  courseApproved: string
   courseGroupId: string
   courseNumber: string
   createdAt: number
@@ -24,16 +29,28 @@ interface CourseData {
   customFields: {
     rawCourseId: string
     lastMultiTermCourse: boolean
+    allowMultipleEnroll: boolean
   }
+  departments: string[]
   deprecatedCourseGroupId: string | null
   description: string
+  dropConsent: string | null
+  effectiveEndDate: string | null
   effectiveStartDate: string
+  endTerm: {
+    year: string
+    id: string
+    semester: number
+  } | null
+  examOnlyCourse: boolean
   gradeMode: string
   lastEditedAt: number
+  lasySyncedAt: number
   longName: string
   name: string
   notes: string
   requisites: any
+  schedulePrint: boolean
   sisId: string
   startTerm: {
     year: string
@@ -74,8 +91,9 @@ const processFacultyCode = (college: string) => {
   return college.split(" - ")[0].trim()
 }
 
-const processTopics = (topics: CourseData["topics"]) => {
+const processTopics = (courseId: string, topics: CourseData["topics"]) => {
   return topics.map((topic) => ({
+    id: `${courseId}-${topic.code}`,
     number: topic.code,
     name: topic.name,
     long_name: topic.longName,
@@ -194,7 +212,7 @@ async function processCourse(
   courseData: CourseData,
   prisma: PrismaClient
 ): Promise<void> {
-  const topics = processTopics(courseData.topics)
+  const topics = processTopics(courseData.id, courseData.topics)
   const [description, prereq, coreq, antireq, notes, aka, nogpa] = processDescription(
     courseData.description
   )
@@ -203,10 +221,12 @@ async function processCourse(
   const departments = filterDepartments(courseData.departments)
   const components = courseData.components.map((c) => componentSerializer(c.code))
   const career = careerSerializer(courseData.career)
-  const rawJson = convertDictKeysCamelToSnake(courseData.requisites)
+  const rawRequisites = convertDictKeysCamelToSnake(courseData.requisites)
 
   const data = {
-    cid: courseData.courseGroupId,
+    id: courseData.id,
+    course_id: courseData.customFields.rawCourseId,
+    course_group_id: courseData.courseGroupId,
     code: courseData.code,
     course_number: courseData.courseNumber,
     subject: {
@@ -222,26 +242,39 @@ async function processCourse(
     version: courseData.version,
     units: courseData.credits.numberOfCredits,
     aka: aka,
+    consent: courseData.consent,
+    drop_consent: courseData.dropConsent,
     prereq: prereq,
     coreq: coreq,
     antireq: antireq,
+    is_archived: courseData.archived,
+    is_can_schedule: courseData.canSchedule,
+    is_catalog_print: courseData.catalogPrint,
+    is_blind_grading: courseData.blindGrading,
+    is_course_approved: courseData.courseApproved === "Yes",
+    is_exam_only_course: courseData.examOnlyCourse,
     is_active: courseData.status === "Active",
     is_multi_term: courseData.customFields.lastMultiTermCourse,
     is_no_gpa: nogpa,
     is_repeatable: courseData.credits.repeatable,
     components: components,
-    course_group_id: courseData.customFields.rawCourseId,
     coursedog_id: courseData._id,
     course_created_at: new Date(courseData.createdAt),
     course_effective_start_date: new Date(courseData.effectiveStartDate),
+    course_effective_end_date: courseData.effectiveEndDate
+      ? new Date(courseData.effectiveEndDate)
+      : null,
     course_last_updated_at: new Date(courseData.lastEditedAt),
+    course_last_synced_at: new Date(courseData.lasySyncedAt),
+    start_term: courseData.startTerm as any,
+    end_term: courseData.endTerm as any,
     grade_mode: GradeMode.CRF,
     career: career,
-    raw_json: rawJson,
+    raw_requisites: rawRequisites,
   }
 
   await prisma.course.upsert({
-    where: { course_group_id: data.course_group_id, cid: data.cid },
+    where: { id: data.id },
     create: {
       ...data,
       departments: {
