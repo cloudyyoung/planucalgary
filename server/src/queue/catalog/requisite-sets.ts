@@ -4,7 +4,7 @@ import { PrismaClient, Requisite } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
 import { DATABASE_URL } from "../../config"
 
-interface RequisiteRuleData {
+export interface RequisiteRuleData {
   id: string
   name?: string
   description?: string
@@ -30,14 +30,14 @@ interface RequisiteRuleData {
   }
 }
 
-interface RequisiteData {
+export interface RequisiteData {
   id: string
   name: string
   type: string
   rules: RequisiteRuleData[]
 }
 
-interface RequisiteSetData {
+export interface RequisiteSetData {
   _id: string
   requisiteSetGroupId: string
   name: string
@@ -89,6 +89,68 @@ function processRequisites(requisites: any[] | undefined): any[] {
 }
 
 /**
+ * Process a single requisite upsert
+ */
+export async function processRequisite(requisiteData: RequisiteData, prisma: PrismaClient): Promise<void> {
+  await prisma.requisite.upsert({
+    where: { id: requisiteData.id },
+    create: {
+      id: requisiteData.id,
+      name: requisiteData.name,
+      type: requisiteData.type,
+      raw_rules: processRequisites(requisiteData.rules),
+    },
+    update: {
+      name: requisiteData.name,
+      type: requisiteData.type,
+      raw_rules: processRequisites(requisiteData.rules),
+    },
+  })
+
+  await Promise.all(
+    (requisiteData.rules.flatMap((rule) => {
+      return prisma.requisiteRule.upsert({
+        where: { id: rule.id },
+        create: {
+          id: rule.id,
+          requisite_id: requisiteData.id,
+          name: rule.name,
+          description: rule.description,
+          notes: rule.notes,
+          condition: rule.condition,
+          min_courses: rule.minCourses,
+          max_courses: rule.maxCourses,
+          min_credits: rule.minCredits,
+          max_credits: rule.maxCredits,
+          credits: rule.credits,
+          number: rule.number,
+          restriction: rule.restriction,
+          grade: rule.grade,
+          grade_type: rule.gradeType,
+          raw_json: convertDictKeysCamelToSnake(rule.value),
+        },
+        update: {
+          name: rule.name,
+          description: rule.description,
+          notes: rule.notes,
+          condition: rule.condition,
+          min_courses: rule.minCourses,
+          max_courses: rule.maxCourses,
+          min_credits: rule.minCredits,
+          max_credits: rule.maxCredits,
+          credits: rule.credits,
+          number: rule.number,
+          restriction: rule.restriction,
+          grade: rule.grade,
+          grade_type: rule.gradeType,
+          raw_json: convertDictKeysCamelToSnake(rule.value),
+        },
+      })
+    }) ?? [])
+  )
+}
+
+/**
  * Process a single requisite set upsert
  */
 async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: PrismaClient): Promise<void> {
@@ -128,68 +190,7 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
     return
   }
 
-  await Promise.all(
-    requisiteSetData.requisites.map((req) => {
-      return prisma.requisite.upsert({
-        where: { id: req.id },
-        create: {
-          id: req.id,
-          name: req.name,
-          type: req.type,
-          raw_rules: processRequisites(req.rules),
-        },
-        update: {
-          name: req.name,
-          type: req.type,
-          raw_rules: processRequisites(req.rules),
-        },
-      })
-    }) || []
-  )
-
-  await Promise.all(
-    (requisiteSetData.requisites.flatMap((req) => {
-      return req.rules.flatMap(rule => {
-        return prisma.requisiteRule.upsert({
-          where: { id: rule.id },
-          create: {
-            id: rule.id,
-            requisite_id: req.id,
-            name: rule.name,
-            description: rule.description,
-            notes: rule.notes,
-            condition: rule.condition,
-            min_courses: rule.minCourses,
-            max_courses: rule.maxCourses,
-            min_credits: rule.minCredits,
-            max_credits: rule.maxCredits,
-            credits: rule.credits,
-            number: rule.number,
-            restriction: rule.restriction,
-            grade: rule.grade,
-            grade_type: rule.gradeType,
-            raw_json: convertDictKeysCamelToSnake(rule.value),
-          },
-          update: {
-            name: rule.name,
-            description: rule.description,
-            notes: rule.notes,
-            condition: rule.condition,
-            min_courses: rule.minCourses,
-            max_courses: rule.maxCourses,
-            min_credits: rule.minCredits,
-            max_credits: rule.maxCredits,
-            credits: rule.credits,
-            number: rule.number,
-            restriction: rule.restriction,
-            grade: rule.grade,
-            grade_type: rule.gradeType,
-            raw_json: convertDictKeysCamelToSnake(rule.value),
-          },
-        })
-      })
-    }) ?? [])
-  )
+  await Promise.all(requisiteSetData.requisites.map((req) => processRequisite(req, prisma)))
 
   await prisma.requisiteSet.update({
     where: { id: data.id },

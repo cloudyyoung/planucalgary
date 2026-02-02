@@ -5,6 +5,7 @@ import axios from "axios"
 import { GradeMode } from "@planucalgary/shared/prisma/client"
 import { DATABASE_URL } from "../../config"
 import { DateTime } from 'luxon';
+import { processRequisite, RequisiteData } from "./requisite-sets"
 
 interface CourseData {
   _id: string
@@ -51,10 +52,7 @@ interface CourseData {
   name: string
   notes: string
   requisites: {
-    requisites_simple: {
-      id: string
-      type: string
-    }[]
+    requisites_simple: RequisiteData[]
   }
   schedulePrint: boolean
   sisId: string
@@ -212,9 +210,9 @@ function careerSerializer(career: string): Career {
 }
 
 function processRequisites(requisites: CourseData["requisites"]) {
-  let prereq = null
-  let coreq = null
-  let antireq = null
+  let prereq: RequisiteData | null = null
+  let coreq: RequisiteData | null = null
+  let antireq: RequisiteData | null = null
 
   if (!requisites) {
     return { prereq, coreq, antireq }
@@ -227,17 +225,12 @@ function processRequisites(requisites: CourseData["requisites"]) {
 
   // Reference: https://coursedogcurriculum.docs.apiary.io/#reference/requisites/
   for (const req of array) {
-    const requisite = {
-      id: req.id,
-      type: req.type,
-    }
-
     if (req.type === "Prerequisite") {
-      prereq = requisite
+      prereq = req
     } else if (req.type === "Corequisite") {
-      coreq = requisite
+      coreq = req
     } else if (req.type === "Antirequisite") {
-      antireq = requisite
+      antireq = req
     }
   }
 
@@ -261,7 +254,7 @@ async function processCourse(
   const components = courseData.components.map((c) => componentSerializer(c.code))
   const career = careerSerializer(courseData.career)
   const rawRequisites = convertDictKeysCamelToSnake(courseData.requisites)
-  const { prereq: prereqReq, coreq: coreqReq, antireq: antireqReq } = processRequisites(rawRequisites)
+  const { prereq: prereqReq, coreq: coreqReq, antireq: antireqReq } = processRequisites(courseData.requisites)
 
   const data = {
     id: courseData.id,
@@ -326,6 +319,9 @@ async function processCourse(
         update: {},
       })
     ),
+    prereqReq && processRequisite(prereqReq, prisma),
+    coreqReq && processRequisite(coreqReq, prisma),
+    antireqReq && processRequisite(antireqReq, prisma),
   ].filter(Boolean))
 
   // Now create/update the course with all connections
