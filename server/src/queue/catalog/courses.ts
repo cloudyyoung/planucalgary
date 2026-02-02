@@ -4,6 +4,7 @@ import { PrismaClient, Career, CourseComponent } from "@planucalgary/shared/pris
 import axios from "axios"
 import { GradeMode } from "@planucalgary/shared/prisma/client"
 import { DATABASE_URL } from "../../config"
+import { DateTime } from 'luxon';
 
 interface CourseData {
   _id: string
@@ -45,11 +46,34 @@ interface CourseData {
   examOnlyCourse: boolean
   gradeMode: string
   lastEditedAt: number
-  lasySyncedAt: number
+  lastSyncedAt: number
   longName: string
   name: string
   notes: string
-  requisites: any
+  requisites: {
+    requisites_simple: {
+      id: string
+      name: string
+      type: string
+      rules: {
+        id: string
+        name: string
+        description: string
+        notes: string
+        condition: string
+        min_courses?: number
+        max_courses?: number
+        min_credits?: number
+        max_credits?: number
+        credits?: number
+        number?: number
+        restriction?: number
+        grade?: string
+        grade_type?: string
+        sub_rules: any[]
+      }[]
+    }[]
+  }
   schedulePrint: boolean
   sisId: string
   startTerm: {
@@ -205,6 +229,57 @@ function careerSerializer(career: string): Career {
   }
 }
 
+function processRequisites(requisites: CourseData["requisites"]) {
+  let prereq = null
+  let coreq = null
+  let antireq = null
+
+  if (!requisites) {
+    return { prereq, coreq, antireq }
+  }
+
+  const array = requisites.requisites_simple
+  if (!array || !Array.isArray(array)) {
+    return { prereq, coreq, antireq }
+  }
+
+  // Reference: https://coursedogcurriculum.docs.apiary.io/#reference/requisites/
+  for (const req of array) {
+    const requisite = {
+      id: req.id,
+      name: req.name,
+      type: req.type,
+      raw_rules: req.rules,
+      rules: req.rules.map((r) => ({
+        id: r.id,
+        name: r.name,
+        description: r.description,
+        notes: r.notes,
+        condition: r.condition,
+        min_courses: r.min_courses ?? null,
+        max_courses: r.max_courses ?? null,
+        min_credits: r.min_credits ?? null,
+        max_credits: r.max_credits ?? null,
+        credits: r.credits ?? null,
+        number: r.number ?? null,
+        restriction: r.restriction ?? null,
+        grade: r.grade ?? null,
+        grade_type: r.grade_type ?? null,
+      }))
+    }
+
+    if (req.type === "Prerequisite") {
+      prereq = requisite
+    } else if (req.type === "Corequisite") {
+      coreq = requisite
+    } else if (req.type === "Antirequisite") {
+      antireq = requisite
+    }
+  }
+
+  return { prereq, coreq, antireq }
+}
+
 /**
  * Process a single course upsert
  */
@@ -222,6 +297,7 @@ async function processCourse(
   const components = courseData.components.map((c) => componentSerializer(c.code))
   const career = careerSerializer(courseData.career)
   const rawRequisites = convertDictKeysCamelToSnake(courseData.requisites)
+  const { prereq: prereqReq, coreq: coreqReq, antireq: antireqReq } = processRequisites(rawRequisites)
 
   const data = {
     id: courseData.id,
@@ -258,14 +334,13 @@ async function processCourse(
     is_no_gpa: nogpa,
     is_repeatable: courseData.credits.repeatable,
     components: components,
-    coursedog_id: courseData._id,
     course_created_at: new Date(courseData.createdAt),
-    course_effective_start_date: new Date(courseData.effectiveStartDate),
+    course_effective_start_date: DateTime.fromJSDate(new Date(courseData.effectiveStartDate)).toJSDate(),
     course_effective_end_date: courseData.effectiveEndDate
-      ? new Date(courseData.effectiveEndDate)
+      ? DateTime.fromJSDate(new Date(courseData.effectiveEndDate)).toJSDate()
       : null,
     course_last_updated_at: new Date(courseData.lastEditedAt),
-    course_last_synced_at: new Date(courseData.lasySyncedAt),
+    course_last_synced_at: new Date(courseData.lastSyncedAt),
     start_term: courseData.startTerm as any,
     end_term: courseData.endTerm as any,
     grade_mode: GradeMode.CRF,
@@ -290,6 +365,22 @@ async function processCourse(
         })),
       },
       topics: { create: topics },
+      prereq_requisite: prereqReq
+        ? {
+          connectOrCreate: {
+            where: { id: prereqReq.id },
+            create: {
+              id: prereqReq.id,
+              name: prereqReq.name,
+              type: prereqReq.type,
+              raw_rules: prereqReq.raw_rules,
+              rules: {
+                create: prereqReq.rules,
+              },
+            },
+          },
+        }
+        : undefined,
     },
     update: {
       ...data,
@@ -320,6 +411,31 @@ async function processCourse(
         deleteMany: {},
         create: topics,
       },
+      prereq_requisite: prereqReq
+        ? {
+          connectOrCreate: {
+            where: { id: prereqReq.id },
+            create: {
+              id: prereqReq.id,
+              name: prereqReq.name,
+              type: prereqReq.type,
+              raw_rules: prereqReq.raw_rules,
+              rules: { create: prereqReq.rules },
+            },
+          },
+          update: {
+            name: prereqReq.name,
+            type: prereqReq.type,
+            raw_rules: prereqReq.raw_rules,
+            rules: {
+              deleteMany: {},
+              create: prereqReq.rules,
+            },
+          },
+        }
+        : {
+          disconnect: true,
+        },
     },
   })
 }
@@ -340,6 +456,8 @@ export async function crawlCourses(job: Job) {
       },
       params: {
         effectiveDatesRange: "2026-06-21,2099-01-01",
+        skip: 500,
+        limit: 10,
       },
       timeout: 60000,
     })

@@ -355,7 +355,7 @@ model RequisiteRule {
   max_credits Int?
   credits     Int?
   number      Int?
-  restriction String?
+  restriction Int?
   grade       String?
   grade_type  String?
 
