@@ -301,7 +301,7 @@ export function buildRequisiteRuleRelations(rule: RequisiteRule, prisma: PrismaC
         set: flattenedValues.map(id => ({ course_group_id: id })),
       },
       programs: {
-        set: flattenedValues.map(id => ({ id })),
+        set: flattenedValues.map(id => ({ program_group_id: id })),
       },
       course_sets: {
         set: flattenedValues.map(id => ({ course_set_group_id: id })),
