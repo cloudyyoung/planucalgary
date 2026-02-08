@@ -50,13 +50,12 @@ model Course {
   antireq_json Json?
 
   raw_requisites      Json?
-  requisites          Requisite[]
   prereq_id           String?
-  prereq_requisite    Requisite?  @relation("course_prereq", fields: [prereq_id], references: [id], onDelete: SetNull)
+  prereq_requisite    Requisite? @relation("course_prereq", fields: [prereq_id], references: [id], onDelete: SetNull)
   coreq_id            String?
-  coreq_requisite     Requisite?  @relation("course_coreq", fields: [coreq_id], references: [id], onDelete: SetNull)
+  coreq_requisite     Requisite? @relation("course_coreq", fields: [coreq_id], references: [id], onDelete: SetNull)
   antireq_id          String?
-  antireq_requisite   Requisite?  @relation("course_antireq", fields: [antireq_id], references: [id], onDelete: SetNull)
+  antireq_requisite   Requisite? @relation("course_antireq", fields: [antireq_id], references: [id], onDelete: SetNull)
   is_archived         Boolean
   is_can_schedule     Boolean
   is_catalog_print    Boolean
@@ -140,6 +139,8 @@ model CourseSet {
   course_set_last_updated_at      DateTime
   course_set_effective_start_date DateTime?
   course_set_effective_end_date   DateTime?
+  requisite                       Requisite? @relation(fields: [requisiteId], references: [id])
+  requisiteId                     String?
 
   @@map("course_sets")
   @@schema("catalog")
@@ -318,11 +319,12 @@ model Requisite {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  courses         Course[]
-  prereq_courses  Course[]  @relation("course_prereq")
-  coreq_courses   Course[]  @relation("course_coreq")
-  antireq_courses Course[]  @relation("course_antireq")
+  prereq_courses  Course[]       @relation("course_prereq")
+  coreq_courses   Course[]       @relation("course_coreq")
+  antireq_courses Course[]       @relation("course_antireq")
   programs        Program[]
+  course_sets     CourseSet[]
+  requisite_sets  RequisiteSet[]
 
   type  String
   name  String
@@ -330,8 +332,6 @@ model Requisite {
 
   raw_rules Json?
   rules     RequisiteRule[]
-
-  requisite_sets RequisiteSet[]
 
   @@map("requisites")
   @@schema("catalog")
@@ -365,10 +365,10 @@ model RequisiteRule {
   grade_type  String?
 
   // Simplify the Coursedog `value` structure, currently `condition` is only valued with `courseSets` or `requisiteSets`
-  course_sets    CourseSet[]
-  requisite_sets RequisiteSet[]
-  courses        Course[]
-  programs       Program[]
+  referring_course_sets    CourseSet[]
+  referring_requisite_sets RequisiteSet[]
+  referring_courses        Course[]
+  referring_programs       Program[]
 
   raw_json Json?
 

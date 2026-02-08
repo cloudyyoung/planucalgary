@@ -3,7 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg"
 import { Course, CourseSet, PrismaClient, Program, RequisiteRule, RequisiteSet } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
 import { DATABASE_URL } from "../../config"
-import { JsonNull } from "@prisma/client/runtime/client"
+import { DefaultArgs, JsonNull } from "@prisma/client/runtime/client"
 
 interface RequisiteRuleValue {
   id: string
@@ -263,12 +263,13 @@ export async function crawlRequisiteSets(job: Job) {
   }
 
   // build relations for all requisite rules
-  await prisma.$transaction(async (tx) => {
-    const allRules = await tx.requisiteRule.findMany()
-    await Promise.all(
-      allRules.map((rule) => buildRequisiteRuleRelations(rule, tx as PrismaClient))
-    )
-  })
+  // await prisma.$transaction(async (tx) => {
+  //   const allRules = await tx.requisiteRule.findMany()
+  //   console.log(allRules.length)
+  //   await Promise.all(
+  //     allRules.map((rule) => buildRequisiteRuleRelations(rule, tx))
+  //   )
+  // })
 
   await job.updateProgress(100)
   await prisma.$disconnect()
@@ -280,7 +281,7 @@ export async function crawlRequisiteSets(job: Job) {
   }
 }
 
-export function buildRequisiteRuleRelations(rule: RequisiteRule, prisma: PrismaClient) {
+export async function buildRequisiteRuleRelations(rule: RequisiteRule, prisma: Omit<PrismaClient<never, undefined, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">) {
   if (!rule.raw_json) return
 
   const rawJson = rule.raw_json as any as RequisiteRuleValue
@@ -294,19 +295,19 @@ export function buildRequisiteRuleRelations(rule: RequisiteRule, prisma: PrismaC
     return []
   })
 
-  return prisma.requisiteRule.update({
+  return await prisma.requisiteRule.update({
     where: { id: rule.id },
     data: {
-      courses: {
+      referring_courses: {
         set: flattenedValues.map(id => ({ course_group_id: id })),
       },
-      programs: {
+      referring_programs: {
         set: flattenedValues.map(id => ({ program_group_id: id })),
       },
-      course_sets: {
+      referring_course_sets: {
         set: flattenedValues.map(id => ({ course_set_group_id: id })),
       },
-      requisite_sets: {
+      referring_requisite_sets: {
         set: flattenedValues.map(id => ({ requisite_set_group_id: id })),
       },
     },
