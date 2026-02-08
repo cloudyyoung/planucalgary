@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { ArrowLeftIcon, PlusIcon, ArrowRightIcon, RepeatIcon, CircleSlash2Icon, SquareStackIcon, Archive } from "lucide-react"
-import { Course } from "@planucalgary/shared"
+import { Course } from "@planucalgary/shared/prisma/browser"
 
 import { useCourses } from "@/hooks/useCourses"
 import { Button, ButtonProps } from "@/components/ui/button"

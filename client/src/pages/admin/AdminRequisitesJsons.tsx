@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import { Department, Faculty, RequisiteJson } from "@planucalgary/shared/prisma/client"
+import { RequisiteJson } from "@planucalgary/shared/prisma/client"
 import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@planucalgary/shared";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"

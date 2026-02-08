@@ -79,10 +79,10 @@ export const listCourses: CourseListHandler = async (req, res) => {
         include: {
           rules: {
             include: {
-              courses: true,
-              programs: true,
-              course_sets: true,
-              requisite_sets: true,
+              referring_courses: true,
+              referring_programs: true,
+              referring_course_sets: true,
+              referring_requisite_sets: true,
             },
           },
         },
@@ -91,10 +91,10 @@ export const listCourses: CourseListHandler = async (req, res) => {
         include: {
           rules: {
             include: {
-              courses: true,
-              programs: true,
-              course_sets: true,
-              requisite_sets: true,
+              referring_courses: true,
+              referring_programs: true,
+              referring_course_sets: true,
+              referring_requisite_sets: true,
             },
           },
         },
@@ -103,10 +103,10 @@ export const listCourses: CourseListHandler = async (req, res) => {
         include: {
           rules: {
             include: {
-              courses: true,
-              programs: true,
-              course_sets: true,
-              requisite_sets: true,
+              referring_courses: true,
+              referring_programs: true,
+              referring_course_sets: true,
+              referring_requisite_sets: true,
             },
           },
         },
