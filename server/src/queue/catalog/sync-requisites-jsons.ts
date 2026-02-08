@@ -39,7 +39,7 @@ export async function syncRequisitesJsons(job: Job) {
           prereq: true,
           coreq: true,
           antireq: true,
-          raw_json: true,
+          raw_requisites: true,
           departments: {
             select: {
               code: true,
@@ -62,13 +62,13 @@ export async function syncRequisitesJsons(job: Job) {
     await job.updateProgress(10)
 
     const courses_requisites_jsons = courses.flatMap((course) => {
-      const { prereq, coreq, antireq, departments, faculties, raw_json } = course
+      const { prereq, coreq, antireq, departments, faculties, raw_requisites } = course
       const department_codes = departments.map((d) => d.code)
       const faculty_codes = faculties.map((f) => f.code)
 
       const requisites_jsons = []
 
-      const raw_json_array: CDRequisite[] = Array.isArray(raw_json) ? raw_json as any : []
+      const raw_json_array: CDRequisite[] = Array.isArray(raw_requisites) ? raw_requisites as any : []
       const prereq_raw_json = raw_json_array.find((r) => r.type === "Prerequisite")
       const coreq_raw_json = raw_json_array.find((r) => r.type === "Corequisite")
       const antireq_raw_json = raw_json_array.find((r) => r.type === "Antirequisite")
