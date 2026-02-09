@@ -8,6 +8,7 @@ export * from "./id";
 export * from "./pagination";
 export * from "./program";
 export * from "./queue";
+export * from "./requisite-rule";
 export * from "./requisite-set";
 export * from "./requisite";
 export * from "./sorting";

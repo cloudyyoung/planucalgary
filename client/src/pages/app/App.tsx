@@ -47,6 +47,10 @@ const adminMenuItems = [
     url: "admin/requisite-sets",
   },
   {
+    title: "Requisite Rules",
+    url: "admin/requisite-rules",
+  },
+  {
     title: "Fields of Study",
     url: "admin/fields-of-study",
   },

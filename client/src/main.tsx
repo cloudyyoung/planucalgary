@@ -20,6 +20,7 @@ import { AdminDepartments } from './pages/admin/AdminDepartments';
 import { AdminFaculties } from './pages/admin/AdminFaculties';
 import { AdminPrograms } from './pages/admin/AdminPrograms';
 import { AdminRequisiteSets } from './pages/admin/AdminRequisiteSets';
+import { AdminRequisiteRules } from './pages/admin/AdminRequisiteRules';
 import { AdminFieldsOfStudy } from './pages/admin/AdminFieldsOfStudy';
 import AdminCatalogQueue from './pages/admin/AdminCatalogQueue';
 
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { path: "/admin/courses", element: <AdminCourses /> },
       { path: "/admin/course-sets", element: <AdminCourseSets /> },
       { path: "/admin/requisite-sets", element: <AdminRequisiteSets /> },
+      { path: "/admin/requisite-rules", element: <AdminRequisiteRules /> },
       { path: "/admin/fields-of-study", element: <AdminFieldsOfStudy /> },
       { path: "/admin/subjects", element: <AdminSubjects /> },
       { path: "/admin/departments", element: <AdminDepartments /> },

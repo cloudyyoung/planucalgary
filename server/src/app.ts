@@ -16,6 +16,7 @@ import { router as departmentRouter } from "./api/departments/routes"
 import { router as programRouter } from "./api/programs/routes"
 import { router as courseSetRouter } from "./api/course-sets/routes"
 import { router as requisiteSetRouter } from "./api/requisite-sets/routes"
+import { router as requisiteRuleRouter } from "./api/requisite-rules/routes"
 import { router as FieldsOfStudyRouter } from "./api/fields-of-study/routes"
 import { router as queuesRouter } from "./api/queues/routes"
 import { PORT, JWT_SECRET_KEY } from "./config"
@@ -59,6 +60,7 @@ const load = async (app: Express) => {
   app.use("/programs", programRouter)
   app.use("/course-sets", courseSetRouter)
   app.use("/requisite-sets", requisiteSetRouter)
+  app.use("/requisite-rules", requisiteRuleRouter)
   app.use("/field-of-studies", FieldsOfStudyRouter)
   app.use("/queues", queuesRouter)
 
