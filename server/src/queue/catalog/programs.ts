@@ -3,8 +3,9 @@ import { PrismaPg } from "@prisma/adapter-pg"
 import { PrismaClient, Career } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
 import { DateTime } from "luxon"
+import { RequisiteData } from "@planucalgary/shared"
 import { DATABASE_URL } from "../../config"
-import { processRequisite, RequisiteData } from "./requisite-sets"
+import { processRequisite } from "./requisite-sets"
 import { ProgramCreateArgs } from "../../../../shared/dist/generated/prisma/models"
 
 interface ProgramData {
