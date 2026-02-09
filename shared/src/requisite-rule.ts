@@ -11,6 +11,34 @@ import {
 import { getSortingReqQuerySchema } from "./sorting";
 
 
+export interface RequisiteRuleValue {
+  id: string
+  condition: string
+  values: (string | {
+    logic: string
+    value: string[]
+  })[]
+}
+
+export interface RequisiteRuleData {
+  id: string
+  name?: string
+  description?: string
+  notes?: string
+  condition: string
+  minCourses?: number
+  maxCourses?: number
+  minCredits?: number
+  maxCredits?: number
+  credits?: number
+  number?: number
+  restriction?: number
+  grade?: string
+  gradeType?: string
+  subRules: RequisiteRuleData[]
+  value: RequisiteRuleValue
+}
+
 // List Requisite Rules
 export const RequisiteRuleListReqQuerySchema = z.object({
   id: z.string().optional(),

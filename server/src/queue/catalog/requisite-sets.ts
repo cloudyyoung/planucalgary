@@ -1,57 +1,10 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { Course, CourseSet, PrismaClient, Program, RequisiteRule, RequisiteSet } from "@planucalgary/shared/prisma/client"
+import { RequisiteData, RequisiteSetData } from "@planucalgary/shared"
+import { PrismaClient } from "@planucalgary/shared/prisma/client"
 import axios from "axios"
 import { DATABASE_URL } from "../../config"
-import { DefaultArgs, JsonNull } from "@prisma/client/runtime/client"
 
-interface RequisiteRuleValue {
-  id: string
-  condition: string
-  values: (string | {
-    logic: string
-    value: string[]
-  })[]
-}
-
-export interface RequisiteRuleData {
-  id: string
-  name?: string
-  description?: string
-  notes?: string
-  condition: string
-  minCourses?: number
-  maxCourses?: number
-  minCredits?: number
-  maxCredits?: number
-  credits?: number
-  number?: number
-  restriction?: number
-  grade?: string
-  gradeType?: string
-  subRules: RequisiteRuleData[]
-  value: RequisiteRuleValue
-}
-
-export interface RequisiteData {
-  id: string
-  name: string
-  type: string
-  rules: RequisiteRuleData[]
-}
-
-export interface RequisiteSetData {
-  _id: string
-  requisiteSetGroupId: string
-  name: string
-  description?: string
-  requisites?: RequisiteData[]
-  effectiveStartDate?: string
-  effectiveEndDate?: string
-  createdAt?: number
-  lastEditedAt?: number
-  version: number
-}
 
 function camelToSnake(key: string): string {
   return key.replace(/(?<!^)(?=[A-Z])/g, "_").toLowerCase()
@@ -257,19 +210,10 @@ export async function crawlRequisiteSets(job: Job) {
       }
     })
 
-    // Update progress (10% to 90%)
-    const progress = 10 + (currentBatch / totalBatches) * 80
+    // Update progress (10% to 100%)
+    const progress = 10 + (currentBatch / totalBatches) * 90
     await job.updateProgress(progress)
   }
-
-  // build relations for all requisite rules
-  // await prisma.$transaction(async (tx) => {
-  //   const allRules = await tx.requisiteRule.findMany()
-  //   console.log(allRules.length)
-  //   await Promise.all(
-  //     allRules.map((rule) => buildRequisiteRuleRelations(rule, tx))
-  //   )
-  // })
 
   await job.updateProgress(100)
   await prisma.$disconnect()
@@ -279,37 +223,4 @@ export async function crawlRequisiteSets(job: Job) {
     totalSucceeded,
     totalFailed,
   }
-}
-
-export async function buildRequisiteRuleRelations(rule: RequisiteRule, prisma: Omit<PrismaClient<never, undefined, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">) {
-  if (!rule.raw_json) return
-
-  const rawJson = rule.raw_json as any as RequisiteRuleValue
-  const values = rawJson.values
-  const flattenedValues: string[] = values.flatMap((v) => {
-    if (typeof v === "string") {
-      return [v]
-    } else if (typeof v === "object" && v.logic && Array.isArray(v.value)) {
-      return v.value
-    }
-    return []
-  })
-
-  return await prisma.requisiteRule.update({
-    where: { id: rule.id },
-    data: {
-      referring_courses: {
-        set: flattenedValues.map(id => ({ course_group_id: id })),
-      },
-      referring_programs: {
-        set: flattenedValues.map(id => ({ program_group_id: id })),
-      },
-      referring_course_sets: {
-        set: flattenedValues.map(id => ({ course_set_group_id: id })),
-      },
-      referring_requisite_sets: {
-        set: flattenedValues.map(id => ({ requisite_set_group_id: id })),
-      },
-    },
-  })
 }

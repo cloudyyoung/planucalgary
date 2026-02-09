@@ -5,17 +5,39 @@ import { IdInputSchema } from "./id";
 import { RequisiteSet } from './generated/prisma/client';
 import { RequisiteSetCreateInputObjectZodSchema, RequisiteSetScalarFieldEnumSchema, RequisiteSetUpdateInputObjectZodSchema } from "./generated/zod/schemas";
 import { getSortingReqQuerySchema } from "./sorting";
+import { RequisiteRuleData } from "./requisite-rule";
+
+
+export interface RequisiteData {
+  id: string
+  name: string
+  type: string
+  rules: RequisiteRuleData[]
+}
+
+export interface RequisiteSetData {
+  _id: string
+  requisiteSetGroupId: string
+  name: string
+  description?: string
+  requisites?: RequisiteData[]
+  effectiveStartDate?: string
+  effectiveEndDate?: string
+  createdAt?: number
+  lastEditedAt?: number
+  version: number
+}
 
 
 // List Requisite Sets
 export const RequisiteSetListReqQuerySchema = z.object({
-    id: z.string().optional(),
-    csid: z.string().optional(),
-    requisite_set_group_id: z.string().optional(),
-    version: z.number().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    sorting: getSortingReqQuerySchema(RequisiteSetScalarFieldEnumSchema),
+  id: z.string().optional(),
+  csid: z.string().optional(),
+  requisite_set_group_id: z.string().optional(),
+  version: z.number().optional(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  sorting: getSortingReqQuerySchema(RequisiteSetScalarFieldEnumSchema),
 }).extend(PaginatedRequestSchema.shape);
 export type RequisiteSetListReqQuery = z.infer<typeof RequisiteSetListReqQuerySchema>;
 export type RequisiteSetListResBody = PaginatedResponse<RequisiteSet>;
