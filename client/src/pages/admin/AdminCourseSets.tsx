@@ -66,15 +66,6 @@ export const AdminCourseSets = () => {
       },
     },
     {
-      accessorKey: "json",
-      header: "JSON",
-      size: 400,
-      cell: ({ cell }) => {
-        const json = cell.getValue<any>()
-        return <JsonView src={json} displaySize={false} displayArrayIndex={false} />
-      },
-    },
-    {
       accessorKey: "name",
       header: "Name",
       size: 500,

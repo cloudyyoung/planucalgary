@@ -147,9 +147,6 @@ export const createCourse: CourseCreateHandler = async (req, res) => {
     data: {
       ...req.body,
       raw_requisites: req.body.raw_requisites as any,
-      prereq_json: req.body.prereq_json as any,
-      antireq_json: req.body.antireq_json as any,
-      coreq_json: req.body.coreq_json as any,
       subject: {
         connectOrCreate: {
           where: { code: req.body.subject },
@@ -191,9 +188,6 @@ export const updateCourse: CourseUpdateHandler = async (req, res) => {
           create: { code: req.body.subject, title: req.body.subject },
         }
       },
-      prereq_json: req.body.prereq_json as any,
-      antireq_json: req.body.antireq_json as any,
-      coreq_json: req.body.coreq_json as any,
       departments: {
         connectOrCreate: req.body.departments?.map((code) => ({
           where: { code },

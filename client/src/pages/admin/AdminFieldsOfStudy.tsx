@@ -51,7 +51,7 @@ export const AdminFieldsOfStudy = () => {
                     {course_sets.map((cs) => (
                         <li key={cs.id}>
                             <div>{cs.name}</div>
-                            <JsonView src={cs.json} displaySize={false} displayArrayIndex={false} />
+                            <JsonView src={cs.raw_json} displaySize={false} displayArrayIndex={false} />
                         </li>
                     ))}
                 </ul>

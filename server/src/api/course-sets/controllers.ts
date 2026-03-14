@@ -52,7 +52,6 @@ export const createCourseSet: CourseSetCreateHandler = async (req, res) => {
   const courseSet = await req.prisma.courseSet.create({
     data: {
       ...req.body,
-      json: req.body.json as any,
       raw_json: req.body.raw_json as any,
     },
   })
@@ -65,7 +64,6 @@ export const updateCourseSet: CourseSetUpdateHandler = async (req, res) => {
     where: { id: req.params.id },
     data: {
       ...req.body,
-      json: req.body.json as any,
       raw_json: req.body.raw_json as any,
     },
   })

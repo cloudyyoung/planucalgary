@@ -52,7 +52,6 @@ export const createRequisiteSet: RequisiteSetCreateHandler = async (req, res) =>
     const requisiteSet = await req.prisma.requisiteSet.create({
         data: {
             ...req.body,
-            json: req.body.json as any,
             raw_json: req.body.raw_json as any,
         },
     })
@@ -65,7 +64,6 @@ export const updateRequisiteSet: RequisiteSetUpdateHandler = async (req, res) =>
         where: { id: req.params.id },
         data: {
             ...req.body,
-            json: req.body.json as any,
             raw_json: req.body.raw_json as any,
         },
     })

@@ -42,20 +42,17 @@ model Course {
   consent      String?
   drop_consent String?
 
-  prereq       String?
-  prereq_json  Json?
-  coreq        String?
-  coreq_json   Json?
-  antireq      String?
-  antireq_json Json?
+  raw_requisites    Json?
+  prereq_id         String?
+  prereq            String?
+  prereq_requisite  Requisite? @relation("course_prereq", fields: [prereq_id], references: [id], onDelete: SetNull)
+  coreq_id          String?
+  coreq             String?
+  coreq_requisite   Requisite? @relation("course_coreq", fields: [coreq_id], references: [id], onDelete: SetNull)
+  antireq_id        String?
+  antireq           String?
+  antireq_requisite Requisite? @relation("course_antireq", fields: [antireq_id], references: [id], onDelete: SetNull)
 
-  raw_requisites      Json?
-  prereq_id           String?
-  prereq_requisite    Requisite? @relation("course_prereq", fields: [prereq_id], references: [id], onDelete: SetNull)
-  coreq_id            String?
-  coreq_requisite     Requisite? @relation("course_coreq", fields: [coreq_id], references: [id], onDelete: SetNull)
-  antireq_id          String?
-  antireq_requisite   Requisite? @relation("course_antireq", fields: [antireq_id], references: [id], onDelete: SetNull)
   is_archived         Boolean
   is_can_schedule     Boolean
   is_catalog_print    Boolean
@@ -132,7 +129,6 @@ model CourseSet {
   description         String?
   course_list         String[]
 
-  json     Json?
   raw_json Json?
 
   course_set_created_at           DateTime
@@ -389,7 +385,6 @@ model RequisiteSet {
   name                   String
   description            String?
 
-  json     Json?
   raw_json Json?
 
   requisite_set_created_at           DateTime
