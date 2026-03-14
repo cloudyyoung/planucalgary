@@ -14,21 +14,19 @@ export const RequisiteViewer = ({ requisite }: { requisite?: Requisite & { rules
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-2 w-full">
-        {requisite.rules?.map(rule => (
-          <Item variant="outline" size="sm" key={rule.id}>
-            <ItemMedia variant="icon">
-              <Boxes />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>{rule.name}</ItemTitle>
-              <ItemDescription>{rule.description}</ItemDescription>
-              <ItemDescription>{rule.condition}: {rule.credits}</ItemDescription>
-            </ItemContent>
-          </Item>
-        ))}
-      </div>
+    <div className="flex flex-col gap-2 w-full">
+      {requisite.rules?.map(rule => (
+        <Item variant="outline" size="sm" key={rule.id} className="pl-1.5 pr-2.5 py-1">
+          <ItemMedia variant="icon">
+            <Boxes />
+          </ItemMedia>
+          <ItemContent>
+            <ItemTitle>{rule.name}</ItemTitle>
+            <ItemDescription>{rule.description}</ItemDescription>
+            <ItemDescription>{rule.condition}: {rule.credits}</ItemDescription>
+          </ItemContent>
+        </Item>
+      ))}
     </div>
   )
 }
