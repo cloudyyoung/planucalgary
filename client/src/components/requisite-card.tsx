@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Pill } from "@/components/ui/pill"
 import { CourseSetCard } from "@/components/course-set-card"
 
-export const RequisiteViewer = ({ rules }: { rules?: RequisiteRule[] }) => {
+export const RequisiteCard = ({ rules }: { rules?: RequisiteRule[] }) => {
   return (
     <div className="flex flex-col gap-2 w-full">
       {rules?.map(rule => (

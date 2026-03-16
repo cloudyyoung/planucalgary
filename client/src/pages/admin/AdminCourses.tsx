@@ -8,7 +8,7 @@ import { RequisiteRule, Course } from "@planucalgary/shared/prisma/browser";
 import { useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
 import { Input } from "@/components/ui/input";
-import { RequisiteViewer } from "@/components/requisite-viewer";
+import { RequisiteCard } from "@/components/requisite-card";
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -52,7 +52,7 @@ export const columns: ColumnDef<Course>[] = [
     cell: ({ cell }) => {
       const requisite = cell.getValue<any>()
       const rules = requisite?.rules as RequisiteRule[]
-      return <RequisiteViewer rules={rules} />
+      return <RequisiteCard rules={rules} />
     },
   },
   {
@@ -67,7 +67,7 @@ export const columns: ColumnDef<Course>[] = [
     cell: ({ cell }) => {
       const requisite = cell.getValue<any>()
       const rules = requisite?.rules as RequisiteRule[]
-      return <RequisiteViewer rules={rules} />
+      return <RequisiteCard rules={rules} />
     },
   },
   {
@@ -82,7 +82,7 @@ export const columns: ColumnDef<Course>[] = [
     cell: ({ cell }) => {
       const requisite = cell.getValue<any>()
       const rules = requisite?.rules as RequisiteRule[]
-      return <RequisiteViewer rules={rules} />
+      return <RequisiteCard rules={rules} />
     },
   },
   {
