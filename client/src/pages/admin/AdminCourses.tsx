@@ -3,7 +3,7 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, Sortin
 import JsonView from "react18-json-view";
 import { DateTime } from "luxon";
 import { Check, X } from "lucide-react";
-import { Course } from "@planucalgary/shared/prisma/client";
+import { RequisiteRule, Course } from "@planucalgary/shared/prisma/browser";
 
 import { useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
@@ -48,10 +48,11 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "prereq_requisite",
     header: "Prerequisites",
-    size: 400,
+    size: 500,
     cell: ({ cell }) => {
       const requisite = cell.getValue<any>()
-      return <RequisiteViewer requisite={requisite} />
+      const rules = requisite?.rules as RequisiteRule[]
+      return <RequisiteViewer rules={rules} />
     },
   },
   {
@@ -62,10 +63,11 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "antireq_requisite",
     header: "Antirequisites",
-    size: 400,
+    size: 500,
     cell: ({ cell }) => {
       const requisite = cell.getValue<any>()
-      return <RequisiteViewer requisite={requisite} />
+      const rules = requisite?.rules as RequisiteRule[]
+      return <RequisiteViewer rules={rules} />
     },
   },
   {
@@ -76,10 +78,11 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "coreq_requisite",
     header: "Corequisites",
-    size: 400,
+    size: 500,
     cell: ({ cell }) => {
       const requisite = cell.getValue<any>()
-      return <RequisiteViewer requisite={requisite} />
+      const rules = requisite?.rules as RequisiteRule[]
+      return <RequisiteViewer rules={rules} />
     },
   },
   {
