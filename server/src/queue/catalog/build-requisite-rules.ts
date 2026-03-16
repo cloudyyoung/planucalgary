@@ -1,9 +1,28 @@
+import { Job } from "bullmq"
+import { PrismaPg } from "@prisma/adapter-pg"
 import { RequisiteRuleValue } from "@planucalgary/shared"
 import { PrismaClient, RequisiteRule } from "@planucalgary/shared/prisma/client"
-import { DefaultArgs } from "@prisma/client/runtime/client"
+import { DATABASE_URL } from "../../config"
 
 
-export async function buildRequisiteRuleRelations(rule: RequisiteRule, prisma: Omit<PrismaClient<never, undefined, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">) {
+export async function buildRequisiteRules(job: Job) {
+  const adapter = new PrismaPg({ connectionString: DATABASE_URL })
+  const prisma = new PrismaClient({ adapter })
+  const rules = await prisma.requisiteRule.findMany()
+
+  const chunkSize = 100
+  const totalRules = rules.length
+  for (let i = 0; i < rules.length; i += chunkSize) {
+    const chunk = rules.slice(i, i + chunkSize)
+    await Promise.all(chunk.map(rule => buildRequisiteRule(rule, prisma)))
+    job.updateProgress(Math.min(((i + chunkSize) / totalRules) * 100, 100))
+  }
+  job.updateProgress(100)
+
+  prisma.$disconnect()
+}
+
+async function buildRequisiteRule(rule: RequisiteRule, prisma: PrismaClient) {
   if (!rule.raw_json) return
 
   const rawJson = rule.raw_json as any as RequisiteRuleValue
@@ -17,7 +36,7 @@ export async function buildRequisiteRuleRelations(rule: RequisiteRule, prisma: O
     return []
   })
 
-  return await prisma.requisiteRule.update({
+  await prisma.requisiteRule.update({
     where: { id: rule.id },
     data: {
       referring_courses: {

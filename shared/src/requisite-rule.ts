@@ -81,3 +81,7 @@ export type RequisiteRuleUpdateHandler = RequestHandler<RequisiteRuleUpdateParam
 export const RequisiteRuleDeleteParamsSchema = IdInputSchema;
 export type RequisiteRuleDeleteParams = z.infer<typeof RequisiteRuleDeleteParamsSchema>;
 export type RequisiteRuleDeleteHandler = RequestHandler<RequisiteRuleDeleteParams, void, never, never>;
+
+
+// Build Requisite Rule Relations
+export type RequisiteRuleBuildRelationsHandler = RequestHandler<never, void, never, never>;

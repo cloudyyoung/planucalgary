@@ -4,9 +4,11 @@ import {
   RequisiteRuleGetHandler,
   RequisiteRuleListHandler,
   RequisiteRuleUpdateHandler,
+  RequisiteRuleBuildRelationsHandler,
   getSortings,
 } from "@planucalgary/shared";
 import { RequisiteRuleAlreadyExistsError, RequisiteRuleNotFoundError } from "./errors";
+import { catalogQueue } from "@/queue";
 
 export const listRequisiteRules: RequisiteRuleListHandler = async (req, res) => {
   const { id, requisite_id, parent_rule_id, name, description, notes, condition, grade, grade_type, sorting } = req.query;
@@ -102,4 +104,9 @@ export const deleteRequisiteRule: RequisiteRuleDeleteHandler = async (req, res) 
   });
 
   return res.sendStatus(204);
+};
+
+export const buildRequisiteRulesRelations: RequisiteRuleBuildRelationsHandler = async (req, res) => {
+  await catalogQueue.add("build-requisite-rules", {})
+  return res.sendStatus(202);
 };

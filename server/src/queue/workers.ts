@@ -10,6 +10,7 @@ import { syncCourseSets } from "./catalog/sync-course-sets";
 import { syncCourses } from "./catalog/sync-courses";
 import { syncFieldsOfStudy } from "./catalog/sync-fields-of-study";
 import { syncRequisitesJsons } from "./catalog/sync-requisites-jsons";
+import { buildRequisiteRules } from "./catalog/build-requisite-rules";
 
 export const cataloglWorker = new Worker(
     "catalog",
@@ -34,6 +35,8 @@ export const cataloglWorker = new Worker(
             await syncCourseSets(job)
         } else if (job.name === "sync-fields-of-study") {
             await syncFieldsOfStudy(job)
+        } else if (job.name === "build-requisite-rules") {
+            await buildRequisiteRules(job)
         }
     },
     defaultWorkerOptions,
