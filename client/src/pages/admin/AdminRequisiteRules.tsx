@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import { DateTime } from "luxon";
-import { RequisiteRule } from "@planucalgary/shared/prisma/client";
+import { Course, RequisiteRule } from "@planucalgary/shared/prisma/browser";
 import JsonView from "react18-json-view";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useRequisiteRules } from "@/hooks/useRequisiteRules";
+import { Pill } from "@/components/ui/pill";
 
 
 export const AdminRequisiteRules = () => {
@@ -121,6 +122,74 @@ export const AdminRequisiteRules = () => {
       header: "Grade Type",
       enableColumnFilter: true,
       enableSorting: true,
+    },
+    {
+      accessorKey: "referring_courses",
+      header: "Referring Courses",
+      size: 300,
+      cell: ({ cell }) => {
+        const courses = cell.getValue<Course[]>();
+        return (
+          <div className="flex flex-row gap-1">
+            {courses.map((course) => (
+              <Pill key={course.course_id}>
+                <span className="font-mono">{course.code}</span>
+              </Pill>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "referring_programs",
+      header: "Referring Programs",
+      size: 300,
+      cell: ({ cell }) => {
+        const programs = cell.getValue<{ program_id: string }[]>();
+        return (
+          <ul>
+            {programs.map((program) => (
+              <li key={program.program_id}>
+                <span className="font-mono">{program.program_id}</span>
+              </li>
+            ))}
+          </ul>
+        );
+      },
+    },
+    {
+      accessorKey: "referring_course_sets",
+      header: "Referring Course Sets",
+      size: 300,
+      cell: ({ cell }) => {
+        const courses = cell.getValue<{ course_id: string }[]>();
+        return (
+          <ul>
+            {courses.map((course) => (
+              <li key={course.course_id}>
+                <span className="font-mono">{course.course_id}</span>
+              </li>
+            ))}
+          </ul>
+        );
+      },
+    },
+    {
+      accessorKey: "referring_requisite_sets",
+      header: "Referring Requisite Sets",
+      size: 300,
+      cell: ({ cell }) => {
+        const courses = cell.getValue<{ course_id: string }[]>();
+        return (
+          <ul>
+            {courses.map((course) => (
+              <li key={course.course_id}>
+                <span className="font-mono">{course.course_id}</span>
+              </li>
+            ))}
+          </ul>
+        );
+      },
     },
     {
       accessorKey: "description",

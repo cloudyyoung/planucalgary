@@ -5,6 +5,7 @@ import { catalogQueue } from "@/queue"
 export const getQueueStatus: QueueStatusHandler = async (_req, res) => {
   const counts = await catalogQueue.getJobCounts()
   const jobs = await catalogQueue.getJobs()
+  jobs.sort((a, b) => b.timestamp - a.timestamp)
 
   res.json({
     counts: {

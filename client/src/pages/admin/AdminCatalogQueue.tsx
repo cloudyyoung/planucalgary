@@ -155,6 +155,7 @@ export default function AdminCatalogQueue() {
     columns: JobColumns,
     getCoreRowModel: getCoreRowModel(),
     enableColumnFilters: false,
+    enableSorting: false,
   })
 
   return (

@@ -29,6 +29,12 @@ export const listRequisiteRules: RequisiteRuleListHandler = async (req, res) => 
       orderBy: getSortings(sorting),
       skip: req.pagination.offset,
       take: req.pagination.limit,
+      include: {
+        referring_course_sets: true,
+        referring_programs: true,
+        referring_courses: true,
+        referring_requisite_sets: true,
+      },
     }),
     req.prisma.requisiteRule.count({
       where: whereConditions,
