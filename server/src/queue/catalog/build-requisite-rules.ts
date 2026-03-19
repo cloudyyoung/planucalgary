@@ -18,7 +18,6 @@ export async function buildRequisiteRules(job: Job) {
     await Promise.all(chunk.map(rule => buildRequisiteRule(rule, prisma)))
     const progress = Math.min(((i + chunkSize) / totalRules) * 100, 100)
     await job.updateProgress(progress)
-    console.log(progress)
   }
 
   await job.updateProgress(100)

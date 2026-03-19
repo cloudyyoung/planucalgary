@@ -9,6 +9,7 @@ import { crawlSubjects } from "./catalog/subjects";
 import { syncFieldsOfStudy } from "./catalog/sync-fields-of-study";
 import { syncRequisitesJsons } from "./catalog/sync-requisites-jsons";
 import { buildRequisiteRules } from "./catalog/build-requisite-rules";
+import { buildCourseSets } from "./catalog/build-course-sets";
 
 export const cataloglWorker = new Worker(
     "catalog",
@@ -31,6 +32,8 @@ export const cataloglWorker = new Worker(
             await syncFieldsOfStudy(job)
         } else if (job.name === "build-requisite-rules") {
             await buildRequisiteRules(job)
+        } else if (job.name === "build-course-sets") {
+            await buildCourseSets(job)
         }
     },
     defaultWorkerOptions,
