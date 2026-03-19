@@ -1,16 +1,9 @@
-import { DepartmentCrawlHandler, DepartmentCreateHandler, DepartmentDeleteHandler, DepartmentGetHandler, DepartmentListHandler, DepartmentUpdateHandler, getSortings } from "@planucalgary/shared"
+import { DepartmentCreateHandler, DepartmentDeleteHandler, DepartmentGetHandler, DepartmentListHandler, DepartmentUpdateHandler, getSortings } from "@planucalgary/shared"
 import { DepartmentAlreadyExistsError, DepartmentNotFoundError } from "./errors";
-import { catalogQueue } from "@/queue/queues";
 
 export const listDepartments: DepartmentListHandler = async (req, res) => {
-  const { id, name, display_name, code, is_active, sorting } = req.query;
-  const whereConditions = {
-    ...(id && { id: { contains: id } }),
-    ...(name && { name: { contains: name } }),
-    ...(display_name && { display_name: { contains: display_name } }),
-    ...(code && { code: { contains: code } }),
-    ...(is_active !== undefined && { is_active }),
-  }
+  const { name, display_name, code, is_active, sorting } = req.query;
+  const whereConditions = { name, display_name, code, is_active, }
   const [departments, total] = await Promise.all([
     req.prisma.department.findMany({
       where: whereConditions,
@@ -27,9 +20,8 @@ export const listDepartments: DepartmentListHandler = async (req, res) => {
 }
 
 export const getDepartment: DepartmentGetHandler = async (req, res) => {
-  const { id } = req.params;
   const department = await req.prisma.department.findUnique({
-    where: { id },
+    where: { code: req.params.code },
   })
 
   if (!department) {
@@ -45,7 +37,7 @@ export const createDepartment: DepartmentCreateHandler = async (req, res) => {
   })
 
   if (existing) {
-    throw new DepartmentAlreadyExistsError(existing.id)
+    throw new DepartmentAlreadyExistsError(existing.code)
   }
 
   const department = await req.prisma.department.create({
@@ -57,7 +49,7 @@ export const createDepartment: DepartmentCreateHandler = async (req, res) => {
 
 export const updateDepartment: DepartmentUpdateHandler = async (req, res) => {
   const department = await req.prisma.department.update({
-    where: { id: req.params.id },
+    where: { code: req.params.code },
     data: req.body,
   })
   return res.json(department)
@@ -65,7 +57,7 @@ export const updateDepartment: DepartmentUpdateHandler = async (req, res) => {
 
 export const deleteDepartment: DepartmentDeleteHandler = async (req, res) => {
   await req.prisma.department.delete({
-    where: { id: req.params.id },
+    where: { code: req.params.code },
   })
   return res.sendStatus(204)
 }
