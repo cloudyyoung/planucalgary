@@ -76,8 +76,3 @@ export const deleteCourseSet: CourseSetDeleteHandler = async (req, res) => {
   })
   return res.sendStatus(204)
 }
-
-export const crawlCourseSets: CourseSetCrawlHandler = async (req, res) => {
-  await catalogQueue.add("course-sets", {})
-  return res.sendStatus(202)
-}

@@ -95,8 +95,3 @@ export const deleteSubject: SubjectDeleteHandler = async (req, res) => {
   })
   return res.sendStatus(204)
 }
-
-export const crawlSubjects: SubjectCrawlHandler = async (req, res) => {
-  await catalogQueue.add("subjects", {})
-  return res.sendStatus(202)
-}

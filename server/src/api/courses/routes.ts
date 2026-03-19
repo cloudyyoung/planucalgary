@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { CourseCreateReqBodySchema, CourseListReqQuerySchema, CourseGetReqParamsSchema, CourseUpdateReqBodySchema, CourseUpdateReqParamsSchema, CourseDeleteReqParamsSchema } from "@planucalgary/shared"
 
-import { createCourse, deleteCourse, getCourse, listCourses, updateCourse, crawlCourses } from "./controllers"
+import { createCourse, deleteCourse, getCourse, listCourses, updateCourse } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
 
@@ -17,8 +17,6 @@ router.put(
   updateCourse,
 )
 router.delete("/:id", admin(), zod({ params: CourseDeleteReqParamsSchema }), deleteCourse)
-
-router.post("/crawl", admin(), zod({}), crawlCourses)
 
 export default router
 export { router }

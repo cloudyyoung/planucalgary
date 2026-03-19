@@ -69,9 +69,3 @@ export const deleteDepartment: DepartmentDeleteHandler = async (req, res) => {
   })
   return res.sendStatus(204)
 }
-
-
-export const crawlDepartments: DepartmentCrawlHandler = async (req, res) => {
-  await catalogQueue.add("departments", {})
-  return res.sendStatus(202)
-}

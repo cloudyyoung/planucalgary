@@ -6,7 +6,6 @@ import {
   getRequisiteRule,
   listRequisiteRules,
   updateRequisiteRule,
-  buildRequisiteRulesRelations,
 } from "./controllers";
 import { admin } from "../../middlewares/admin";
 import { zod } from "../../middlewares";
@@ -24,7 +23,6 @@ router.get("/:id", zod({ params: RequisiteRuleGetParamsSchema }), getRequisiteRu
 router.post("/", admin(), zod({ body: RequisiteRuleCreateBodySchema }), createRequisiteRule);
 router.put("/:id", admin(), zod({ params: RequisiteRuleUpdateParamsSchema, body: RequisiteRuleUpdateBodySchema }), updateRequisiteRule);
 router.delete("/:id", admin(), zod({ params: RequisiteRuleDeleteParamsSchema }), deleteRequisiteRule);
-router.post("/build", admin(), zod({}), buildRequisiteRulesRelations);
 
 export default router;
 export { router };

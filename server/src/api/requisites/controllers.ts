@@ -116,22 +116,3 @@ export const generateRequisiteChoices: RequisiteGenerateChoicesHandler = async (
     ...validation,
   })
 }
-
-export const syncRequisites: RequisitesSyncHandler = async (req, res, next) => {
-  const destination = req.body.destination
-  if (destination === RequisitesSyncDestination.REQUISITES_JSONS) {
-    await catalogQueue.add("sync-requisites-jsons", {})
-    return res.sendStatus(202)
-  } else if (destination === RequisitesSyncDestination.COURSES) {
-    await catalogQueue.add("sync-courses", {})
-    return res.sendStatus(202)
-  } else if (destination === RequisitesSyncDestination.COURSE_SETS) {
-    await catalogQueue.add("sync-course-sets", {})
-    return res.sendStatus(202)
-  } else if (destination === RequisitesSyncDestination.FIELDS_OF_STUDY) {
-    await catalogQueue.add("sync-fields-of-study", {})
-    return res.sendStatus(202)
-  } else {
-    throw new InvalidSyncDestinationError()
-  }
-}

@@ -111,8 +111,3 @@ export const deleteRequisiteRule: RequisiteRuleDeleteHandler = async (req, res) 
 
   return res.sendStatus(204);
 };
-
-export const buildRequisiteRulesRelations: RequisiteRuleBuildRelationsHandler = async (req, res) => {
-  await catalogQueue.add("build-requisite-rules", {})
-  return res.sendStatus(202);
-};

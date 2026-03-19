@@ -76,8 +76,3 @@ export const deleteRequisiteSet: RequisiteSetDeleteHandler = async (req, res) =>
     })
     return res.sendStatus(204)
 }
-
-export const crawlRequisiteSets: RequisiteSetCrawlHandler = async (req, res) => {
-    await catalogQueue.add("requisite-sets", {})
-    return res.sendStatus(202)
-}

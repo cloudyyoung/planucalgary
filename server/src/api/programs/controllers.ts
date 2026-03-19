@@ -111,9 +111,3 @@ export const deleteProgram: ProgramDeleteHandler = async (req, res) => {
   })
   return res.sendStatus(204)
 }
-
-export const crawlPrograms: ProgramCrawlHandler = async (req, res) => {
-  await catalogQueue.add("programs", {})
-  return res.sendStatus(202)
-}
-
