@@ -122,6 +122,7 @@ model CourseSet {
   fields_of_study FieldOfStudy[]
   requisite_rules RequisiteRule[]
   courses         Course[]
+  requisite       Requisite[]
 
   course_set_group_id String   @unique
   type                String
@@ -135,8 +136,6 @@ model CourseSet {
   course_set_last_updated_at      DateTime
   course_set_effective_start_date DateTime?
   course_set_effective_end_date   DateTime?
-  requisite                       Requisite? @relation(fields: [requisiteId], references: [id])
-  requisiteId                     String?
 
   @@map("course_sets")
   @@schema("catalog")
