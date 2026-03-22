@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { Department, Faculty, Program } from "@contracts/generated/prisma/client";
 import JsonView from "react18-json-view";
 import { Check, X } from "lucide-react";
 
@@ -9,6 +8,40 @@ import AdvancedTable from "@/components/advanced-table";
 import { usePrograms } from "@/hooks/usePrograms";
 import { FacultyPills } from "@/components/faculty-pills";
 import { DepartmentPills } from "@/components/department-pills";
+
+type FacultyItem = {
+    code: string
+    name: string
+    display_name: string
+    is_active: boolean
+    created_at: Date
+    updated_at: Date
+}
+
+type DepartmentItem = {
+    code: string
+    name: string
+    display_name: string
+    is_active: boolean
+    created_at: Date
+    updated_at: Date
+}
+
+type ProgramListItem = {
+    id: string
+    code: string
+    pid: string
+    name: string
+    long_name: string | null
+    display_name: string
+    is_active: boolean
+    requisites: unknown
+    degree_designation_code: string | null
+    created_at: string
+    updated_at: string
+    faculties: FacultyItem[]
+    departments: DepartmentItem[]
+}
 
 
 export const AdminPrograms = () => {
@@ -28,7 +61,7 @@ export const AdminPrograms = () => {
 
     const { data, isLoading, isFetching } = usePrograms(props)
 
-    const columns: ColumnDef<Program>[] = useMemo(() => [
+    const columns: ColumnDef<ProgramListItem>[] = useMemo(() => [
         {
             accessorKey: "id",
             header: "ID",
@@ -97,7 +130,7 @@ export const AdminPrograms = () => {
             header: 'Faculties',
             size: 200,
             cell: ({ cell }) => {
-                const faculties = cell.getValue<Faculty[]>()
+                const faculties = cell.getValue<FacultyItem[]>()
                 return <FacultyPills faculties={faculties} />
             },
         },
@@ -106,7 +139,7 @@ export const AdminPrograms = () => {
             header: 'Departments',
             size: 200,
             cell: ({ cell }) => {
-                const departments = cell.getValue<Department[]>()
+                const departments = cell.getValue<DepartmentItem[]>()
                 return <DepartmentPills departments={departments} />
             },
         },
@@ -115,7 +148,7 @@ export const AdminPrograms = () => {
             header: 'Requisites',
             size: 600,
             cell: ({ cell }) => {
-                const requisites = cell.getValue<string>()
+                const requisites = cell.getValue<unknown>()
                 return <div className="overflow-hidden text-wrap break-all">
                     <JsonView src={requisites} displaySize={false} displayArrayIndex={false} />
                 </div>
@@ -148,8 +181,10 @@ export const AdminPrograms = () => {
         }
     ], [])
 
+    const tableData: ProgramListItem[] = (data?.items as ProgramListItem[] | undefined) ?? []
+
     const table = useReactTable({
-        data: data?.items || [],
+        data: tableData,
         columns,
         rowCount: data?.total,
         getCoreRowModel: getCoreRowModel(),

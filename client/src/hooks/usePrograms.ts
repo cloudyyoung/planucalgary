@@ -1,16 +1,16 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { ProgramListReqQuery, ProgramListResBody } from "@contracts"
-import api from "@/api"
+import { ProgramListReqQuery } from "@contracts"
+import type { inferRouterOutputs } from "@trpc/server"
+import type { AppRouter } from "../../../server/src/trpc/router"
+import { trpcClient } from "@/trpc"
+
+type RouterOutput = inferRouterOutputs<AppRouter>
+type ProgramListOutput = RouterOutput["programs"]["list"]
 
 export const usePrograms = (props: ProgramListReqQuery) => {
-    const result = useQuery<ProgramListResBody>({
-        queryKey: ['programs', ...Object.values(props)],
-        queryFn: async () => {
-            const response = await api.get('/programs', {
-                params: props,
-            })
-            return response.data
-        },
+    const result = useQuery<ProgramListOutput>({
+        queryKey: ["programs", props],
+        queryFn: async () => trpcClient.programs.list.query(props),
         placeholderData: keepPreviousData,
     })
 
