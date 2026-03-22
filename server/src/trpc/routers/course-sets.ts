@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../sorting"
 
-import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "../init"
+import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
 
 const ensureAdmin = (isAdmin: boolean | undefined) => {
   if (!isAdmin) {
@@ -81,7 +81,7 @@ export const courseSetsRouter = createTRPCRouter({
       return courseSet
     }),
 
-  create: authenticatedProcedure
+  create: adminProcedure
     .input(
       z
         .object({
@@ -111,7 +111,7 @@ export const courseSetsRouter = createTRPCRouter({
       })
     }),
 
-  update: authenticatedProcedure
+  update: adminProcedure
     .input(z.object({ id: z.string(), raw_json: z.any().optional() }))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
@@ -127,7 +127,7 @@ export const courseSetsRouter = createTRPCRouter({
       })
     }),
 
-  delete: authenticatedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+  delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.courseSet.delete({

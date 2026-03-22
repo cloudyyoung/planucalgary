@@ -3,7 +3,7 @@ import { z } from "zod"
 import { getSortings } from "../sorting"
 
 import { catalogQueue } from "../../queue"
-import { createTRPCRouter, authenticatedProcedure } from "../init"
+import { createTRPCRouter, adminProcedure } from "../init"
 
 const ensureAdmin = (isAdmin: boolean | undefined) => {
   if (!isAdmin) {
@@ -47,7 +47,7 @@ const RequisitesSyncDestinationSchema = z.enum([
 const SyncInputSchema = RequisitesSyncDestinationSchema.transform((destination) => ({ destination }))
 
 export const requisitesRouter = createTRPCRouter({
-  list: authenticatedProcedure.input(RequisiteListReqQuerySchema).query(async ({ ctx, input }) => {
+  list: adminProcedure.input(RequisiteListReqQuerySchema).query(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const { id, requisite_type, text, sorting } = input
@@ -90,7 +90,7 @@ export const requisitesRouter = createTRPCRouter({
     }
   }),
 
-  get: authenticatedProcedure.input(RequisiteIdParamsSchema).query(async ({ ctx, input }) => {
+  get: adminProcedure.input(RequisiteIdParamsSchema).query(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const requisite = await ctx.prisma.requisiteJson.findUnique({
@@ -112,7 +112,7 @@ export const requisitesRouter = createTRPCRouter({
     }
   }),
 
-  update: authenticatedProcedure
+  update: adminProcedure
     .input(RequisiteUpdateReqBodySchema.merge(RequisiteIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
@@ -148,7 +148,7 @@ export const requisitesRouter = createTRPCRouter({
       }
     }),
 
-  generateChoices: authenticatedProcedure
+  generateChoices: adminProcedure
     .input(RequisiteGenerateChoicesReqParamsSchema)
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
@@ -179,7 +179,7 @@ export const requisitesRouter = createTRPCRouter({
       }
     }),
 
-  sync: authenticatedProcedure.input(SyncInputSchema).mutation(async ({ ctx, input }) => {
+  sync: adminProcedure.input(SyncInputSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     let jobName: string

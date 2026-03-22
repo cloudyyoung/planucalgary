@@ -1,10 +1,10 @@
 import { Job } from "bullmq"
 
-import { createTRPCRouter, authenticatedProcedure } from "../init"
+import { createTRPCRouter, adminProcedure } from "../init"
 import { catalogQueue } from "../../queue"
 
 export const queuesRouter = createTRPCRouter({
-  catalog: authenticatedProcedure.query(async () => {
+  catalog: adminProcedure.query(async () => {
     const counts = await catalogQueue.getJobCounts()
     const jobs = await catalogQueue.getJobs()
     jobs.sort((a, b) => b.timestamp - a.timestamp)

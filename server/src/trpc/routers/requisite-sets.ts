@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../sorting"
 
-import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "../init"
+import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
 
 const ensureAdmin = (isAdmin: boolean | undefined) => {
   if (!isAdmin) {
@@ -89,7 +89,7 @@ export const requisiteSetsRouter = createTRPCRouter({
     return requisiteSet
   }),
 
-  create: authenticatedProcedure.input(RequisiteSetCreateBodySchema).mutation(async ({ ctx, input }) => {
+  create: adminProcedure.input(RequisiteSetCreateBodySchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const existing = await ctx.prisma.requisiteSet.findFirst({
@@ -111,7 +111,7 @@ export const requisiteSetsRouter = createTRPCRouter({
     })
   }),
 
-  update: authenticatedProcedure
+  update: adminProcedure
     .input(RequisiteSetUpdateBodySchema.merge(RequisiteSetIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
@@ -127,7 +127,7 @@ export const requisiteSetsRouter = createTRPCRouter({
       })
     }),
 
-  delete: authenticatedProcedure.input(RequisiteSetIdParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: adminProcedure.input(RequisiteSetIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.requisiteSet.delete({

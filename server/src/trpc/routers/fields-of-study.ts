@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../sorting"
 
-import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "../init"
+import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
 
 const ensureAdmin = (isAdmin: boolean | undefined) => {
   if (!isAdmin) {
@@ -88,7 +88,7 @@ export const fieldsOfStudyRouter = createTRPCRouter({
     return fieldOfStudy
   }),
 
-  create: authenticatedProcedure.input(FieldsOfStudyCreateBodySchema).mutation(async ({ ctx, input }) => {
+  create: adminProcedure.input(FieldsOfStudyCreateBodySchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const existing = await ctx.prisma.fieldOfStudy.findFirst({
@@ -109,7 +109,7 @@ export const fieldsOfStudyRouter = createTRPCRouter({
     })
   }),
 
-  update: authenticatedProcedure
+  update: adminProcedure
     .input(FieldsOfStudyUpdateBodySchema.merge(FieldsOfStudyIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
@@ -123,7 +123,7 @@ export const fieldsOfStudyRouter = createTRPCRouter({
       })
     }),
 
-  delete: authenticatedProcedure.input(FieldsOfStudyIdParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: adminProcedure.input(FieldsOfStudyIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.fieldOfStudy.delete({
