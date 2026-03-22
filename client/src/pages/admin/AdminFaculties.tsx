@@ -1,11 +1,15 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { Faculty } from "@contracts/generated/prisma/client";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "../../../../server/src/trpc/router";
 import { Check, X } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useFaculties } from "@/hooks/useFaculties";
+
+type RouterOutput = inferRouterOutputs<AppRouter>
+type FacultyListItem = RouterOutput["faculties"]["list"]["items"][number]
 
 
 export const AdminFaculties = () => {
@@ -25,7 +29,7 @@ export const AdminFaculties = () => {
 
     const { data, isLoading, isFetching } = useFaculties(props)
 
-    const columns: ColumnDef<Faculty>[] = useMemo(() => [
+    const columns: ColumnDef<FacultyListItem>[] = useMemo(() => [
         {
             accessorKey: "id",
             header: "ID",
@@ -85,8 +89,10 @@ export const AdminFaculties = () => {
         }
     ], [])
 
+    const tableData: FacultyListItem[] = (data?.items as FacultyListItem[] | undefined) ?? []
+
     const table = useReactTable({
-        data: data?.items || [],
+        data: tableData,
         columns,
         rowCount: data?.total,
         getCoreRowModel: getCoreRowModel(),

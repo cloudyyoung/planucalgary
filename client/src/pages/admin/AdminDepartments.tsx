@@ -1,11 +1,15 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { Department } from "@contracts/generated/prisma/client";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "../../../../server/src/trpc/router";
 import { Check, X } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useDepartments } from "@/hooks/useDepartments";
+
+type RouterOutput = inferRouterOutputs<AppRouter>
+type DepartmentListItem = RouterOutput["departments"]["list"]["items"][number]
 
 
 export const AdminDepartments = () => {
@@ -25,7 +29,7 @@ export const AdminDepartments = () => {
 
     const { data, isLoading, isFetching } = useDepartments(props)
 
-    const columns: ColumnDef<Department>[] = useMemo(() => [
+    const columns: ColumnDef<DepartmentListItem>[] = useMemo(() => [
         {
             accessorKey: "id",
             header: "ID",
@@ -85,8 +89,10 @@ export const AdminDepartments = () => {
         }
     ], [])
 
+    const tableData: DepartmentListItem[] = (data?.items as DepartmentListItem[] | undefined) ?? []
+
     const table = useReactTable({
-        data: data?.items || [],
+        data: tableData,
         columns,
         rowCount: data?.total,
         getCoreRowModel: getCoreRowModel(),
