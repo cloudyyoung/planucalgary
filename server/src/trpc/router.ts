@@ -32,14 +32,6 @@ export const appRouter = createTRPCRouter({
   requisiteSets: requisiteSetsRouter,
   requisites: requisitesRouter,
   subjects: subjectsRouter,
-
-  account: protectedProcedure.query(({ ctx }) => {
-    return {
-      id: ctx.account.id,
-      email: ctx.account.email,
-      name: ctx.account.name,
-    }
-  }),
 })
 
 export type AppRouter = typeof appRouter
