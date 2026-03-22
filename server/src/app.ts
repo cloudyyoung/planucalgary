@@ -8,7 +8,6 @@ import bodyParser from "body-parser"
 import { expressjwt as jwt } from "express-jwt"
 import { createExpressMiddleware } from "@trpc/server/adapters/express"
 
-import { router as requisitesRouter } from "./api/requisites/routes"
 import { router as subjectRouter } from "./api/subjects/routes"
 import { PORT, JWT_SECRET_KEY } from "./config"
 import { auth, errors, pagination, prisma } from "./middlewares"
@@ -49,7 +48,6 @@ const load = async (app: Express) => {
   app.use(emptyget())
   app.use(pagination())
 
-  app.use("/requisites", requisitesRouter)
   app.use("/subjects", subjectRouter)
 
   app.get("/", (_req, res) => {

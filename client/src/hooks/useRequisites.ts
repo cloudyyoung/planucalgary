@@ -1,17 +1,12 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
-import api, { queryClient } from "@/api"
-import { RequisiteGenerateChoicesResBody, RequisiteListReqQuery, RequisiteListResBody, RequisitesSyncDestination, RequisitesSyncResBody, RequisiteUpdateReqBody, RequisiteUpdateResBody } from "@contracts"
+import { queryClient } from "@/api"
+import { RequisiteListReqQuery, RequisitesSyncDestination, RequisiteUpdateReqBody } from "@contracts"
+import { trpcClient } from "@/trpc"
 
 export const useRequisites = (props: RequisiteListReqQuery) => {
   const result = useQuery({
     queryKey: ['requisites', JSON.stringify(props)],
-    queryFn: async () => {
-      const response = await api.get<RequisiteListResBody>('/requisites', {
-        params: props,
-        timeout: 6000,
-      })
-      return response.data
-    },
+    queryFn: async () => trpcClient.requisites.list.query(props),
     placeholderData: keepPreviousData,
   })
 
@@ -21,8 +16,7 @@ export const useRequisites = (props: RequisiteListReqQuery) => {
 export const useRequisitesGenerateChoices = (props: RequisiteListReqQuery) => {
   const mutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await api.post<RequisiteGenerateChoicesResBody>(`/requisites/${id}/`, {})
-      return response.data
+      return trpcClient.requisites.generateChoices.mutate({ id })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['requisites', JSON.stringify(props)] })
@@ -35,8 +29,7 @@ export const useRequisitesGenerateChoices = (props: RequisiteListReqQuery) => {
 export const useRequisitesUpdate = (props: RequisiteListReqQuery) => {
   const mutation = useMutation({
     mutationFn: async (data: RequisiteUpdateReqBody) => {
-      const response = await api.put<RequisiteUpdateResBody>(`/requisites/${data.id}/`, data)
-      return response.data
+      return trpcClient.requisites.update.mutate(data as RequisiteUpdateReqBody & { id: string })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['requisites', JSON.stringify(props)] })
@@ -49,10 +42,7 @@ export const useRequisitesUpdate = (props: RequisiteListReqQuery) => {
 export const useRequisitesSync = () => {
   const mutation = useMutation({
     mutationFn: async (destination: RequisitesSyncDestination) => {
-      const response = await api.post<RequisitesSyncResBody>('/requisites/sync', {
-        destination,
-      })
-      return response.data
+      return trpcClient.requisites.sync.mutate(destination)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['requisites'] })

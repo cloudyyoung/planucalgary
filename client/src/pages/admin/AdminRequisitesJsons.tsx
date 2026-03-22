@@ -1,7 +1,6 @@
 import { useMemo, useState, useEffect } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import { RequisiteJson } from "@contracts/generated/prisma/client"
-import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@contracts";
+import { RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@contracts";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
 import Editor, { useMonaco } from '@monaco-editor/react';
@@ -68,11 +67,12 @@ export const AdminRequisitesJsons = () => {
   }), [pagination, sorting, columnFilters])
 
   const { data, isLoading, isFetching } = useRequisites(props)
+  const response = data as { items: any[]; total: number } | undefined
   const { mutateAsync: generateChoices } = useRequisitesGenerateChoices(props)
   const { mutateAsync: updateJson } = useRequisitesUpdate(props)
   const { mutateAsync: syncRequisites } = useRequisitesSync()
 
-  const columns: ColumnDef<RequisiteJson & RequisiteJsonValidation>[] = useMemo(() => [
+  const columns: ColumnDef<any>[] = useMemo(() => [
     {
       accessorKey: "id",
       header: "ID",
@@ -166,7 +166,7 @@ export const AdminRequisitesJsons = () => {
                     <DialogDescription className="space-y-2">
                       <div className="max-h-[30vh] max-w-4xl overflow-auto flex flex-row px-6 -mx-6">
                         {
-                          jsonChoices.map((choice, index) => (
+                          jsonChoices.map((choice: unknown, index: number) => (
                             <Button key={index} variant="ghost" className="h-full min-h-20 text-left justify-start w-full" onClick={() => onClickJsonChoice(choice)}>
                               <JsonView src={choice} displaySize={false} displayArrayIndex={false} />
                             </Button>
@@ -222,7 +222,7 @@ export const AdminRequisitesJsons = () => {
             {errors.length > 0 && (
               <div>
                 <ul className="list-none list-inside space-y-1">
-                  {errors.map((error, index) => (
+                  {errors.map((error: { message: string; value: unknown }, index: number) => (
                     <li key={index} className="text-sm bg-destructive/10 text-destructive p-2">
                       <span>{error.message}</span>
                       <JsonView src={error.value} displaySize={false} displayArrayIndex={false} />
@@ -234,7 +234,7 @@ export const AdminRequisitesJsons = () => {
             {warnings.length > 0 && (
               <div>
                 <ul className="list-none list-inside space-y-1">
-                  {warnings.map((warning, index) => (
+                  {warnings.map((warning: { message: string; value: unknown }, index: number) => (
                     <li key={index} className="text-sm bg-caution/10 text-caution p-2">
                       <span>{warning.message}</span>
                       <JsonView src={warning.value} displaySize={false} displayArrayIndex={false} />
@@ -285,9 +285,9 @@ export const AdminRequisitesJsons = () => {
   ], [])
 
   const table = useReactTable({
-    data: data?.items || [],
+    data: response?.items || [],
     columns,
-    rowCount: data?.total,
+    rowCount: response?.total,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,
