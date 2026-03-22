@@ -1,12 +1,16 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { CourseSet } from "@contracts/generated/prisma/client";
 import JsonView from "react18-json-view";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useCourseSets } from "@/hooks/useCourseSets";
 import { CourseSetTypeSchema } from "@contracts/course-set";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "../../../../server/src/trpc/router";
+
+type RouterOutput = inferRouterOutputs<AppRouter>
+type CourseSetListItem = RouterOutput["courseSets"]["list"]["items"][number]
 
 
 export const AdminCourseSets = () => {
@@ -26,7 +30,7 @@ export const AdminCourseSets = () => {
 
   const { data, isLoading, isFetching } = useCourseSets(props)
 
-  const columns: ColumnDef<CourseSet>[] = useMemo(() => [
+  const columns: ColumnDef<CourseSetListItem>[] = useMemo(() => [
     {
       accessorKey: "id",
       header: "ID",
@@ -108,8 +112,10 @@ export const AdminCourseSets = () => {
     }
   ], [])
 
+  const tableData: CourseSetListItem[] = (data?.items as CourseSetListItem[] | undefined) ?? []
+
   const table = useReactTable({
-    data: data?.items || [],
+    data: tableData,
     columns,
     rowCount: data?.total,
     getCoreRowModel: getCoreRowModel(),
