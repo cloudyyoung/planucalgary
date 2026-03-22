@@ -1,7 +1,7 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { RequisiteRuleValue } from "@/contracts"
-import { CourseSet, PrismaClient } from "@/contracts/generated/prisma/client"
+import { CourseSet, PrismaClient } from "@/generated/prisma/client"
 import { DATABASE_URL } from "../../config"
 
 

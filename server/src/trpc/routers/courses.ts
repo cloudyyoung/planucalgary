@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../../contracts/sorting"
-import { Course, Prisma } from "../../contracts/generated/prisma/client"
+import { Course, Prisma } from "../../generated/prisma/client"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 

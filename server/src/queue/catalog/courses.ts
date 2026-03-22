@@ -1,6 +1,6 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { PrismaClient, Career, CourseComponent, GradeMode } from "@/contracts/generated/prisma/client"
+import { PrismaClient, Career, CourseComponent, GradeMode } from "@/generated/prisma/client"
 import axios from "axios"
 import { RequisiteData } from "@/contracts"
 import { DATABASE_URL } from "../../config"

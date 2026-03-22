@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Account, PrismaClient } from "../contracts/generated/prisma/client"
+import { Account, PrismaClient } from "../generated/prisma/client"
 import { JwtPayload, verify } from "jsonwebtoken"
 
 import { JWT_SECRET_KEY } from "../config"

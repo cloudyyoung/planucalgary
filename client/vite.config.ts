@@ -10,7 +10,7 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@", replacement: path.resolve("src/") },
-      { find: "@contracts", replacement: path.resolve("../server/src/contracts") },
+      { find: "@prisma", replacement: path.resolve("../server/src/generated/prisma") },
     ],
   },
 })
