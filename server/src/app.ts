@@ -11,7 +11,6 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express"
 import { router as requisitesRouter } from "./api/requisites/routes"
 import { router as facultyRouter } from "./api/faculties/routes"
 import { router as subjectRouter } from "./api/subjects/routes"
-import { router as departmentRouter } from "./api/departments/routes"
 import { router as programRouter } from "./api/programs/routes"
 import { router as requisiteSetRouter } from "./api/requisite-sets/routes"
 import { router as requisiteRuleRouter } from "./api/requisite-rules/routes"
@@ -59,7 +58,6 @@ const load = async (app: Express) => {
   app.use("/requisites", requisitesRouter)
   app.use("/faculties", facultyRouter)
   app.use("/subjects", subjectRouter)
-  app.use("/departments", departmentRouter)
   app.use("/programs", programRouter)
   app.use("/requisite-sets", requisiteSetRouter)
   app.use("/requisite-rules", requisiteRuleRouter)

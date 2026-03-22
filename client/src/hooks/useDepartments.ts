@@ -1,16 +1,16 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { DepartmentListReqQuery, DepartmentListResBody } from "@contracts"
-import api from "@/api"
+import { DepartmentListReqQuery } from "@contracts"
+import type { inferRouterOutputs } from "@trpc/server"
+import type { AppRouter } from "../../../server/src/trpc/router"
+import { trpcClient } from "@/trpc"
+
+type RouterOutput = inferRouterOutputs<AppRouter>
+type DepartmentListOutput = RouterOutput["departments"]["list"]
 
 export const useDepartments = (props: DepartmentListReqQuery) => {
-    const result = useQuery<DepartmentListResBody>({
-        queryKey: ['departments', ...Object.values(props)],
-        queryFn: async () => {
-            const response = await api.get('/departments', {
-                params: props,
-            })
-            return response.data
-        },
+    const result = useQuery<DepartmentListOutput>({
+        queryKey: ["departments", props],
+        queryFn: async () => trpcClient.departments.list.query(props),
         placeholderData: keepPreviousData,
     })
 
