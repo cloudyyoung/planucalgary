@@ -1,11 +1,26 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { CourseSet, FieldOfStudy } from "@contracts/generated/prisma/client";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useFieldsOfStudy } from "@/hooks/useFieldsOfStudy";
 import JsonView from "react18-json-view";
+
+type CourseSetItem = {
+    id: number
+    name: string
+    raw_json: unknown
+}
+
+type FieldsOfStudyListItem = {
+    id: number
+    name: string
+    description: string | null
+    notes: string | null
+    created_at: string
+    updated_at: string
+    course_sets: CourseSetItem[]
+}
 
 
 export const AdminFieldsOfStudy = () => {
@@ -25,7 +40,7 @@ export const AdminFieldsOfStudy = () => {
 
     const { data, isLoading, isFetching } = useFieldsOfStudy(props)
 
-    const columns: ColumnDef<FieldOfStudy>[] = useMemo(() => [
+    const columns: ColumnDef<FieldsOfStudyListItem>[] = useMemo(() => [
         {
             accessorKey: "id",
             header: "ID",
@@ -46,7 +61,7 @@ export const AdminFieldsOfStudy = () => {
             enableColumnFilter: false,
             enableSorting: false,
             cell: ({ cell }) => {
-                const course_sets = cell.getValue<CourseSet[]>()
+                const course_sets = cell.getValue<CourseSetItem[]>()
                 return <ul className="flex flex-col gap-3">
                     {course_sets.map((cs) => (
                         <li key={cs.id}>
@@ -91,8 +106,10 @@ export const AdminFieldsOfStudy = () => {
         }
     ], [])
 
+    const tableData: FieldsOfStudyListItem[] = (data?.items as FieldsOfStudyListItem[] | undefined) ?? []
+
     const table = useReactTable({
-        data: data?.items || [],
+        data: tableData,
         columns,
         rowCount: data?.total,
         getCoreRowModel: getCoreRowModel(),
