@@ -6,6 +6,7 @@ import morgan from "morgan"
 import helmet from "helmet"
 import bodyParser from "body-parser"
 import { expressjwt as jwt } from "express-jwt"
+import { createExpressMiddleware } from "@trpc/server/adapters/express"
 
 import { router as accountRouter } from "./api/accounts/routes"
 import { router as courseRouter } from "./api/courses/routes"
@@ -23,6 +24,8 @@ import { PORT, JWT_SECRET_KEY } from "./config"
 import { auth, errors, pagination, prisma } from "./middlewares"
 import { emptyget } from "./middlewares/empty-get"
 import { closeWorkers } from "./queue"
+import { createTRPCContext } from "./trpc/context"
+import { appRouter } from "./trpc/router"
 
 const load = async (app: Express) => {
   process.on("uncaughtException", async (error) => {
@@ -42,6 +45,13 @@ const load = async (app: Express) => {
   app.use(helmet())
   app.use(compression())
   app.use(prisma())
+  app.use(
+    "/trpc",
+    createExpressMiddleware({
+      router: appRouter,
+      createContext: createTRPCContext,
+    }),
+  )
   app.use(
     jwt({ secret: JWT_SECRET_KEY!, algorithms: ["HS256"], issuer: "plan-ucalgary-api" }).unless({
       path: ["/accounts/signin", "/accounts/signup"],
