@@ -1,8 +1,7 @@
 import { useState } from "react"
 import { ArrowLeftIcon, PlusIcon, ArrowRightIcon, RepeatIcon, CircleSlash2Icon, SquareStackIcon, Archive } from "lucide-react"
-import { Course } from "@planucalgary/shared/prisma/browser"
 
-import { useCourses } from "@/hooks/useCourses"
+import { CourseListItem, useCourses } from "@/hooks/useCourses"
 import { Button, ButtonProps } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge, BadgeProps } from "@/components/ui/badge"
@@ -20,17 +19,34 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
+type CourseCardItem = Pick<
+  CourseListItem,
+  | "id"
+  | "subject_code"
+  | "course_number"
+  | "long_name"
+  | "description"
+  | "is_active"
+  | "is_repeatable"
+  | "is_no_gpa"
+  | "is_multi_term"
+  | "prereq"
+  | "antireq"
+  | "coreq"
+>
+
 export const Courses = () => {
   const [keywords, setKeywords] = useState('')
   const [pagination, setPagination] = useState({ offset: 0, limit: 100 })
   const [showCourseDetails, setShowCourseDetails] = useState(false)
-  const [courseDetails, setCourseDetails] = useState<Course | null>(null)
+  const [courseDetails, setCourseDetails] = useState<CourseCardItem | null>(null)
 
   const { data, isLoading } = useCourses({
     keywords,
     offset: pagination.offset,
     limit: pagination.limit,
   })
+  const courses: CourseCardItem[] = (data?.items as CourseCardItem[] | undefined) ?? []
 
   const prevPage = () => setPagination((prev) => ({ ...prev, offset: prev.offset - prev.limit }))
   const nextPage = () => setPagination((prev) => ({ ...prev, offset: prev.offset + prev.limit }))
@@ -61,7 +77,7 @@ export const Courses = () => {
               <div className="pointer-events-none -mt-48 w-full h-48 z-30 bg-gradient-to-t from-white to-transparent border-none"></div>
             </>
           )}
-          {data?.items.map((course: any) => (
+          {courses.map((course) => (
             <HoverCard>
               <HoverCardTrigger>
                 <CourseRowButton
@@ -133,7 +149,7 @@ const FilterChip = ({ children, ...props }: ButtonProps) => {
   )
 }
 
-const CourseRowButton = ({ course, onClick }: { course?: Course, onClick?: ButtonProps["onClick"] }) => {
+const CourseRowButton = ({ course, onClick }: { course?: CourseCardItem, onClick?: ButtonProps["onClick"] }) => {
   return (
     <Button variant="link" className="flex flex-row px-0 h-12 justify-start items-center w-full" onClick={onClick}>
       {
@@ -153,7 +169,7 @@ const CourseRowButton = ({ course, onClick }: { course?: Course, onClick?: Butto
   )
 }
 
-const CourseCodeBadge = ({ course, variant }: { course: Course, variant: BadgeProps["variant"] }) => {
+const CourseCodeBadge = ({ course, variant }: { course: CourseCardItem, variant: BadgeProps["variant"] }) => {
   return (
     <Badge variant={variant} className="font-bold font-mono rounded-full gap-0.5">
       <span>{course.subject_code}</span>

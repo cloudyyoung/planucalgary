@@ -3,14 +3,14 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, Sortin
 import JsonView from "react18-json-view";
 import { DateTime } from "luxon";
 import { Check, X } from "lucide-react";
-import { RequisiteRule, Course } from "@planucalgary/shared/prisma/browser";
+import { RequisiteRule } from "@planucalgary/shared/prisma/browser";
 
-import { useCourses } from "@/hooks/useCourses"
+import { CourseListItem, useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
 import { Input } from "@/components/ui/input";
 import { RequisiteCard } from "@/components/requisite-card";
 
-export const columns: ColumnDef<Course>[] = [
+export const columns: ColumnDef<CourseListItem>[] = [
   {
     accessorKey: "id",
     header: "ID",

@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Account } from "@planucalgary/shared/prisma/client"
+import { Account, PrismaClient } from "@planucalgary/shared/prisma/client"
 import { JwtPayload, verify } from "jsonwebtoken"
 
 import { JWT_SECRET_KEY } from "../config"
@@ -11,13 +11,22 @@ type AuthPayload = JwtPayload & {
 export type TRPCContext = {
   req: Request
   res: Response
-  prisma: Request["prisma"]
+  prisma: PrismaClient
   account: Account | null
 }
 
+const getRequestPrisma = (req: Request): PrismaClient => {
+  return (req as any).prisma as PrismaClient
+}
+
+const getRequestAccount = (req: Request): Account | null => {
+  return ((req as any).account ?? null) as Account | null
+}
+
 const getAccountFromAuthorization = async (req: Request): Promise<Account | null> => {
-  if (req.account) {
-    return req.account
+  const requestAccount = getRequestAccount(req)
+  if (requestAccount) {
+    return requestAccount
   }
 
   const authorization = req.headers.authorization
@@ -32,7 +41,7 @@ const getAccountFromAuthorization = async (req: Request): Promise<Account | null
       issuer: "plan-ucalgary-api",
     }) as AuthPayload
 
-    const account = await req.prisma.account.findFirst({
+    const account = await getRequestPrisma(req).account.findFirst({
       where: {
         id: payload.id,
       },
@@ -50,7 +59,7 @@ export const createTRPCContext = async ({ req, res }: { req: Request; res: Respo
   return {
     req,
     res,
-    prisma: req.prisma,
+    prisma: getRequestPrisma(req),
     account,
   }
 }

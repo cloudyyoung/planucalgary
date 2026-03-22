@@ -211,54 +211,56 @@ export const coursesRouter = createTRPCRouter({
   }),
 
   update: protectedProcedure
-    .input(CourseUpdateReqParamsSchema.extend(CourseUpdateReqBodySchema.shape))
+    .input(CourseUpdateReqBodySchema.omit({ id: true }).merge(CourseUpdateReqParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
+      const { id, ...updateData } = input
+
       return ctx.prisma.course.update({
-        where: { id: input.id },
+        where: { id },
         data: {
-          ...input,
-          raw_requisites: input.raw_requisites as any,
+          ...updateData,
+          raw_requisites: updateData.raw_requisites as any,
           subject: {
             connectOrCreate: {
-              where: { code: input.subject },
-              create: { code: input.subject, title: input.subject },
+              where: { code: updateData.subject },
+              create: { code: updateData.subject, title: updateData.subject },
             },
           },
           departments: {
-            connectOrCreate: input.departments?.map((code) => ({
+            connectOrCreate: updateData.departments?.map((code) => ({
               where: { code },
               create: { code, name: code, display_name: code, is_active: false },
             })),
-            set: input.departments?.map((code) => ({ code })),
+            set: updateData.departments?.map((code) => ({ code })),
           },
           faculties: {
-            connectOrCreate: input.faculties?.map((code) => ({
+            connectOrCreate: updateData.faculties?.map((code) => ({
               where: { code },
               create: { code, name: code, display_name: code, is_active: false },
             })),
-            set: input.faculties?.map((code) => ({ code })),
+            set: updateData.faculties?.map((code) => ({ code })),
           },
           topics: {
-            connectOrCreate: input.topics?.map((topic) => ({
+            connectOrCreate: updateData.topics?.map((topic) => ({
               where: {
                 number_course_id: {
                   number: topic.number,
-                  course_id: input.id,
+                  course_id: id,
                 },
               },
               create: topic,
             })),
-            set: input.topics?.map((topic) => ({
+            set: updateData.topics?.map((topic) => ({
               number_course_id: {
                 number: topic.number,
-                course_id: input.id,
+                course_id: id,
               },
             })),
           },
-          start_term: input.start_term as any,
-          end_term: input.end_term as any,
+          start_term: updateData.start_term as any,
+          end_term: updateData.end_term as any,
         },
       })
     }),
