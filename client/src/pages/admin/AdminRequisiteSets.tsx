@@ -1,11 +1,10 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { RequisiteSet } from "@contracts/generated/prisma/client";
 import JsonView from "react18-json-view";
 
 import AdvancedTable from "@/components/advanced-table";
-import { useRequisiteSets } from "@/hooks/useRequisiteSets";
+import { RequisiteSetListItem, RequisiteSetListOutput, useRequisiteSets } from "@/hooks/useRequisiteSets";
 
 
 export const AdminRequisiteSets = () => {
@@ -24,8 +23,9 @@ export const AdminRequisiteSets = () => {
     }), [pagination, sorting, columnFilters])
 
     const { data, isLoading, isFetching } = useRequisiteSets(props)
+    const response = data as RequisiteSetListOutput | undefined
 
-    const columns: ColumnDef<RequisiteSet>[] = useMemo(() => [
+    const columns: ColumnDef<RequisiteSetListItem>[] = useMemo(() => [
         {
             accessorKey: "id",
             header: "ID",
@@ -102,10 +102,12 @@ export const AdminRequisiteSets = () => {
         }
     ], [])
 
+    const tableData: RequisiteSetListItem[] = response?.items ?? []
+
     const table = useReactTable({
-        data: data?.items || [],
+        data: tableData,
         columns,
-        rowCount: data?.total,
+        rowCount: response?.total,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onPaginationChange: setPagination,

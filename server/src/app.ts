@@ -10,7 +10,6 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express"
 
 import { router as requisitesRouter } from "./api/requisites/routes"
 import { router as subjectRouter } from "./api/subjects/routes"
-import { router as requisiteSetRouter } from "./api/requisite-sets/routes"
 import { router as requisiteRuleRouter } from "./api/requisite-rules/routes"
 import { PORT, JWT_SECRET_KEY } from "./config"
 import { auth, errors, pagination, prisma } from "./middlewares"
@@ -53,7 +52,6 @@ const load = async (app: Express) => {
 
   app.use("/requisites", requisitesRouter)
   app.use("/subjects", subjectRouter)
-  app.use("/requisite-sets", requisiteSetRouter)
   app.use("/requisite-rules", requisiteRuleRouter)
 
   app.get("/", (_req, res) => {
