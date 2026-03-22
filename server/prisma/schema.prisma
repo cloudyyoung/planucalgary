@@ -8,8 +8,3 @@ generator client {
   output          = "../src/contracts/generated/prisma/"
   previewFeatures = ["fullTextSearchPostgres"]
 }
-
-generator zod {
-  provider = "prisma-zod-generator"
-  output   = "../src/contracts/generated/zod/"
-}

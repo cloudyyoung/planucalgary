@@ -73,8 +73,6 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "prettier": "~3.8.1",
     "prisma": "^7.0.1",
-    "prisma-generator-express": "^1.16.7",
-    "prisma-zod-generator": "^2.1.4",
     "tsx": "^4.21.0"
   }
 }
