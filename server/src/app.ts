@@ -8,7 +8,6 @@ import bodyParser from "body-parser"
 import { expressjwt as jwt } from "express-jwt"
 import { createExpressMiddleware } from "@trpc/server/adapters/express"
 
-import { router as accountRouter } from "./api/accounts/routes"
 import { router as courseRouter } from "./api/courses/routes"
 import { router as requisitesRouter } from "./api/requisites/routes"
 import { router as facultyRouter } from "./api/faculties/routes"
@@ -53,15 +52,12 @@ const load = async (app: Express) => {
     }),
   )
   app.use(
-    jwt({ secret: JWT_SECRET_KEY!, algorithms: ["HS256"], issuer: "plan-ucalgary-api" }).unless({
-      path: ["/accounts/signin", "/accounts/signup"],
-    }),
+    jwt({ secret: JWT_SECRET_KEY!, algorithms: ["HS256"], issuer: "plan-ucalgary-api" }),
     auth(),
   )
   app.use(emptyget())
   app.use(pagination())
 
-  app.use("/accounts", accountRouter)
   app.use("/courses", courseRouter)
   app.use("/requisites", requisitesRouter)
   app.use("/faculties", facultyRouter)
