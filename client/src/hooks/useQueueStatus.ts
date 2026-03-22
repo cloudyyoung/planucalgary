@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
-import { QueueStatusResBody } from "@contracts"
-import api from "@/api"
+import { trpcClient } from "@/trpc"
+
+export type QueueStatusOutput = Awaited<ReturnType<typeof trpcClient.queues.catalog.query>>
 
 export const useQueueStatus = () => {
-  const result = useQuery<QueueStatusResBody>({
+  const result = useQuery<QueueStatusOutput>({
     queryKey: ['queue', 'catalog'],
-    queryFn: async () => {
-      const response = await api.get('/queues/catalog')
-      return response.data
-    },
+    queryFn: async () => trpcClient.queues.catalog.query(),
     refetchInterval: 2000, // Auto-refresh every 2 seconds
   })
 

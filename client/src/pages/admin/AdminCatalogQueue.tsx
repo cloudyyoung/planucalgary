@@ -1,12 +1,14 @@
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table"
 import JsonView from "react18-json-view"
 import { DateTime } from "luxon"
-import { QueueJob, QueueCounts } from "@contracts"
 import { Card, CardContent } from "@/components/ui/card"
 import AdvancedTable from "@/components/advanced-table"
-import { useQueueStatus } from "@/hooks/useQueueStatus"
+import { useQueueStatus, type QueueStatusOutput } from "@/hooks/useQueueStatus"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
+
+type QueueCounts = QueueStatusOutput["counts"]
+type QueueJob = QueueStatusOutput["jobs"][number]
 
 const JobColumns: ColumnDef<QueueJob>[] = [
   {
