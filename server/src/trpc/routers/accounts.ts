@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server"
 import { SignInInputSchema, SignUpInputSchema } from "../../contracts"
 
 import { JWT_SECRET_KEY } from "../../config"
-import { generateAccessToken, JwtContent } from "../../api/accounts/utils"
+import { generateAccessToken, JwtContent } from "./accounts-utils"
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
 export const accountsRouter = createTRPCRouter({
