@@ -10,7 +10,6 @@ type PaginatedResponse<T> = {
   total: number
   offset: number
   limit: number
-  has_more: boolean
   items: T[]
 }
 
@@ -34,13 +33,11 @@ export const pagination = () => async (req: Request, res: Response, next: NextFu
 
   res.paginate = (items, total) => {
     const { offset, limit } = req.pagination
-    const has_more = total - (offset + limit) > 0
 
     return res.json({
       total,
       offset,
       limit,
-      has_more,
       items,
     })
   }

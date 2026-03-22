@@ -52,7 +52,6 @@ export type RequisiteRuleListOutput = {
   total: number
   offset: number
   limit: number
-  has_more: boolean
   items: RequisiteRuleListItem[]
 }
 

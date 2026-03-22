@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../sorting"
-import { paginationInputSchema, resolvePagination, hasMorePages } from "../pagination"
+import { paginationInputSchema, resolvePagination } from "../pagination"
 
 import { catalogQueue } from "../../queue"
 import { createTRPCRouter, adminProcedure } from "../init"
@@ -70,7 +70,6 @@ export const requisitesRouter = createTRPCRouter({
       total,
       offset,
       limit,
-      has_more: hasMorePages(total, offset, limit),
       items: validatedItems,
     }
     }),

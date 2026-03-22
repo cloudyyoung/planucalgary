@@ -47,6 +47,7 @@ export const Courses = () => {
     limit: pagination.limit,
   })
   const courses: CourseCardItem[] = (data?.items as CourseCardItem[] | undefined) ?? []
+  const hasNextPage = (data?.offset ?? 0) + (data?.limit ?? 0) < (data?.total ?? 0)
 
   const prevPage = () => setPagination((prev) => ({ ...prev, offset: prev.offset - prev.limit }))
   const nextPage = () => setPagination((prev) => ({ ...prev, offset: prev.offset + prev.limit }))
@@ -104,7 +105,7 @@ export const Courses = () => {
             <Button variant="outline" size="icon" disabled={data?.offset === 0} onClick={prevPage}>
               <ArrowLeftIcon className="w-5 h-5" />
             </Button>
-            <Button variant="outline" size="icon" disabled={!data?.has_more} onClick={nextPage}>
+            <Button variant="outline" size="icon" disabled={!hasNextPage} onClick={nextPage}>
               <ArrowRightIcon className="w-5 h-5" />
             </Button>
           </div>

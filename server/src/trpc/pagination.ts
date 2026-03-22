@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 const DEFAULT_OFFSET = 0
-const DEFAULT_LIMIT = 100
+const DEFAULT_LIMIT = 500
 
 export const paginationInputSchema = z.object({
   offset: z.coerce.number().int().min(0).optional(),
@@ -15,8 +15,4 @@ export const resolvePagination = (input: PaginationInput) => {
   const limit = input.limit ?? DEFAULT_LIMIT
 
   return { offset, limit }
-}
-
-export const hasMorePages = (total: number, offset: number, limit: number) => {
-  return total - (offset + limit) > 0
 }

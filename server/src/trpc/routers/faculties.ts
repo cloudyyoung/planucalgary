@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../sorting"
-import { paginationInputSchema, resolvePagination, hasMorePages } from "../pagination"
+import { paginationInputSchema, resolvePagination } from "../pagination"
 
 import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
 
@@ -53,7 +53,6 @@ export const facultiesRouter = createTRPCRouter({
       total,
       offset,
       limit,
-      has_more: hasMorePages(total, offset, limit),
       items,
     }
     }),

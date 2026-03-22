@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../sorting"
-import { paginationInputSchema, resolvePagination, hasMorePages } from "../pagination"
+import { paginationInputSchema, resolvePagination } from "../pagination"
 import { Course, Prisma } from "../../generated/prisma/client"
 
 import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
@@ -135,13 +135,11 @@ export const coursesRouter = createTRPCRouter({
       })
 
       const total = totalResult[0].count
-      const has_more = hasMorePages(total, offset, limit)
 
       return {
         total,
         offset,
         limit,
-        has_more,
         items: courses,
       }
     }),
