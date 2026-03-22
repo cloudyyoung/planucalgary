@@ -1,11 +1,10 @@
 import { useMemo, useState } from "react";
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import { DateTime } from "luxon";
-import { Course, RequisiteRule } from "@contracts/generated/prisma/browser";
 import JsonView from "react18-json-view";
 
 import AdvancedTable from "@/components/advanced-table";
-import { useRequisiteRules } from "@/hooks/useRequisiteRules";
+import { RequisiteRuleListItem, RequisiteRuleListOutput, useRequisiteRules } from "@/hooks/useRequisiteRules";
 import { Pill } from "@/components/ui/pill";
 
 
@@ -25,8 +24,9 @@ export const AdminRequisiteRules = () => {
   }), [pagination, sorting, columnFilters]);
 
   const { data, isLoading, isFetching } = useRequisiteRules(props);
+  const response = data as RequisiteRuleListOutput | undefined;
 
-  const columns: ColumnDef<RequisiteRule>[] = useMemo(() => [
+  const columns: ColumnDef<RequisiteRuleListItem>[] = useMemo(() => [
     {
       accessorKey: "id",
       header: "ID",
@@ -128,7 +128,7 @@ export const AdminRequisiteRules = () => {
       header: "Referring Courses",
       size: 300,
       cell: ({ cell }) => {
-        const courses = cell.getValue<Course[]>();
+        const courses = cell.getValue<{ course_id: string; code: string }[]>();
         return (
           <div className="flex flex-row gap-1">
             {courses.map((course) => (
@@ -235,9 +235,9 @@ export const AdminRequisiteRules = () => {
   ], []);
 
   const table = useReactTable({
-    data: data?.items || [],
+    data: response?.items || [],
     columns,
-    rowCount: data?.total,
+    rowCount: response?.total,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,
