@@ -152,6 +152,7 @@ export const coursesRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const course = await ctx.prisma.course.findUnique({
         where: { id: input.id },
+        include: {
           subject: true,
           departments: true,
           faculties: true,

@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { Account, PrismaClient } from "../generated/prisma/client"
-import { JwtPayload, verify } from "jsonwebtoken"
+import jwt, { type JwtPayload } from "jsonwebtoken"
 
 import { JWT_SECRET_KEY } from "../config"
 
@@ -36,7 +36,7 @@ const getAccountFromAuthorization = async (req: Request): Promise<Account | null
 
   try {
     const token = authorization.slice("Bearer ".length)
-    const payload = verify(token, JWT_SECRET_KEY, {
+    const payload = jwt.verify(token, JWT_SECRET_KEY, {
       algorithms: ["HS256"],
       issuer: "plan-ucalgary-api",
     }) as AuthPayload
