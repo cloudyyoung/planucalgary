@@ -6,15 +6,6 @@ import { paginationInputSchema, resolvePagination } from "../pagination"
 import { catalogQueue } from "../../queue"
 import { createTRPCRouter, adminProcedure } from "../init"
 
-const ensureAdmin = (isAdmin: boolean | undefined) => {
-  if (!isAdmin) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Unauthorized endpoint",
-    })
-  }
-}
-
 enum RequisitesSyncDestination {
   REQUISITES_JSONS = "REQUISITES_JSONS",
   COURSES = "COURSES",
@@ -34,8 +25,6 @@ export const requisitesRouter = createTRPCRouter({
       .merge(paginationInputSchema)
     )
     .query(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
-
     const { id, requisite_type, text, sorting } = input
     const { offset, limit } = resolvePagination(input)
 
@@ -77,8 +66,6 @@ export const requisitesRouter = createTRPCRouter({
   get: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
-
     const requisite = await ctx.prisma.requisiteJson.findUnique({
       where: { id: input.id },
     })
@@ -109,8 +96,6 @@ export const requisitesRouter = createTRPCRouter({
         .merge(z.object({ id: z.string() }))
     )
     .mutation(async ({ ctx, input }) => {
-      ensureAdmin(ctx.account.is_admin)
-
       const { id, ...updateData } = input as any
 
       const existing = await ctx.prisma.requisiteJson.findUnique({
@@ -145,8 +130,6 @@ export const requisitesRouter = createTRPCRouter({
   generateChoices: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      ensureAdmin(ctx.account.is_admin)
-
       const existing = await ctx.prisma.requisiteJson.findUnique({
         where: { id: input.id },
       })
@@ -185,8 +168,6 @@ export const requisitesRouter = createTRPCRouter({
         .transform((destination) => ({ destination }))
     )
     .mutation(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
-
     let jobName: string
     if (input.destination === RequisitesSyncDestination.REQUISITES_JSONS) {
       jobName = "sync-requisites-jsons"

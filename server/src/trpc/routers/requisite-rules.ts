@@ -5,15 +5,6 @@ import { paginationInputSchema, resolvePagination } from "../pagination"
 
 import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
 
-const ensureAdmin = (isAdmin: boolean | undefined) => {
-  if (!isAdmin) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Unauthorized endpoint",
-    })
-  }
-}
-
 export const requisiteRulesRouter = createTRPCRouter({
   list: publicProcedure
     .input(
@@ -93,8 +84,6 @@ export const requisiteRulesRouter = createTRPCRouter({
   create: adminProcedure
     .input(z.object({ id: z.string(), raw_json: z.any().optional() }))
     .mutation(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
-
     const existing = await ctx.prisma.requisiteRule.findUnique({
       where: { id: input.id },
     })
@@ -117,8 +106,6 @@ export const requisiteRulesRouter = createTRPCRouter({
   update: adminProcedure
     .input(z.object({ raw_json: z.any().optional() }).merge(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      ensureAdmin(ctx.account.is_admin)
-
       const { id, ...updateData } = input
 
       const existing = await ctx.prisma.requisiteRule.findUnique({
@@ -142,8 +129,6 @@ export const requisiteRulesRouter = createTRPCRouter({
     }),
 
   delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
-
     const existing = await ctx.prisma.requisiteRule.findUnique({
       where: { id: input.id },
     })

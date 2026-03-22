@@ -6,15 +6,6 @@ import { Course, Prisma } from "../../generated/prisma/client"
 
 import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
 
-const ensureAdmin = (isAdmin: boolean | undefined) => {
-  if (!isAdmin) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Unauthorized endpoint",
-    })
-  }
-}
-
 export const coursesRouter = createTRPCRouter({
   list: publicProcedure
     .input(
@@ -187,8 +178,6 @@ export const coursesRouter = createTRPCRouter({
         })
     )
     .mutation(async ({ ctx, input }) => {
-      ensureAdmin(ctx.account.is_admin)
-
       const payload = input as any
 
       const existing = await ctx.prisma.course.findFirst({
@@ -253,8 +242,6 @@ export const coursesRouter = createTRPCRouter({
         .merge(z.object({ id: z.string() }))
     )
     .mutation(async ({ ctx, input }) => {
-      ensureAdmin(ctx.account.is_admin)
-
       const { id, ...updateData } = input as any
 
       return ctx.prisma.course.update({
@@ -306,8 +293,6 @@ export const coursesRouter = createTRPCRouter({
     }),
 
   delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
-
     await ctx.prisma.course.delete({
       where: { id: input.id },
     })

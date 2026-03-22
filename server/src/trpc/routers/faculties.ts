@@ -5,15 +5,6 @@ import { paginationInputSchema, resolvePagination } from "../pagination"
 
 import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
 
-const ensureAdmin = (isAdmin: boolean | undefined) => {
-  if (!isAdmin) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Unauthorized endpoint",
-    })
-  }
-}
-
 export const facultiesRouter = createTRPCRouter({
   list: publicProcedure
     .input(
@@ -84,8 +75,6 @@ export const facultiesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
-
     const existing = await ctx.prisma.faculty.findFirst({
       where: { code: input.code },
     })
@@ -116,8 +105,6 @@ export const facultiesRouter = createTRPCRouter({
         .merge(z.object({ code: z.string() }))
     )
     .mutation(async ({ ctx, input }) => {
-      ensureAdmin(ctx.account.is_admin)
-
       const { code, ...updateData } = input
 
       return ctx.prisma.faculty.update({
@@ -127,8 +114,6 @@ export const facultiesRouter = createTRPCRouter({
     }),
 
   delete: adminProcedure.input(z.object({ code: z.string() })).mutation(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
-
     await ctx.prisma.faculty.delete({
       where: { code: input.code },
     })

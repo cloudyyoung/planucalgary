@@ -36,12 +36,3 @@ const enforceAdminUser = t.middleware(({ ctx, next }) => {
 })
 
 export const adminProcedure = t.procedure.use(enforceAdminUser)
-
-export function ensureAdmin(isAdmin: boolean) {
-  if (!isAdmin) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "You do not have permission to perform this action.",
-    })
-  }
-} 
