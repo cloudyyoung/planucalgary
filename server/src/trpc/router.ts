@@ -10,6 +10,7 @@ import { queuesRouter } from "./routers/queues"
 import { requisiteRulesRouter } from "./routers/requisite-rules"
 import { requisiteSetsRouter } from "./routers/requisite-sets"
 import { requisitesRouter } from "./routers/requisites"
+import { subjectsRouter } from "./routers/subjects"
 
 export const appRouter = createTRPCRouter({
   health: publicProcedure.query(() => {
@@ -30,6 +31,7 @@ export const appRouter = createTRPCRouter({
   requisiteRules: requisiteRulesRouter,
   requisiteSets: requisiteSetsRouter,
   requisites: requisitesRouter,
+  subjects: subjectsRouter,
 
   account: protectedProcedure.query(({ ctx }) => {
     return {

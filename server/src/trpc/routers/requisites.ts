@@ -145,7 +145,7 @@ export const requisitesRouter = createTRPCRouter({
 
       const updated = await ctx.prisma.requisiteJson.update({
         where: { id: input.id },
-        data: { json_choices: jsonChoices, json: jsonChoices[0] },
+        data: { json_choices: jsonChoices as any, json: jsonChoices[0] as any },
       })
 
       return {

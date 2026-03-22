@@ -8,7 +8,6 @@ import bodyParser from "body-parser"
 import { expressjwt as jwt } from "express-jwt"
 import { createExpressMiddleware } from "@trpc/server/adapters/express"
 
-import { router as subjectRouter } from "./api/subjects/routes"
 import { PORT, JWT_SECRET_KEY } from "./config"
 import { auth, errors, pagination, prisma } from "./middlewares"
 import { emptyget } from "./middlewares/empty-get"
@@ -47,8 +46,6 @@ const load = async (app: Express) => {
   )
   app.use(emptyget())
   app.use(pagination())
-
-  app.use("/subjects", subjectRouter)
 
   app.get("/", (_req, res) => {
     return res.status(200).json({ message: "ok" }).end()

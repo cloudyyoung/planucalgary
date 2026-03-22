@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { Subject } from "@contracts/generated/prisma/client";
 
 import AdvancedTable from "@/components/advanced-table";
-import { useSubjects } from "@/hooks/useSubjects";
+import { SubjectListItem, SubjectListOutput, useSubjects } from "@/hooks/useSubjects";
 
 
 export const AdminSubjects = () => {
@@ -23,8 +22,9 @@ export const AdminSubjects = () => {
     }), [pagination, sorting, columnFilters])
 
     const { data, isLoading, isFetching } = useSubjects(props)
+    const response = data as SubjectListOutput | undefined
 
-    const columns: ColumnDef<Subject>[] = useMemo(() => [
+    const columns: ColumnDef<SubjectListItem>[] = useMemo(() => [
         {
             accessorKey: "id",
             header: "ID",
@@ -68,10 +68,12 @@ export const AdminSubjects = () => {
         }
     ], [])
 
+    const tableData: SubjectListItem[] = response?.items ?? []
+
     const table = useReactTable({
-        data: data?.items || [],
+        data: tableData,
         columns,
-        rowCount: data?.total,
+        rowCount: response?.total,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onPaginationChange: setPagination,
