@@ -13,40 +13,19 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
   }
 }
 
-const SubjectCodeParamsSchema = z.object({
-  code: z.string(),
-})
-
-const SubjectListReqQuerySchema = z
-  .object({
-    id: z.string().optional(),
-    code: z.string().optional(),
-    title: z.string().optional(),
-    sorting: z.array(z.string()).optional(),
-    offset: z.coerce.number().int().min(0).optional(),
-    limit: z.coerce.number().int().min(0).max(5000).optional(),
-  })
-  .loose()
-
-const SubjectCreateBodySchema = z
-  .object({
-    code: z.string(),
-    title: z.string(),
-    departments: z.array(z.string()).optional(),
-    faculties: z.array(z.string()).optional(),
-  })
-  .loose()
-
-const SubjectUpdateBodySchema = z
-  .object({
-    title: z.string().optional(),
-    departments: z.array(z.string()).optional(),
-    faculties: z.array(z.string()).optional(),
-  })
-  .loose()
-
 export const subjectsRouter = createTRPCRouter({
-  list: publicProcedure.input(SubjectListReqQuerySchema).query(async ({ ctx, input }) => {
+  list: publicProcedure
+    .input(
+      z.object({
+        id: z.string().optional(),
+        code: z.string().optional(),
+        title: z.string().optional(),
+        sorting: z.array(z.string()).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+        limit: z.coerce.number().int().min(0).max(5000).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
     const { id, code, title, sorting } = input
     const offset = input.offset ?? 0
     const limit = input.limit ?? 100
@@ -76,9 +55,11 @@ export const subjectsRouter = createTRPCRouter({
       has_more: total - (offset + limit) > 0,
       items,
     }
-  }),
+    }),
 
-  get: publicProcedure.input(SubjectCodeParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure
+    .input(z.object({ code: z.string() }))
+    .query(async ({ ctx, input }) => {
     const subject = await ctx.prisma.subject.findUnique({
       where: { code: input.code },
     })
@@ -91,9 +72,18 @@ export const subjectsRouter = createTRPCRouter({
     }
 
     return subject
-  }),
+    }),
 
-  create: adminProcedure.input(SubjectCreateBodySchema).mutation(async ({ ctx, input }) => {
+  create: adminProcedure
+    .input(
+      z.object({
+        code: z.string(),
+        title: z.string(),
+        departments: z.array(z.string()).optional(),
+        faculties: z.array(z.string()).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const existing = await ctx.prisma.subject.findFirst({
@@ -124,10 +114,18 @@ export const subjectsRouter = createTRPCRouter({
         },
       },
     })
-  }),
+    }),
 
   update: adminProcedure
-    .input(SubjectUpdateBodySchema.merge(SubjectCodeParamsSchema))
+    .input(
+      z
+        .object({
+          title: z.string().optional(),
+          departments: z.array(z.string()).optional(),
+          faculties: z.array(z.string()).optional(),
+        })
+        .merge(z.object({ code: z.string() }))
+    )
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -153,7 +151,7 @@ export const subjectsRouter = createTRPCRouter({
       })
     }),
 
-  delete: adminProcedure.input(SubjectCodeParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: adminProcedure.input(z.object({ code: z.string() })).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.subject.delete({

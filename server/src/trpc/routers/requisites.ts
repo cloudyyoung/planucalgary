@@ -21,33 +21,19 @@ enum RequisitesSyncDestination {
   FIELDS_OF_STUDY = "FIELDS_OF_STUDY",
 }
 
-const RequisiteIdParamsSchema = z.object({ id: z.string() })
-const RequisiteGenerateChoicesReqParamsSchema = RequisiteIdParamsSchema
-
-const RequisiteListReqQuerySchema = z
-  .object({
-    id: z.string().optional(),
-    requisite_type: z.string().optional(),
-    text: z.string().optional(),
-    sorting: z.array(z.string()).optional(),
-    offset: z.coerce.number().int().min(0).optional(),
-    limit: z.coerce.number().int().min(0).max(5000).optional(),
-  })
-  .loose()
-
-const RequisiteUpdateReqBodySchema = z.object({}).loose()
-
-const RequisitesSyncDestinationSchema = z.enum([
-  RequisitesSyncDestination.REQUISITES_JSONS,
-  RequisitesSyncDestination.COURSES,
-  RequisitesSyncDestination.COURSE_SETS,
-  RequisitesSyncDestination.FIELDS_OF_STUDY,
-])
-
-const SyncInputSchema = RequisitesSyncDestinationSchema.transform((destination) => ({ destination }))
-
 export const requisitesRouter = createTRPCRouter({
-  list: adminProcedure.input(RequisiteListReqQuerySchema).query(async ({ ctx, input }) => {
+  list: adminProcedure
+    .input(
+      z.object({
+        id: z.string().optional(),
+        requisite_type: z.string().optional(),
+        text: z.string().optional(),
+        sorting: z.array(z.string()).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+        limit: z.coerce.number().int().min(0).max(5000).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const { id, requisite_type, text, sorting } = input
@@ -88,9 +74,11 @@ export const requisitesRouter = createTRPCRouter({
       has_more: total - (offset + limit) > 0,
       items: validatedItems,
     }
-  }),
+    }),
 
-  get: adminProcedure.input(RequisiteIdParamsSchema).query(async ({ ctx, input }) => {
+  get: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const requisite = await ctx.prisma.requisiteJson.findUnique({
@@ -110,10 +98,18 @@ export const requisitesRouter = createTRPCRouter({
       json_errors: [],
       json_warnings: [],
     }
-  }),
+    }),
 
   update: adminProcedure
-    .input(RequisiteUpdateReqBodySchema.merge(RequisiteIdParamsSchema))
+    .input(
+      z
+        .object({
+          json: z.any().optional(),
+          json_choices: z.any().optional(),
+          raw_json: z.any().optional(),
+        })
+        .merge(z.object({ id: z.string() }))
+    )
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -149,7 +145,7 @@ export const requisitesRouter = createTRPCRouter({
     }),
 
   generateChoices: adminProcedure
-    .input(RequisiteGenerateChoicesReqParamsSchema)
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -179,7 +175,18 @@ export const requisitesRouter = createTRPCRouter({
       }
     }),
 
-  sync: adminProcedure.input(SyncInputSchema).mutation(async ({ ctx, input }) => {
+  sync: adminProcedure
+    .input(
+      z
+        .enum([
+          RequisitesSyncDestination.REQUISITES_JSONS,
+          RequisitesSyncDestination.COURSES,
+          RequisitesSyncDestination.COURSE_SETS,
+          RequisitesSyncDestination.FIELDS_OF_STUDY,
+        ])
+        .transform((destination) => ({ destination }))
+    )
+    .mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     let jobName: string
@@ -204,5 +211,5 @@ export const requisitesRouter = createTRPCRouter({
       message: `${input.destination} sync job is queued.`,
       affected_rows: 0,
     }
-  }),
+    }),
 })

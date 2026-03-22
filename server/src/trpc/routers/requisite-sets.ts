@@ -13,33 +13,22 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
   }
 }
 
-const RequisiteSetIdParamsSchema = z.object({ id: z.string() })
-
-const RequisiteSetListReqQuerySchema = z
-  .object({
-    id: z.string().optional(),
-    csid: z.string().optional(),
-    requisite_set_group_id: z.string().optional(),
-    version: z.coerce.number().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    sorting: z.array(z.string()).optional(),
-    offset: z.coerce.number().int().min(0).optional(),
-    limit: z.coerce.number().int().min(0).max(5000).optional(),
-  })
-  .loose()
-
-const RequisiteSetCreateBodySchema = z
-  .object({
-    requisite_set_group_id: z.string(),
-    raw_json: z.any().optional(),
-  })
-  .loose()
-
-const RequisiteSetUpdateBodySchema = z.object({ raw_json: z.any().optional() }).loose()
-
 export const requisiteSetsRouter = createTRPCRouter({
-  list: publicProcedure.input(RequisiteSetListReqQuerySchema).query(async ({ ctx, input }) => {
+  list: publicProcedure
+    .input(
+      z.object({
+        id: z.string().optional(),
+        csid: z.string().optional(),
+        requisite_set_group_id: z.string().optional(),
+        version: z.coerce.number().optional(),
+        name: z.string().optional(),
+        description: z.string().optional(),
+        sorting: z.array(z.string()).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+        limit: z.coerce.number().int().min(0).max(5000).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
     const { id, csid, requisite_set_group_id, version, name, description, sorting } = input
     const offset = input.offset ?? 0
     const limit = input.limit ?? 100
@@ -72,9 +61,11 @@ export const requisiteSetsRouter = createTRPCRouter({
       has_more: total - (offset + limit) > 0,
       items,
     }
-  }),
+    }),
 
-  get: publicProcedure.input(RequisiteSetIdParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
     const requisiteSet = await ctx.prisma.requisiteSet.findUnique({
       where: { id: input.id },
     })
@@ -87,9 +78,11 @@ export const requisiteSetsRouter = createTRPCRouter({
     }
 
     return requisiteSet
-  }),
+    }),
 
-  create: adminProcedure.input(RequisiteSetCreateBodySchema).mutation(async ({ ctx, input }) => {
+  create: adminProcedure
+    .input(z.object({ requisite_set_group_id: z.string(), raw_json: z.any().optional() }))
+    .mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const existing = await ctx.prisma.requisiteSet.findFirst({
@@ -109,10 +102,10 @@ export const requisiteSetsRouter = createTRPCRouter({
         raw_json: input.raw_json as any,
       } as any,
     })
-  }),
+    }),
 
   update: adminProcedure
-    .input(RequisiteSetUpdateBodySchema.merge(RequisiteSetIdParamsSchema))
+    .input(z.object({ raw_json: z.any().optional() }).merge(z.object({ id: z.string() })))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -127,7 +120,7 @@ export const requisiteSetsRouter = createTRPCRouter({
       })
     }),
 
-  delete: adminProcedure.input(RequisiteSetIdParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.requisiteSet.delete({

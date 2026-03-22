@@ -14,237 +14,246 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
   }
 }
 
-const CourseIdParamsSchema = z.object({ id: z.string() })
-
-const CourseListReqQuerySchema = z
-  .object({
-    keywords: z.string().optional(),
-    sorting: z.array(z.string()).optional(),
-    offset: z.coerce.number().int().min(0).optional(),
-    limit: z.coerce.number().int().min(0).max(5000).optional(),
-  })
-  .loose()
-
-const CourseTopicSchema = z
-  .object({
-    number: z.coerce.number(),
-    title: z.string(),
-  })
-  .loose()
-
-const CourseCreateReqBodySchema = z
-  .object({
-    id: z.string(),
-    subject: z.string(),
-    departments: z.array(z.string()).optional(),
-    faculties: z.array(z.string()).optional(),
-    topics: z.array(CourseTopicSchema).optional(),
-  })
-  .loose()
-
-const CourseUpdateReqBodySchema = z
-  .object({
-    id: z.string().optional(),
-    subject: z.string().optional(),
-    departments: z.array(z.string()).optional(),
-    faculties: z.array(z.string()).optional(),
-    topics: z.array(CourseTopicSchema).optional(),
-  })
-  .loose()
-
 export const coursesRouter = createTRPCRouter({
-  list: publicProcedure.input(CourseListReqQuerySchema).query(async ({ ctx, input }) => {
-    const keywords = input.keywords
-    const offset = input.offset ?? 0
-    const limit = input.limit ?? 100
-    const sorting = input.sorting
+  list: publicProcedure
+    .input(
+      z
+        .object({
+          keywords: z.string().optional(),
+          sorting: z.array(z.string()).optional(),
+          offset: z.coerce.number().int().min(0).optional(),
+          limit: z.coerce.number().int().min(0).max(5000).optional(),
+        })
+    )
+    .query(async ({ ctx, input }) => {
+      const keywords = input.keywords
+      const offset = input.offset ?? 0
+      const limit = input.limit ?? 100
+      const sorting = input.sorting
 
-    const getSelectStatement = () => {
-      const fields = [
-        Prisma.sql`id`,
-        Prisma.sql`ts_rank(search_vector, plainto_tsquery('english', ${keywords})) AS rank`,
-      ]
+      const getSelectStatement = () => {
+        const fields = [
+          Prisma.sql`id`,
+          Prisma.sql`ts_rank(search_vector, plainto_tsquery('english', ${keywords})) AS rank`,
+        ]
 
-      return Prisma.sql`select ${Prisma.join(fields, ", ")} from "catalog"."courses"`
-    }
-
-    const getWhereStatement = () => {
-      const whereSegments = []
-
-      whereSegments.push(Prisma.sql`is_active = true`)
-
-      if (keywords) {
-        whereSegments.push(Prisma.sql`search_vector @@ plainto_tsquery('english', ${keywords})`)
+        return Prisma.sql`select ${Prisma.join(fields, ", ")} from "catalog"."courses"`
       }
 
-      if (whereSegments.length === 0) {
-        return Prisma.empty
+      const getWhereStatement = () => {
+        const whereSegments = []
+
+        whereSegments.push(Prisma.sql`is_active = true`)
+
+        if (keywords) {
+          whereSegments.push(Prisma.sql`search_vector @@ plainto_tsquery('english', ${keywords})`)
+        }
+
+        if (whereSegments.length === 0) {
+          return Prisma.empty
+        }
+
+        return Prisma.sql`where ${Prisma.join(whereSegments, " and ")}`
       }
 
-      return Prisma.sql`where ${Prisma.join(whereSegments, " and ")}`
-    }
+      const getOrderByStatement = () => {
+        if (!sorting || sorting.length === 0) {
+          return Prisma.sql`order by rank desc`
+        }
 
-    const getOrderByStatement = () => {
-      if (!sorting || sorting.length === 0) {
-        return Prisma.sql`order by rank desc`
+        const sortings = getSortings(sorting)
+        const orderBySegments = sortings.map((sort) => {
+          const column = Object.keys(sort)[0]
+          const direction = sort[column]
+          return Prisma.sql`${Prisma.raw(column)} ${Prisma.raw(direction)}`
+        })
+
+        return Prisma.sql`order by ${Prisma.join(orderBySegments, ", ")}`
       }
 
-      const sortings = getSortings(sorting)
-      const orderBySegments = sortings.map((sort) => {
-        const column = Object.keys(sort)[0]
-        const direction = sort[column]
-        return Prisma.sql`${Prisma.raw(column)} ${Prisma.raw(direction)}`
-      })
+      const selectStatement = getSelectStatement()
+      const whereStatement = getWhereStatement()
+      const orderByStatement = getOrderByStatement()
 
-      return Prisma.sql`order by ${Prisma.join(orderBySegments, ", ")}`
-    }
-
-    const selectStatement = getSelectStatement()
-    const whereStatement = getWhereStatement()
-    const orderByStatement = getOrderByStatement()
-
-    const queryString = Prisma.sql`
+      const queryString = Prisma.sql`
       ${selectStatement}
       ${whereStatement}
       ${orderByStatement}
       offset ${offset}
       limit ${limit}
     `
-    const totalQueryString = Prisma.sql`select count(*)::int from "catalog"."courses" ${whereStatement}`
+      const totalQueryString = Prisma.sql`select count(*)::int from "catalog"."courses" ${whereStatement}`
 
-    const [courseIds, totalResult] = await Promise.all([
-      await ctx.prisma.$queryRaw<Course[]>(queryString),
-      await ctx.prisma.$queryRaw<[{ count: number }]>(totalQueryString),
-    ])
+      const [courseIds, totalResult] = await Promise.all([
+        await ctx.prisma.$queryRaw<Course[]>(queryString),
+        await ctx.prisma.$queryRaw<[{ count: number }]>(totalQueryString),
+      ])
 
-    const courses = await ctx.prisma.course.findMany({
-      where: { id: { in: courseIds.map((c) => c.id) } },
-      include: {
-        subject: true,
-        departments: true,
-        faculties: true,
-        topics: true,
-        prereq_requisite: {
-          include: {
-            rules: {
-              include: {
-                referring_courses: true,
-                referring_programs: true,
-                referring_course_sets: true,
-                referring_requisite_sets: true,
+      const courses = await ctx.prisma.course.findMany({
+        where: { id: { in: courseIds.map((c) => c.id) } },
+        include: {
+          subject: true,
+          departments: true,
+          faculties: true,
+          topics: true,
+          prereq_requisite: {
+            include: {
+              rules: {
+                include: {
+                  referring_courses: true,
+                  referring_programs: true,
+                  referring_course_sets: true,
+                  referring_requisite_sets: true,
+                },
+              },
+            },
+          },
+          coreq_requisite: {
+            include: {
+              rules: {
+                include: {
+                  referring_courses: true,
+                  referring_programs: true,
+                  referring_course_sets: true,
+                  referring_requisite_sets: true,
+                },
+              },
+            },
+          },
+          antireq_requisite: {
+            include: {
+              rules: {
+                include: {
+                  referring_courses: true,
+                  referring_programs: true,
+                  referring_course_sets: true,
+                  referring_requisite_sets: true,
+                },
               },
             },
           },
         },
-        coreq_requisite: {
-          include: {
-            rules: {
-              include: {
-                referring_courses: true,
-                referring_programs: true,
-                referring_course_sets: true,
-                referring_requisite_sets: true,
-              },
-            },
-          },
-        },
-        antireq_requisite: {
-          include: {
-            rules: {
-              include: {
-                referring_courses: true,
-                referring_programs: true,
-                referring_course_sets: true,
-                referring_requisite_sets: true,
-              },
-            },
-          },
-        },
-      },
-    })
-
-    const total = totalResult[0].count
-    const has_more = total - (offset + limit) > 0
-
-    return {
-      total,
-      offset,
-      limit,
-      has_more,
-      items: courses,
-    }
-  }),
-
-  get: publicProcedure.input(CourseIdParamsSchema).query(async ({ ctx, input }) => {
-    const course = await ctx.prisma.course.findUnique({
-      where: { id: input.id },
-      include: {
-        subject: true,
-        departments: true,
-        faculties: true,
-        topics: true,
-      },
-    })
-
-    if (!course) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "The requested course was not found.",
       })
-    }
 
-    return course
-  }),
+      const total = totalResult[0].count
+      const has_more = total - (offset + limit) > 0
 
-  create: adminProcedure.input(CourseCreateReqBodySchema).mutation(async ({ ctx, input }) => {
-    ensureAdmin(ctx.account.is_admin)
+      return {
+        total,
+        offset,
+        limit,
+        has_more,
+        items: courses,
+      }
+    }),
 
-    const payload = input as any
-
-    const existing = await ctx.prisma.course.findFirst({
-      where: { id: payload.id },
-    })
-
-    if (existing) {
-      throw new TRPCError({
-        code: "CONFLICT",
-        message: "A course with the given CID already exists.",
+  get: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const course = await ctx.prisma.course.findUnique({
+        where: { id: input.id },
+          subject: true,
+          departments: true,
+          faculties: true,
+          topics: true,
+        },
       })
-    }
 
-    return ctx.prisma.course.create({
-      data: {
-        ...payload,
-        raw_requisites: payload.raw_requisites as any,
-        subject: {
-          connectOrCreate: {
-            where: { code: payload.subject },
-            create: { code: payload.subject, title: payload.subject },
+      if (!course) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "The requested course was not found.",
+        })
+      }
+
+      return course
+    }),
+
+  create: adminProcedure
+    .input(
+      z
+        .object({
+          id: z.string(),
+          subject: z.string(),
+          departments: z.array(z.string()).optional(),
+          faculties: z.array(z.string()).optional(),
+          topics: z
+            .array(
+              z
+                .object({
+                  number: z.coerce.number(),
+                  title: z.string(),
+                })
+            )
+            .optional(),
+        })
+    )
+    .mutation(async ({ ctx, input }) => {
+      ensureAdmin(ctx.account.is_admin)
+
+      const payload = input as any
+
+      const existing = await ctx.prisma.course.findFirst({
+        where: { id: payload.id },
+      })
+
+      if (existing) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "A course with the given CID already exists.",
+        })
+      }
+
+      return ctx.prisma.course.create({
+        data: {
+          ...payload,
+          raw_requisites: payload.raw_requisites as any,
+          subject: {
+            connectOrCreate: {
+              where: { code: payload.subject },
+              create: { code: payload.subject, title: payload.subject },
+            },
           },
-        },
-        departments: {
-          connectOrCreate: payload.departments?.map((code: string) => ({
-            where: { code },
-            create: { code, name: code, display_name: code, is_active: false },
-          })),
-        },
-        faculties: {
-          connectOrCreate: payload.faculties?.map((code: string) => ({
-            where: { code },
-            create: { code, name: code, display_name: code, is_active: false },
-          })),
-        },
-        topics: {
-          create: payload.topics as any,
-        },
-        start_term: payload.start_term as any,
-        end_term: payload.end_term as any,
-      } as any,
-    })
-  }),
+          departments: {
+            connectOrCreate: payload.departments?.map((code: string) => ({
+              where: { code },
+              create: { code, name: code, display_name: code, is_active: false },
+            })),
+          },
+          faculties: {
+            connectOrCreate: payload.faculties?.map((code: string) => ({
+              where: { code },
+              create: { code, name: code, display_name: code, is_active: false },
+            })),
+          },
+          topics: {
+            create: payload.topics as any,
+          },
+          start_term: payload.start_term as any,
+          end_term: payload.end_term as any,
+        } as any,
+      })
+    }),
 
   update: adminProcedure
-    .input(CourseUpdateReqBodySchema.omit({ id: true }).merge(CourseIdParamsSchema))
+    .input(
+      z
+        .object({
+          subject: z.string().optional(),
+          departments: z.array(z.string()).optional(),
+          faculties: z.array(z.string()).optional(),
+          topics: z
+            .array(
+              z
+                .object({
+                  number: z.coerce.number(),
+                  title: z.string(),
+                })
+            )
+            .optional(),
+        })
+        .merge(z.object({ id: z.string() }))
+    )
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -298,7 +307,7 @@ export const coursesRouter = createTRPCRouter({
       })
     }),
 
-  delete: adminProcedure.input(CourseIdParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.course.delete({

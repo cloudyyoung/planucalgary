@@ -13,35 +13,21 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
   }
 }
 
-const ProgramIdParamsSchema = z.object({ id: z.string() })
-
-const ProgramListReqQuerySchema = z
-  .object({
-    id: z.string().optional(),
-    code: z.string().optional(),
-    name: z.string().optional(),
-    pid: z.string().optional(),
-    is_active: z.coerce.boolean().optional(),
-    sorting: z.array(z.string()).optional(),
-    offset: z.coerce.number().int().min(0).optional(),
-    limit: z.coerce.number().int().min(0).max(5000).optional(),
-  })
-  .loose()
-
-const ProgramCreateBodySchema = z
-  .object({
-    program_group_id: z.string(),
-    faculties: z.array(z.string()).optional(),
-    departments: z.array(z.string()).optional(),
-    requisites: z.any().optional(),
-    start_term: z.any().optional(),
-  })
-  .loose()
-
-const ProgramUpdateBodySchema = z.object({}).loose()
-
 export const programsRouter = createTRPCRouter({
-  list: publicProcedure.input(ProgramListReqQuerySchema).query(async ({ ctx, input }) => {
+  list: publicProcedure
+    .input(
+      z.object({
+        id: z.string().optional(),
+        code: z.string().optional(),
+        name: z.string().optional(),
+        pid: z.string().optional(),
+        is_active: z.coerce.boolean().optional(),
+        sorting: z.array(z.string()).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+        limit: z.coerce.number().int().min(0).max(5000).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
     const { id, code, name, pid, is_active, sorting } = input
     const offset = input.offset ?? 0
     const limit = input.limit ?? 100
@@ -77,9 +63,11 @@ export const programsRouter = createTRPCRouter({
       has_more: total - (offset + limit) > 0,
       items,
     }
-  }),
+    }),
 
-  get: publicProcedure.input(ProgramIdParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
     const program = await ctx.prisma.program.findUnique({
       include: {
         faculties: true,
@@ -96,9 +84,19 @@ export const programsRouter = createTRPCRouter({
     }
 
     return program
-  }),
+    }),
 
-  create: adminProcedure.input(ProgramCreateBodySchema).mutation(async ({ ctx, input }) => {
+  create: adminProcedure
+    .input(
+      z.object({
+        program_group_id: z.string(),
+        faculties: z.array(z.string()).optional(),
+        departments: z.array(z.string()).optional(),
+        requisites: z.any().optional(),
+        start_term: z.any().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const existing = await ctx.prisma.program.findFirst({
@@ -131,10 +129,19 @@ export const programsRouter = createTRPCRouter({
         start_term: input.start_term as any,
       } as any,
     })
-  }),
+    }),
 
   update: adminProcedure
-    .input(ProgramUpdateBodySchema.merge(ProgramIdParamsSchema))
+    .input(
+      z
+        .object({
+          faculties: z.array(z.string()).optional(),
+          departments: z.array(z.string()).optional(),
+          requisites: z.any().optional(),
+          start_term: z.any().optional(),
+        })
+        .merge(z.object({ id: z.string() }))
+    )
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -164,7 +171,7 @@ export const programsRouter = createTRPCRouter({
       })
     }),
 
-  delete: adminProcedure.input(ProgramIdParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.program.delete({
