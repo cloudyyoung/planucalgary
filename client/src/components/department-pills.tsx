@@ -1,4 +1,4 @@
-import { Department } from "@planucalgary/shared/prisma/client"
+import { Department } from "@contracts/generated/prisma/client"
 import { Pill, PillStatus } from "./ui/pill"
 
 export const DepartmentPills = ({ departments }: { departments: (Department | string)[] }) => {

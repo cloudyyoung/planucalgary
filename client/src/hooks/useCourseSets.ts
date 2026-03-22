@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { CourseSetListReqQuery, CourseSetListResBody } from "@planucalgary/shared"
+import { CourseSetListReqQuery, CourseSetListResBody } from "@contracts"
 import api from "@/api"
 
 export const useCourseSets = (props: CourseSetListReqQuery) => {

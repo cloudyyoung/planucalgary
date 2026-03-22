@@ -7,8 +7,8 @@ import {
   CourseUpdateReqBodySchema,
   CourseUpdateReqParamsSchema,
   getSortings,
-} from "@planucalgary/shared"
-import { Course, Prisma } from "@planucalgary/shared/prisma/client"
+} from "../../contracts"
+import { Course, Prisma } from "../../contracts/generated/prisma/client"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 

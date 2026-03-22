@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { RequisiteGenerateChoicesReqParamsSchema, RequisiteGetReqParamsSchema, RequisiteListReqQuerySchema, RequisitesSyncReqBodySchema } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesReqParamsSchema, RequisiteGetReqParamsSchema, RequisiteListReqQuerySchema, RequisitesSyncReqBodySchema } from "@/contracts"
 
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"

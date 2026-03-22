@@ -1,4 +1,4 @@
-import { RequisiteSetCreateHandler, RequisiteSetDeleteHandler, RequisiteSetGetHandler, RequisiteSetListHandler, RequisiteSetUpdateHandler, RequisiteSetCrawlHandler, getSortings } from "@planucalgary/shared"
+import { RequisiteSetCreateHandler, RequisiteSetDeleteHandler, RequisiteSetGetHandler, RequisiteSetListHandler, RequisiteSetUpdateHandler, RequisiteSetCrawlHandler, getSortings } from "@/contracts"
 import { RequisiteSetAlreadyExistsError, RequisiteSetNotFoundError } from "./errors";
 import { catalogQueue } from "../../queue/queues";
 

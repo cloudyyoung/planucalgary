@@ -1,12 +1,12 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { PrismaClient, Career } from "@planucalgary/shared/prisma/client"
+import { PrismaClient, Career } from "@/contracts/generated/prisma/client"
 import axios from "axios"
 import { DateTime } from "luxon"
-import { RequisiteData } from "@planucalgary/shared"
+import { RequisiteData } from "@/contracts"
 import { DATABASE_URL } from "../../config"
 import { processRequisite } from "./requisite-sets"
-import { ProgramCreateArgs } from "../../../../shared/dist/generated/prisma/models"
+import { ProgramCreateArgs } from "@/contracts/generated/prisma/models"
 
 interface ProgramData {
   _id: string

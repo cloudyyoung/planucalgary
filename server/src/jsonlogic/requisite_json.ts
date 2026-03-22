@@ -1,4 +1,4 @@
-import { RequisiteJsonValidation, RequisiteJsonValidationMessage } from "@planucalgary/shared"
+import { RequisiteJsonValidation, RequisiteJsonValidationMessage } from "@/contracts"
 import { prismaClient } from "../middlewares"
 import { bool } from "./utils"
 

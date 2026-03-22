@@ -5,11 +5,11 @@ datasource db {
 
 generator client {
   provider        = "prisma-client"
-  output          = "../../shared/src/generated/prisma/"
+  output          = "../src/contracts/generated/prisma/"
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
 generator zod {
   provider = "prisma-zod-generator"
-  output   = "../../shared/src/generated/zod/"
+  output   = "../src/contracts/generated/zod/"
 }

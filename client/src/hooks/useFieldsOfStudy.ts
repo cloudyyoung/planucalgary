@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { FieldsOfStudyListReqQuery, FieldsOfStudyListResBody } from "@planucalgary/shared"
+import { FieldsOfStudyListReqQuery, FieldsOfStudyListResBody } from "@contracts"
 import api from "@/api"
 
 export const useFieldsOfStudy = (props: FieldsOfStudyListReqQuery) => {

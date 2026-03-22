@@ -1,8 +1,8 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { PrismaClient, Career, CourseComponent, GradeMode } from "@planucalgary/shared/prisma/client"
+import { PrismaClient, Career, CourseComponent, GradeMode } from "@/contracts/generated/prisma/client"
 import axios from "axios"
-import { RequisiteData } from "@planucalgary/shared"
+import { RequisiteData } from "@/contracts"
 import { DATABASE_URL } from "../../config"
 import { DateTime } from 'luxon';
 import { processRequisite } from "./requisite-sets"

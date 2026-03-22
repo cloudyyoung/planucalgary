@@ -1,4 +1,4 @@
-import { Course, CourseSet, Program, RequisiteRule, RequisiteSet } from "@planucalgary/shared/prisma/browser"
+import { Course, CourseSet, Program, RequisiteRule, RequisiteSet } from "@contracts/generated/prisma/browser"
 import {
   Item,
   ItemContent,

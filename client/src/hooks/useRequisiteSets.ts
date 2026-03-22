@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { RequisiteSetListReqQuery, RequisiteSetListResBody } from "@planucalgary/shared"
+import { RequisiteSetListReqQuery, RequisiteSetListResBody } from "@contracts"
 import api from "@/api"
 
 export const useRequisiteSets = (props: RequisiteSetListReqQuery) => {

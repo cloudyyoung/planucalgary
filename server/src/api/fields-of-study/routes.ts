@@ -3,7 +3,7 @@ import { Router } from "express"
 import { createFieldsOfStudy, deleteFieldsOfStudy, getFieldsOfStudy, listFieldsOfStudy, updateFieldsOfStudy } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
-import { FieldsOfStudyCreateBodySchema, FieldsOfStudyDeleteParamsSchema, FieldsOfStudyGetParamsSchema, FieldsOfStudyUpdateBodySchema, FieldsOfStudyUpdateParamsSchema, } from "@planucalgary/shared"
+import { FieldsOfStudyCreateBodySchema, FieldsOfStudyDeleteParamsSchema, FieldsOfStudyGetParamsSchema, FieldsOfStudyUpdateBodySchema, FieldsOfStudyUpdateParamsSchema, } from "@/contracts"
 
 const router = Router()
 router.get("/", listFieldsOfStudy)

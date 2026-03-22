@@ -1,4 +1,4 @@
-import { SubjectCreateHandler, SubjectDeleteHandler, SubjectGetHandler, SubjectListHandler, SubjectUpdateHandler, SubjectCrawlHandler, getSortings } from "@planucalgary/shared"
+import { SubjectCreateHandler, SubjectDeleteHandler, SubjectGetHandler, SubjectListHandler, SubjectUpdateHandler, SubjectCrawlHandler, getSortings } from "@/contracts"
 import { SubjectAlreadyExistsError, SubjectNotFoundError } from "./errors";
 import { catalogQueue } from "../../queue/queues";
 

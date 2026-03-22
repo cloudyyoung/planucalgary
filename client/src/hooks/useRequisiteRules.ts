@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { RequisiteRuleListReqQuery, RequisiteRuleListResBody } from "@planucalgary/shared";
+import { RequisiteRuleListReqQuery, RequisiteRuleListResBody } from "@contracts";
 import api from "@/api";
 
 export const useRequisiteRules = (props: RequisiteRuleListReqQuery) => {

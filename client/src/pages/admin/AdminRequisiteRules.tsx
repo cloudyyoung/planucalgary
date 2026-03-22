@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import { DateTime } from "luxon";
-import { Course, RequisiteRule } from "@planucalgary/shared/prisma/browser";
+import { Course, RequisiteRule } from "@contracts/generated/prisma/browser";
 import JsonView from "react18-json-view";
 
 import AdvancedTable from "@/components/advanced-table";

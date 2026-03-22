@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import api, { queryClient } from "@/api"
-import { RequisiteGenerateChoicesResBody, RequisiteListReqQuery, RequisiteListResBody, RequisitesSyncDestination, RequisitesSyncResBody, RequisiteUpdateReqBody, RequisiteUpdateResBody } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesResBody, RequisiteListReqQuery, RequisiteListResBody, RequisitesSyncDestination, RequisitesSyncResBody, RequisiteUpdateReqBody, RequisiteUpdateResBody } from "@contracts"
 
 export const useRequisites = (props: RequisiteListReqQuery) => {
   const result = useQuery({

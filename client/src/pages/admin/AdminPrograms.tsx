@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { Department, Faculty, Program } from "@planucalgary/shared/prisma/client";
+import { Department, Faculty, Program } from "@contracts/generated/prisma/client";
 import JsonView from "react18-json-view";
 import { Check, X } from "lucide-react";
 

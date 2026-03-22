@@ -3,7 +3,7 @@ import { Router } from "express"
 import { createSubject, deleteSubject, getSubject, listSubjects, updateSubject } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
-import { SubjectCreateBodySchema, SubjectDeleteParamsSchema, SubjectGetParamsSchema, SubjectUpdateBodySchema, SubjectUpdateParamsSchema, } from "@planucalgary/shared"
+import { SubjectCreateBodySchema, SubjectDeleteParamsSchema, SubjectGetParamsSchema, SubjectUpdateBodySchema, SubjectUpdateParamsSchema, } from "@/contracts"
 
 const router = Router()
 router.get("/", listSubjects)

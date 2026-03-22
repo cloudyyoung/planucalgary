@@ -1,4 +1,4 @@
-import { FacultyCreateHandler, FacultyDeleteHandler, FacultyGetHandler, FacultyListHandler, FacultyUpdateHandler, getSortings } from "@planucalgary/shared"
+import { FacultyCreateHandler, FacultyDeleteHandler, FacultyGetHandler, FacultyListHandler, FacultyUpdateHandler, getSortings } from "@/contracts"
 import { FacultyAlreadyExistsError, FacultyNotFoundError } from "./errors";
 
 export const listFaculties: FacultyListHandler = async (req, res) => {

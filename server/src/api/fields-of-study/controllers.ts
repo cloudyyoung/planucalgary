@@ -1,4 +1,4 @@
-import { FieldsOfStudyCreateHandler, FieldsOfStudyDeleteHandler, FieldsOfStudyGetHandler, FieldsOfStudyListHandler, FieldsOfStudyUpdateHandler, getSortings } from "@planucalgary/shared"
+import { FieldsOfStudyCreateHandler, FieldsOfStudyDeleteHandler, FieldsOfStudyGetHandler, FieldsOfStudyListHandler, FieldsOfStudyUpdateHandler, getSortings } from "@/contracts"
 import { FieldsOfStudyAlreadyExistsError, FieldsOfStudyNotFoundError } from "./errors";
 
 export const listFieldsOfStudy: FieldsOfStudyListHandler = async (req, res) => {

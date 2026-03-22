@@ -6,7 +6,7 @@ import {
   RequisiteRuleUpdateHandler,
   RequisiteRuleBuildRelationsHandler,
   getSortings,
-} from "@planucalgary/shared";
+} from "@/contracts";
 import { RequisiteRuleAlreadyExistsError, RequisiteRuleNotFoundError } from "./errors";
 import { catalogQueue } from "@/queue";
 

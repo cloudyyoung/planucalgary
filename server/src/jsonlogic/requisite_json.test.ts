@@ -1,4 +1,4 @@
-import { RequisiteJsonValidation } from "@planucalgary/shared"
+import { RequisiteJsonValidation } from "@/contracts"
 import { ValidateOptions, getValidator } from "./requisite_json"
 
 describe("validator", () => {

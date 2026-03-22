@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { ProgramListReqQuery, ProgramListResBody } from "@planucalgary/shared"
+import { ProgramListReqQuery, ProgramListResBody } from "@contracts"
 import api from "@/api"
 
 export const usePrograms = (props: ProgramListReqQuery) => {

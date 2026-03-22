@@ -8,6 +8,6 @@ module.exports = {
   },
   testMatch: ["**/?(*.)+(spec|test).ts?(x)"],
   moduleNameMapper: {
-    "^@planucalgary/shared$": "<rootDir>/shared/src/index.ts",
+    "^@/contracts$": "<rootDir>/server/src/contracts/index.ts",
   },
 }

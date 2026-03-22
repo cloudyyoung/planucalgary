@@ -1,5 +1,5 @@
 import { Job } from "bullmq"
-import { QueueStatusHandler } from "@planucalgary/shared"
+import { QueueStatusHandler } from "@/contracts"
 import { catalogQueue } from "@/queue"
 
 export const getQueueStatus: QueueStatusHandler = async (_req, res) => {

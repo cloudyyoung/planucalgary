@@ -15,7 +15,7 @@ import {
   RequisiteRuleGetParamsSchema,
   RequisiteRuleUpdateBodySchema,
   RequisiteRuleUpdateParamsSchema,
-} from "@planucalgary/shared";
+} from "@/contracts";
 
 const router = Router();
 router.get("/", listRequisiteRules);

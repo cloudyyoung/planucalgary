@@ -8,6 +8,9 @@ import path from 'path'
 export default defineConfig({
   plugins: [react(), tailwindcss(), postcss()],
   resolve: {
-    alias: [{ find: "@", replacement: path.resolve("src/") }],
+    alias: [
+      { find: "@", replacement: path.resolve("src/") },
+      { find: "@contracts", replacement: path.resolve("../server/src/contracts") },
+    ],
   },
 })

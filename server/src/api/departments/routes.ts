@@ -3,7 +3,7 @@ import { Router } from "express"
 import { createDepartment, deleteDepartment, getDepartment, listDepartments, updateDepartment } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
-import { DepartmentCreateBodySchema, DepartmentDeleteParamsSchema, DepartmentGetParamsSchema, DepartmentUpdateBodySchema, DepartmentUpdateParamsSchema } from "@planucalgary/shared"
+import { DepartmentCreateBodySchema, DepartmentDeleteParamsSchema, DepartmentGetParamsSchema, DepartmentUpdateBodySchema, DepartmentUpdateParamsSchema } from "@/contracts"
 
 const router = Router()
 

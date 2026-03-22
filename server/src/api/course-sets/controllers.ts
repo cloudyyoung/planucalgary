@@ -1,4 +1,4 @@
-import { CourseSetCreateHandler, CourseSetDeleteHandler, CourseSetGetHandler, CourseSetListHandler, CourseSetUpdateHandler, CourseSetCrawlHandler, getSortings } from "@planucalgary/shared"
+import { CourseSetCreateHandler, CourseSetDeleteHandler, CourseSetGetHandler, CourseSetListHandler, CourseSetUpdateHandler, CourseSetCrawlHandler, getSortings } from "@/contracts"
 import { CourseSetAlreadyExistsError, CourseSetNotFoundError } from "./errors";
 import { catalogQueue } from "../../queue/queues";
 

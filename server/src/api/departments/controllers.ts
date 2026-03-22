@@ -1,4 +1,4 @@
-import { DepartmentCreateHandler, DepartmentDeleteHandler, DepartmentGetHandler, DepartmentListHandler, DepartmentUpdateHandler, getSortings } from "@planucalgary/shared"
+import { DepartmentCreateHandler, DepartmentDeleteHandler, DepartmentGetHandler, DepartmentListHandler, DepartmentUpdateHandler, getSortings } from "@/contracts"
 import { DepartmentAlreadyExistsError, DepartmentNotFoundError } from "./errors";
 
 export const listDepartments: DepartmentListHandler = async (req, res) => {

@@ -3,7 +3,7 @@ import { Router } from "express"
 import { createRequisiteSet, deleteRequisiteSet, getRequisiteSet, listRequisiteSets, updateRequisiteSet } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
-import { RequisiteSetCreateBodySchema, RequisiteSetDeleteParamsSchema, RequisiteSetGetParamsSchema, RequisiteSetUpdateBodySchema, RequisiteSetUpdateParamsSchema, } from "@planucalgary/shared"
+import { RequisiteSetCreateBodySchema, RequisiteSetDeleteParamsSchema, RequisiteSetGetParamsSchema, RequisiteSetUpdateBodySchema, RequisiteSetUpdateParamsSchema, } from "@/contracts"
 
 const router = Router()
 router.get("/", listRequisiteSets)

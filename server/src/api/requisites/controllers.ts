@@ -1,4 +1,4 @@
-import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings, RequisitesSyncDestination } from "@planucalgary/shared"
+import { RequisiteGenerateChoicesHandler, RequisiteGetHandler, RequisiteListHandler, RequisitesSyncHandler, RequisiteUpdateHandler, getSortings, RequisitesSyncDestination } from "@/contracts"
 
 import { generatePrereq } from "../utils/openai"
 import { cleanup, isJsonEqual } from "../../jsonlogic/utils"

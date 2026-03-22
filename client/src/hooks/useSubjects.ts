@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { SubjectListReqQuery, SubjectListResBody } from "@planucalgary/shared"
+import { SubjectListReqQuery, SubjectListResBody } from "@contracts"
 import api from "@/api"
 
 export const useSubjects = (props: SubjectListReqQuery) => {

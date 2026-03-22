@@ -3,7 +3,7 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, Sortin
 import JsonView from "react18-json-view";
 import { DateTime } from "luxon";
 import { Check, X } from "lucide-react";
-import { RequisiteRule } from "@planucalgary/shared/prisma/browser";
+import { RequisiteRule } from "@contracts/generated/prisma/browser";
 
 import { CourseListItem, useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";

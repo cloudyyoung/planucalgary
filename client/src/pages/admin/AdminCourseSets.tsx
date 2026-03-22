@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { CourseSet } from "@planucalgary/shared/prisma/client";
+import { CourseSet } from "@contracts/generated/prisma/client";
 import JsonView from "react18-json-view";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useCourseSets } from "@/hooks/useCourseSets";
-import { CourseSetTypeSchema } from "../../../../shared/dist/course-set";
+import { CourseSetTypeSchema } from "@contracts/course-set";
 
 
 export const AdminCourseSets = () => {

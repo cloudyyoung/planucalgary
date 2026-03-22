@@ -3,7 +3,7 @@ import { Router } from "express"
 import { createCourseSet, deleteCourseSet, getCourseSet, listCourseSets, updateCourseSet } from "./controllers"
 import { admin } from "../../middlewares/admin"
 import { zod } from "../../middlewares"
-import { CourseSetCreateBodySchema, CourseSetDeleteParamsSchema, CourseSetGetParamsSchema, CourseSetUpdateBodySchema, CourseSetUpdateParamsSchema, } from "@planucalgary/shared"
+import { CourseSetCreateBodySchema, CourseSetDeleteParamsSchema, CourseSetGetParamsSchema, CourseSetUpdateBodySchema, CourseSetUpdateParamsSchema, } from "@/contracts"
 
 const router = Router()
 

@@ -21,7 +21,7 @@
     "jsx": "react-jsx",
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
@@ -29,6 +29,12 @@
       "@/*": [
         "./src/*"
       ],
+      "@contracts": [
+        "../server/src/contracts/index.ts"
+      ],
+      "@contracts/*": [
+        "../server/src/contracts/*"
+      ]
     },
   },
   "include": [

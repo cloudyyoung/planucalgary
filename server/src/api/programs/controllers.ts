@@ -1,4 +1,4 @@
-import { ProgramCreateHandler, ProgramDeleteHandler, ProgramGetHandler, ProgramListHandler, ProgramListReqQuerySchema, ProgramUpdateHandler, ProgramCrawlHandler, getSortings } from "@planucalgary/shared"
+import { ProgramCreateHandler, ProgramDeleteHandler, ProgramGetHandler, ProgramListHandler, ProgramListReqQuerySchema, ProgramUpdateHandler, ProgramCrawlHandler, getSortings } from "@/contracts"
 import { ProgramAlreadyExistsError, ProgramNotFoundError } from "./errors"
 import { catalogQueue } from "../../queue/queues"
 

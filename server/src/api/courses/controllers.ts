@@ -1,5 +1,5 @@
-import { CourseListHandler, CourseGetHandler, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCrawlHandler, getSortings } from "@planucalgary/shared"
-import { Course, Prisma } from "@planucalgary/shared/prisma/client"
+import { CourseListHandler, CourseGetHandler, CourseCreateHandler, CourseUpdateHandler, CourseDeleteHandler, CourseCrawlHandler, getSortings } from "@/contracts"
+import { Course, Prisma } from "@/contracts/generated/prisma/client"
 import { CourseAlreadyExistsError, CourseNotFoundError } from "./errors"
 import { catalogQueue } from "@/queue"
 

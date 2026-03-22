@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { CourseCreateReqBodySchema, CourseListReqQuerySchema, CourseGetReqParamsSchema, CourseUpdateReqBodySchema, CourseUpdateReqParamsSchema, CourseDeleteReqParamsSchema } from "@planucalgary/shared"
+import { CourseCreateReqBodySchema, CourseListReqQuerySchema, CourseGetReqParamsSchema, CourseUpdateReqBodySchema, CourseUpdateReqParamsSchema, CourseDeleteReqParamsSchema } from "@/contracts"
 
 import { createCourse, deleteCourse, getCourse, listCourses, updateCourse } from "./controllers"
 import { admin } from "../../middlewares/admin"

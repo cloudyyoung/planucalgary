@@ -1,6 +1,6 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { PrismaClient } from "@planucalgary/shared/prisma/client"
+import { PrismaClient } from "@/contracts/generated/prisma/client"
 import axios from "axios"
 import { DATABASE_URL } from "../../config"
 

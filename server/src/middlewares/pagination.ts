@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from "express"
 import { z } from "zod"
-import { PaginatedRequestSchema, PaginatedResponse } from "@planucalgary/shared"
+import { PaginatedRequestSchema, PaginatedResponse } from "@/contracts"
 
 export const pagination = () => async (req: Request, res: Response, next: NextFunction) => {
   if (req.method !== "GET") {

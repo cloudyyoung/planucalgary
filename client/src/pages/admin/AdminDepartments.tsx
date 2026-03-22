@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
-import { Department } from "@planucalgary/shared/prisma/client";
+import { Department } from "@contracts/generated/prisma/client";
 import { Check, X } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";

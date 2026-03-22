@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import { RequisiteJson } from "@planucalgary/shared/prisma/client"
-import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@planucalgary/shared";
+import { RequisiteJson } from "@contracts/generated/prisma/client"
+import { RequisiteJsonValidation, RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@contracts";
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
 import Editor, { useMonaco } from '@monaco-editor/react';
