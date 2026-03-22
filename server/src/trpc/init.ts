@@ -20,4 +20,28 @@ const enforceAuthenticatedUser = t.middleware(({ ctx, next }) => {
   })
 })
 
-export const protectedProcedure = t.procedure.use(enforceAuthenticatedUser)
+export const authenticatedProcedure = t.procedure.use(enforceAuthenticatedUser)
+
+const enforceAdminUser = t.middleware(({ ctx, next }) => {
+  if (!ctx.account || !ctx.account.is_admin) {
+    throw new TRPCError({ code: "UNAUTHORIZED" })
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      account: ctx.account,
+    },
+  })
+})
+
+export const adminProcedure = t.procedure.use(enforceAdminUser)
+
+export function ensureAdmin(isAdmin: boolean) {
+  if (!isAdmin) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You do not have permission to perform this action.",
+    })
+  }
+} 

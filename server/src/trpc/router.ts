@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "./init"
+import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "./init"
 import { accountsRouter } from "./routers/accounts"
 import { courseSetsRouter } from "./routers/course-sets"
 import { coursesRouter } from "./routers/courses"

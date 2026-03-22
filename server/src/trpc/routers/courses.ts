@@ -3,7 +3,7 @@ import { z } from "zod"
 import { getSortings } from "../sorting"
 import { Course, Prisma } from "../../generated/prisma/client"
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
+import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "../init"
 
 const ensureAdmin = (isAdmin: boolean | undefined) => {
   if (!isAdmin) {
@@ -196,7 +196,7 @@ export const coursesRouter = createTRPCRouter({
     return course
   }),
 
-  create: protectedProcedure.input(CourseCreateReqBodySchema).mutation(async ({ ctx, input }) => {
+  create: authenticatedProcedure.input(CourseCreateReqBodySchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const payload = input as any
@@ -243,7 +243,7 @@ export const coursesRouter = createTRPCRouter({
     })
   }),
 
-  update: protectedProcedure
+  update: authenticatedProcedure
     .input(CourseUpdateReqBodySchema.omit({ id: true }).merge(CourseIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
@@ -298,7 +298,7 @@ export const coursesRouter = createTRPCRouter({
       })
     }),
 
-  delete: protectedProcedure.input(CourseIdParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: authenticatedProcedure.input(CourseIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.course.delete({

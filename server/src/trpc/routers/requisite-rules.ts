@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../sorting"
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
+import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "../init"
 
 const ensureAdmin = (isAdmin: boolean | undefined) => {
   if (!isAdmin) {
@@ -95,7 +95,7 @@ export const requisiteRulesRouter = createTRPCRouter({
     return requisiteRule
   }),
 
-  create: protectedProcedure.input(RequisiteRuleCreateBodySchema).mutation(async ({ ctx, input }) => {
+  create: authenticatedProcedure.input(RequisiteRuleCreateBodySchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const existing = await ctx.prisma.requisiteRule.findUnique({
@@ -117,7 +117,7 @@ export const requisiteRulesRouter = createTRPCRouter({
     })
   }),
 
-  update: protectedProcedure
+  update: authenticatedProcedure
     .input(RequisiteRuleUpdateBodySchema.merge(RequisiteRuleIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
@@ -144,7 +144,7 @@ export const requisiteRulesRouter = createTRPCRouter({
       })
     }),
 
-  delete: protectedProcedure.input(RequisiteRuleIdParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: authenticatedProcedure.input(RequisiteRuleIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const existing = await ctx.prisma.requisiteRule.findUnique({

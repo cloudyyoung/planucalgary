@@ -4,7 +4,7 @@ import { z } from "zod"
 
 import { JWT_SECRET_KEY } from "../../config"
 import { generateAccessToken, JwtContent } from "./accounts-utils"
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
+import { createTRPCRouter, authenticatedProcedure, publicProcedure } from "../init"
 
 export const accountsRouter = createTRPCRouter({
   signin: publicProcedure
@@ -86,7 +86,7 @@ export const accountsRouter = createTRPCRouter({
       }
     }),
 
-  me: protectedProcedure.query(({ ctx }) => {
+  me: authenticatedProcedure.query(({ ctx }) => {
     return {
       id: ctx.account.id,
       email: ctx.account.email,
