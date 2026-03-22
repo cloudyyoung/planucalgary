@@ -8,7 +8,6 @@ import bodyParser from "body-parser"
 import { expressjwt as jwt } from "express-jwt"
 import { createExpressMiddleware } from "@trpc/server/adapters/express"
 
-import { router as courseRouter } from "./api/courses/routes"
 import { router as requisitesRouter } from "./api/requisites/routes"
 import { router as facultyRouter } from "./api/faculties/routes"
 import { router as subjectRouter } from "./api/subjects/routes"
@@ -58,7 +57,6 @@ const load = async (app: Express) => {
   app.use(emptyget())
   app.use(pagination())
 
-  app.use("/courses", courseRouter)
   app.use("/requisites", requisitesRouter)
   app.use("/faculties", facultyRouter)
   app.use("/subjects", subjectRouter)

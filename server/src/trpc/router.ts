@@ -1,5 +1,6 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "./init"
 import { accountsRouter } from "./routers/accounts"
+import { coursesRouter } from "./routers/courses"
 
 export const appRouter = createTRPCRouter({
   health: publicProcedure.query(() => {
@@ -10,6 +11,7 @@ export const appRouter = createTRPCRouter({
   }),
 
   accounts: accountsRouter,
+  courses: coursesRouter,
 
   account: protectedProcedure.query(({ ctx }) => {
     return {
