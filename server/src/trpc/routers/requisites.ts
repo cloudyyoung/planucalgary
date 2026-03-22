@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getSortings } from "../sorting"
+import { paginationInputSchema, resolvePagination, hasMorePages } from "../pagination"
 
 import { catalogQueue } from "../../queue"
 import { createTRPCRouter, adminProcedure } from "../init"
@@ -29,16 +30,14 @@ export const requisitesRouter = createTRPCRouter({
         requisite_type: z.string().optional(),
         text: z.string().optional(),
         sorting: z.array(z.string()).optional(),
-        offset: z.coerce.number().int().min(0).optional(),
-        limit: z.coerce.number().int().min(0).max(5000).optional(),
       })
+      .merge(paginationInputSchema)
     )
     .query(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const { id, requisite_type, text, sorting } = input
-    const offset = input.offset ?? 0
-    const limit = input.limit ?? 100
+    const { offset, limit } = resolvePagination(input)
 
     const whereConditions = {
       ...(id && { id: { contains: id } }),
@@ -71,7 +70,7 @@ export const requisitesRouter = createTRPCRouter({
       total,
       offset,
       limit,
-      has_more: total - (offset + limit) > 0,
+      has_more: hasMorePages(total, offset, limit),
       items: validatedItems,
     }
     }),
