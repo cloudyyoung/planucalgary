@@ -29,14 +29,8 @@
       "@/*": [
         "./src/*"
       ],
-      "@contracts/prisma/*": [
+      "@prisma/*": [
         "../server/src/generated/prisma/*"
-      ],
-      "@contracts": [
-        "../server/src/contracts/index.ts"
-      ],
-      "@contracts/*": [
-        "../server/src/contracts/*"
       ]
     },
   },

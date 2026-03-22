@@ -1,6 +1,9 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { RequisiteSetListReqQuery } from "@contracts"
+import type { inferRouterInputs } from "@trpc/server"
+import type { AppRouter } from "../../../server/src/trpc/router"
 import { trpcClient } from "@/trpc"
+
+type RouterInput = inferRouterInputs<AppRouter>
 
 export type RequisiteSetListItem = {
     id: string
@@ -26,7 +29,7 @@ export type RequisiteSetListOutput = {
     items: RequisiteSetListItem[]
 }
 
-export const useRequisiteSets = (props: RequisiteSetListReqQuery) => {
+export const useRequisiteSets = (props: RouterInput["requisiteSets"]["list"]) => {
     const result = useQuery({
         queryKey: ["requisite-sets", props],
         queryFn: async () => trpcClient.requisiteSets.list.query(props),

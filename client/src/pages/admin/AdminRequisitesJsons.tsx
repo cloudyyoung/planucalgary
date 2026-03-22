@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import { RequisitesSyncDestination, RequisitesSyncDestinationSchema, RequisiteTypeSchema } from "@contracts";
+import { z } from "zod"
 import { Bot, Check, Pencil, X } from "lucide-react";
 import { DateTime } from "luxon"
 import Editor, { useMonaco } from '@monaco-editor/react';
@@ -20,6 +20,23 @@ import {
 } from "@/components/ui/select";
 import { DepartmentPills } from "@/components/department-pills";
 import { FacultyPills } from "@/components/faculty-pills";
+
+const RequisiteTypeSchema = z.enum([
+  "Prerequisite",
+  "Corequisite",
+  "Antirequisite",
+  "Not Open To",
+  "Recommended Preparation",
+])
+
+const RequisitesSyncDestinationSchema = z.enum([
+  "REQUISITES_JSONS",
+  "COURSES",
+  "COURSE_SETS",
+  "FIELDS_OF_STUDY",
+])
+
+type RequisitesSyncDestination = z.infer<typeof RequisitesSyncDestinationSchema>
 
 
 export const AdminRequisitesJsons = () => {

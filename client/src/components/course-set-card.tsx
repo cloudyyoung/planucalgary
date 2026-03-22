@@ -1,4 +1,4 @@
-import { CourseSet } from "@contracts/prisma/browser"
+import { CourseSet } from "@prisma/browser"
 import {
   Item,
   ItemContent,

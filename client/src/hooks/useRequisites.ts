@@ -1,7 +1,13 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { queryClient } from "@/api"
-import { RequisiteListReqQuery, RequisitesSyncDestination, RequisiteUpdateReqBody } from "@contracts"
+import type { inferRouterInputs } from "@trpc/server"
+import type { AppRouter } from "../../../server/src/trpc/router"
 import { trpcClient } from "@/trpc"
+
+type RouterInput = inferRouterInputs<AppRouter>
+type RequisiteListReqQuery = RouterInput["requisites"]["list"]
+type RequisiteUpdateReqBody = RouterInput["requisites"]["update"]
+type RequisitesSyncDestination = RouterInput["requisites"]["sync"]
 
 export const useRequisites = (props: RequisiteListReqQuery) => {
   const result = useQuery({
@@ -29,7 +35,7 @@ export const useRequisitesGenerateChoices = (props: RequisiteListReqQuery) => {
 export const useRequisitesUpdate = (props: RequisiteListReqQuery) => {
   const mutation = useMutation({
     mutationFn: async (data: RequisiteUpdateReqBody) => {
-      return trpcClient.requisites.update.mutate(data as RequisiteUpdateReqBody & { id: string })
+      return trpcClient.requisites.update.mutate(data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['requisites', JSON.stringify(props)] })

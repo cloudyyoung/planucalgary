@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import { getSortings } from "../../contracts/sorting"
+import { getSortings } from "../sorting"
 
 import { catalogQueue } from "../../queue"
 import { createTRPCRouter, protectedProcedure } from "../init"

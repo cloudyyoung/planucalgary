@@ -1,6 +1,18 @@
 import { NextFunction, Response, Request } from "express"
 import { z } from "zod"
-import { PaginatedRequestSchema, PaginatedResponse } from "@/contracts"
+
+const PaginatedRequestSchema = z.object({
+  offset: z.coerce.number().int().min(0).optional(),
+  limit: z.coerce.number().int().min(0).max(5000).optional(),
+})
+
+type PaginatedResponse<T> = {
+  total: number
+  offset: number
+  limit: number
+  has_more: boolean
+  items: T[]
+}
 
 export const pagination = () => async (req: Request, res: Response, next: NextFunction) => {
   if (req.method !== "GET") {

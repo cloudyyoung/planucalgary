@@ -7,7 +7,5 @@ module.exports = {
     ],
   },
   testMatch: ["**/?(*.)+(spec|test).ts?(x)"],
-  moduleNameMapper: {
-    "^@/contracts$": "<rootDir>/server/src/contracts/index.ts",
-  },
+  moduleNameMapper: {  },
 }

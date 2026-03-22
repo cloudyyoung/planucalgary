@@ -2,7 +2,7 @@ import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { PrismaClient, Career, CourseComponent, GradeMode } from "@/generated/prisma/client"
 import axios from "axios"
-import { RequisiteData } from "@/contracts"
+import { RequisiteData } from "./types"
 import { DATABASE_URL } from "../../config"
 import { DateTime } from 'luxon';
 import { processRequisite } from "./requisite-sets"

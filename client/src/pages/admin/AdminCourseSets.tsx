@@ -5,9 +5,10 @@ import JsonView from "react18-json-view";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useCourseSets } from "@/hooks/useCourseSets";
-import { CourseSetTypeSchema } from "@contracts/course-set";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "../../../../server/src/trpc/router";
+
+const COURSE_SET_TYPE_OPTIONS = ["REQUIRED", "OPTIONAL", "GROUP"] as const
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 type CourseSetListItem = RouterOutput["courseSets"]["list"]["items"][number]
@@ -55,7 +56,7 @@ export const AdminCourseSets = () => {
       enableSorting: true,
       meta: {
         filterVariant: 'select',
-        filterOptions: CourseSetTypeSchema.options,
+        filterOptions: COURSE_SET_TYPE_OPTIONS,
       },
     },
     {

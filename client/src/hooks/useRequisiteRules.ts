@@ -1,6 +1,9 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { RequisiteRuleListReqQuery } from "@contracts";
+import type { inferRouterInputs } from "@trpc/server";
+import type { AppRouter } from "../../../server/src/trpc/router";
 import { trpcClient } from "@/trpc";
+
+type RouterInput = inferRouterInputs<AppRouter>
 
 type ReferringCourse = {
   course_id: string
@@ -53,7 +56,7 @@ export type RequisiteRuleListOutput = {
   items: RequisiteRuleListItem[]
 }
 
-export const useRequisiteRules = (props: RequisiteRuleListReqQuery) => {
+export const useRequisiteRules = (props: RouterInput["requisiteRules"]["list"]) => {
   const result = useQuery({
     queryKey: ["requisite-rules", props],
     queryFn: async () => trpcClient.requisiteRules.list.query(props),
