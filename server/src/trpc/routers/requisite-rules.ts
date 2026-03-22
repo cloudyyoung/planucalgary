@@ -1,13 +1,6 @@
 import { TRPCError } from "@trpc/server"
-import {
-  RequisiteRuleCreateBodySchema,
-  RequisiteRuleDeleteParamsSchema,
-  RequisiteRuleGetParamsSchema,
-  RequisiteRuleListReqQuerySchema,
-  RequisiteRuleUpdateBodySchema,
-  RequisiteRuleUpdateParamsSchema,
-  getSortings,
-} from "../../contracts"
+import { z } from "zod"
+import { getSortings } from "../../contracts/sorting"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
@@ -19,6 +12,28 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
     })
   }
 }
+
+const RequisiteRuleIdParamsSchema = z.object({ id: z.string() })
+
+const RequisiteRuleListReqQuerySchema = z
+  .object({
+    id: z.string().optional(),
+    requisite_id: z.string().optional(),
+    parent_rule_id: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    notes: z.string().optional(),
+    condition: z.string().optional(),
+    grade: z.string().optional(),
+    grade_type: z.string().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const RequisiteRuleCreateBodySchema = z.object({ id: z.string(), raw_json: z.any().optional() }).loose()
+const RequisiteRuleUpdateBodySchema = z.object({ raw_json: z.any().optional() }).loose()
 
 export const requisiteRulesRouter = createTRPCRouter({
   list: publicProcedure.input(RequisiteRuleListReqQuerySchema).query(async ({ ctx, input }) => {
@@ -65,7 +80,7 @@ export const requisiteRulesRouter = createTRPCRouter({
     }
   }),
 
-  get: publicProcedure.input(RequisiteRuleGetParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure.input(RequisiteRuleIdParamsSchema).query(async ({ ctx, input }) => {
     const requisiteRule = await ctx.prisma.requisiteRule.findUnique({
       where: { id: input.id },
     })
@@ -98,12 +113,12 @@ export const requisiteRulesRouter = createTRPCRouter({
       data: {
         ...input,
         raw_json: input.raw_json as any,
-      },
+      } as any,
     })
   }),
 
   update: protectedProcedure
-    .input(RequisiteRuleUpdateBodySchema.merge(RequisiteRuleUpdateParamsSchema))
+    .input(RequisiteRuleUpdateBodySchema.merge(RequisiteRuleIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -129,7 +144,7 @@ export const requisiteRulesRouter = createTRPCRouter({
       })
     }),
 
-  delete: protectedProcedure.input(RequisiteRuleDeleteParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: protectedProcedure.input(RequisiteRuleIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const existing = await ctx.prisma.requisiteRule.findUnique({

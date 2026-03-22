@@ -1,13 +1,6 @@
 import { TRPCError } from "@trpc/server"
-import {
-  CourseSetCreateBodySchema,
-  CourseSetDeleteParamsSchema,
-  CourseSetGetParamsSchema,
-  CourseSetListReqQuerySchema,
-  CourseSetUpdateBodySchema,
-  CourseSetUpdateParamsSchema,
-  getSortings,
-} from "../../contracts"
+import { z } from "zod"
+import { getSortings } from "../../contracts/sorting"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
@@ -19,6 +12,31 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
     })
   }
 }
+
+const CourseSetIdParamsSchema = z.object({ id: z.string() })
+
+const CourseSetListReqQuerySchema = z
+  .object({
+    type: z.string().optional(),
+    id: z.string().optional(),
+    course_set_group_id: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    csid: z.string().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const CourseSetCreateBodySchema = z
+  .object({
+    course_set_group_id: z.string(),
+    raw_json: z.any().optional(),
+  })
+  .loose()
+
+const CourseSetUpdateBodySchema = z.object({ raw_json: z.any().optional() }).loose()
 
 export const courseSetsRouter = createTRPCRouter({
   list: publicProcedure.input(CourseSetListReqQuerySchema).query(async ({ ctx, input }) => {
@@ -56,7 +74,7 @@ export const courseSetsRouter = createTRPCRouter({
     }
   }),
 
-  get: publicProcedure.input(CourseSetGetParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure.input(CourseSetIdParamsSchema).query(async ({ ctx, input }) => {
     const courseSet = await ctx.prisma.courseSet.findUnique({
       where: { id: input.id },
     })
@@ -89,12 +107,12 @@ export const courseSetsRouter = createTRPCRouter({
       data: {
         ...input,
         raw_json: input.raw_json as any,
-      },
+      } as any,
     })
   }),
 
   update: protectedProcedure
-    .input(CourseSetUpdateBodySchema.merge(CourseSetUpdateParamsSchema))
+    .input(CourseSetUpdateBodySchema.merge(CourseSetIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -109,7 +127,7 @@ export const courseSetsRouter = createTRPCRouter({
       })
     }),
 
-  delete: protectedProcedure.input(CourseSetDeleteParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: protectedProcedure.input(CourseSetIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.courseSet.delete({

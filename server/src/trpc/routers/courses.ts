@@ -1,13 +1,6 @@
 import { TRPCError } from "@trpc/server"
-import {
-  CourseCreateReqBodySchema,
-  CourseDeleteReqParamsSchema,
-  CourseGetReqParamsSchema,
-  CourseListReqQuerySchema,
-  CourseUpdateReqBodySchema,
-  CourseUpdateReqParamsSchema,
-  getSortings,
-} from "../../contracts"
+import { z } from "zod"
+import { getSortings } from "../../contracts/sorting"
 import { Course, Prisma } from "../../contracts/generated/prisma/client"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
@@ -20,6 +13,44 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
     })
   }
 }
+
+const CourseIdParamsSchema = z.object({ id: z.string() })
+
+const CourseListReqQuerySchema = z
+  .object({
+    keywords: z.string().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const CourseTopicSchema = z
+  .object({
+    number: z.coerce.number(),
+    title: z.string(),
+  })
+  .loose()
+
+const CourseCreateReqBodySchema = z
+  .object({
+    id: z.string(),
+    subject: z.string(),
+    departments: z.array(z.string()).optional(),
+    faculties: z.array(z.string()).optional(),
+    topics: z.array(CourseTopicSchema).optional(),
+  })
+  .loose()
+
+const CourseUpdateReqBodySchema = z
+  .object({
+    id: z.string().optional(),
+    subject: z.string().optional(),
+    departments: z.array(z.string()).optional(),
+    faculties: z.array(z.string()).optional(),
+    topics: z.array(CourseTopicSchema).optional(),
+  })
+  .loose()
 
 export const coursesRouter = createTRPCRouter({
   list: publicProcedure.input(CourseListReqQuerySchema).query(async ({ ctx, input }) => {
@@ -144,7 +175,7 @@ export const coursesRouter = createTRPCRouter({
     }
   }),
 
-  get: publicProcedure.input(CourseGetReqParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure.input(CourseIdParamsSchema).query(async ({ ctx, input }) => {
     const course = await ctx.prisma.course.findUnique({
       where: { id: input.id },
       include: {
@@ -168,8 +199,10 @@ export const coursesRouter = createTRPCRouter({
   create: protectedProcedure.input(CourseCreateReqBodySchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
+    const payload = input as any
+
     const existing = await ctx.prisma.course.findFirst({
-      where: { id: input.id },
+      where: { id: payload.id },
     })
 
     if (existing) {
@@ -181,41 +214,41 @@ export const coursesRouter = createTRPCRouter({
 
     return ctx.prisma.course.create({
       data: {
-        ...input,
-        raw_requisites: input.raw_requisites as any,
+        ...payload,
+        raw_requisites: payload.raw_requisites as any,
         subject: {
           connectOrCreate: {
-            where: { code: input.subject },
-            create: { code: input.subject, title: input.subject },
+            where: { code: payload.subject },
+            create: { code: payload.subject, title: payload.subject },
           },
         },
         departments: {
-          connectOrCreate: input.departments?.map((code) => ({
+          connectOrCreate: payload.departments?.map((code: string) => ({
             where: { code },
             create: { code, name: code, display_name: code, is_active: false },
           })),
         },
         faculties: {
-          connectOrCreate: input.faculties?.map((code) => ({
+          connectOrCreate: payload.faculties?.map((code: string) => ({
             where: { code },
             create: { code, name: code, display_name: code, is_active: false },
           })),
         },
         topics: {
-          create: input.topics,
+          create: payload.topics as any,
         },
-        start_term: input.start_term as any,
-        end_term: input.end_term as any,
-      },
+        start_term: payload.start_term as any,
+        end_term: payload.end_term as any,
+      } as any,
     })
   }),
 
   update: protectedProcedure
-    .input(CourseUpdateReqBodySchema.omit({ id: true }).merge(CourseUpdateReqParamsSchema))
+    .input(CourseUpdateReqBodySchema.omit({ id: true }).merge(CourseIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
-      const { id, ...updateData } = input
+      const { id, ...updateData } = input as any
 
       return ctx.prisma.course.update({
         where: { id },
@@ -229,30 +262,30 @@ export const coursesRouter = createTRPCRouter({
             },
           },
           departments: {
-            connectOrCreate: updateData.departments?.map((code) => ({
+            connectOrCreate: updateData.departments?.map((code: string) => ({
               where: { code },
               create: { code, name: code, display_name: code, is_active: false },
             })),
-            set: updateData.departments?.map((code) => ({ code })),
+            set: updateData.departments?.map((code: string) => ({ code })),
           },
           faculties: {
-            connectOrCreate: updateData.faculties?.map((code) => ({
+            connectOrCreate: updateData.faculties?.map((code: string) => ({
               where: { code },
               create: { code, name: code, display_name: code, is_active: false },
             })),
-            set: updateData.faculties?.map((code) => ({ code })),
+            set: updateData.faculties?.map((code: string) => ({ code })),
           },
           topics: {
-            connectOrCreate: updateData.topics?.map((topic) => ({
+            connectOrCreate: updateData.topics?.map((topic: any) => ({
               where: {
                 number_course_id: {
                   number: topic.number,
                   course_id: id,
                 },
               },
-              create: topic,
+              create: topic as any,
             })),
-            set: updateData.topics?.map((topic) => ({
+            set: updateData.topics?.map((topic: any) => ({
               number_course_id: {
                 number: topic.number,
                 course_id: id,
@@ -261,11 +294,11 @@ export const coursesRouter = createTRPCRouter({
           },
           start_term: updateData.start_term as any,
           end_term: updateData.end_term as any,
-        },
+        } as any,
       })
     }),
 
-  delete: protectedProcedure.input(CourseDeleteReqParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: protectedProcedure.input(CourseIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.course.delete({

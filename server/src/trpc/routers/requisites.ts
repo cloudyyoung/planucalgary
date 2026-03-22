@@ -1,13 +1,6 @@
 import { TRPCError } from "@trpc/server"
-import {
-  RequisiteGenerateChoicesReqParamsSchema,
-  RequisiteGetReqParamsSchema,
-  RequisiteListReqQuerySchema,
-  RequisiteUpdateReqBodySchema,
-  RequisitesSyncDestination,
-  RequisitesSyncDestinationSchema,
-  getSortings,
-} from "../../contracts"
+import { z } from "zod"
+import { getSortings } from "../../contracts/sorting"
 
 import { catalogQueue } from "../../queue"
 import { createTRPCRouter, protectedProcedure } from "../init"
@@ -20,6 +13,36 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
     })
   }
 }
+
+enum RequisitesSyncDestination {
+  REQUISITES_JSONS = "REQUISITES_JSONS",
+  COURSES = "COURSES",
+  COURSE_SETS = "COURSE_SETS",
+  FIELDS_OF_STUDY = "FIELDS_OF_STUDY",
+}
+
+const RequisiteIdParamsSchema = z.object({ id: z.string() })
+const RequisiteGenerateChoicesReqParamsSchema = RequisiteIdParamsSchema
+
+const RequisiteListReqQuerySchema = z
+  .object({
+    id: z.string().optional(),
+    requisite_type: z.string().optional(),
+    text: z.string().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const RequisiteUpdateReqBodySchema = z.object({}).loose()
+
+const RequisitesSyncDestinationSchema = z.enum([
+  RequisitesSyncDestination.REQUISITES_JSONS,
+  RequisitesSyncDestination.COURSES,
+  RequisitesSyncDestination.COURSE_SETS,
+  RequisitesSyncDestination.FIELDS_OF_STUDY,
+])
 
 const SyncInputSchema = RequisitesSyncDestinationSchema.transform((destination) => ({ destination }))
 
@@ -39,13 +62,13 @@ export const requisitesRouter = createTRPCRouter({
 
     const [items, total] = await Promise.all([
       ctx.prisma.requisiteJson.findMany({
-        where: whereConditions,
+        where: whereConditions as any,
         orderBy: [...getSortings(sorting), { requisite_type: "asc" }, { id: "asc" }],
         skip: offset,
         take: limit,
       }),
       ctx.prisma.requisiteJson.count({
-        where: whereConditions,
+        where: whereConditions as any,
       }),
     ])
 
@@ -67,7 +90,7 @@ export const requisitesRouter = createTRPCRouter({
     }
   }),
 
-  get: protectedProcedure.input(RequisiteGetReqParamsSchema).query(async ({ ctx, input }) => {
+  get: protectedProcedure.input(RequisiteIdParamsSchema).query(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     const requisite = await ctx.prisma.requisiteJson.findUnique({
@@ -90,11 +113,11 @@ export const requisitesRouter = createTRPCRouter({
   }),
 
   update: protectedProcedure
-    .input(RequisiteUpdateReqBodySchema.merge(RequisiteGetReqParamsSchema))
+    .input(RequisiteUpdateReqBodySchema.merge(RequisiteIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
-      const { id, ...updateData } = input
+      const { id, ...updateData } = input as any
 
       const existing = await ctx.prisma.requisiteJson.findUnique({
         where: { id },

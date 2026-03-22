@@ -1,10 +1,20 @@
 import bcrypt from "bcrypt"
 import { TRPCError } from "@trpc/server"
-import { SignInInputSchema, SignUpInputSchema } from "../../contracts"
+import { z } from "zod"
 
 import { JWT_SECRET_KEY } from "../../config"
 import { generateAccessToken, JwtContent } from "./accounts-utils"
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
+
+const SignInInputSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+})
+
+const SignUpInputSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+})
 
 export const accountsRouter = createTRPCRouter({
   signin: publicProcedure.input(SignInInputSchema).mutation(async ({ ctx, input }) => {

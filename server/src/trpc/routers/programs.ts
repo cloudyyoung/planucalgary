@@ -1,13 +1,6 @@
 import { TRPCError } from "@trpc/server"
-import {
-  ProgramCreateBodySchema,
-  ProgramDeleteParamsSchema,
-  ProgramGetParamsSchema,
-  ProgramListReqQuerySchema,
-  ProgramUpdateBodySchema,
-  ProgramUpdateParamsSchema,
-  getSortings,
-} from "../../contracts"
+import { z } from "zod"
+import { getSortings } from "../../contracts/sorting"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
@@ -19,6 +12,33 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
     })
   }
 }
+
+const ProgramIdParamsSchema = z.object({ id: z.string() })
+
+const ProgramListReqQuerySchema = z
+  .object({
+    id: z.string().optional(),
+    code: z.string().optional(),
+    name: z.string().optional(),
+    pid: z.string().optional(),
+    is_active: z.coerce.boolean().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const ProgramCreateBodySchema = z
+  .object({
+    program_group_id: z.string(),
+    faculties: z.array(z.string()).optional(),
+    departments: z.array(z.string()).optional(),
+    requisites: z.any().optional(),
+    start_term: z.any().optional(),
+  })
+  .loose()
+
+const ProgramUpdateBodySchema = z.object({}).loose()
 
 export const programsRouter = createTRPCRouter({
   list: publicProcedure.input(ProgramListReqQuerySchema).query(async ({ ctx, input }) => {
@@ -59,7 +79,7 @@ export const programsRouter = createTRPCRouter({
     }
   }),
 
-  get: publicProcedure.input(ProgramGetParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure.input(ProgramIdParamsSchema).query(async ({ ctx, input }) => {
     const program = await ctx.prisma.program.findUnique({
       include: {
         faculties: true,
@@ -109,16 +129,16 @@ export const programsRouter = createTRPCRouter({
         },
         requisites: input.requisites as any,
         start_term: input.start_term as any,
-      },
+      } as any,
     })
   }),
 
   update: protectedProcedure
-    .input(ProgramUpdateBodySchema.merge(ProgramUpdateParamsSchema))
+    .input(ProgramUpdateBodySchema.merge(ProgramIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
-      const { id, ...updateData } = input
+      const { id, ...updateData } = input as any
 
       return ctx.prisma.program.update({
         where: { id },
@@ -144,7 +164,7 @@ export const programsRouter = createTRPCRouter({
       })
     }),
 
-  delete: protectedProcedure.input(ProgramDeleteParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: protectedProcedure.input(ProgramIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.program.delete({

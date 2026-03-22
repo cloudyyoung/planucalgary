@@ -1,11 +1,6 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import {
-  SubjectCreateBodySchema,
-  SubjectListReqQuerySchema,
-  SubjectUpdateBodySchema,
-  getSortings,
-} from "../../contracts"
+import { getSortings } from "../../contracts/sorting"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
@@ -21,6 +16,34 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
 const SubjectCodeParamsSchema = z.object({
   code: z.string(),
 })
+
+const SubjectListReqQuerySchema = z
+  .object({
+    id: z.string().optional(),
+    code: z.string().optional(),
+    title: z.string().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const SubjectCreateBodySchema = z
+  .object({
+    code: z.string(),
+    title: z.string(),
+    departments: z.array(z.string()).optional(),
+    faculties: z.array(z.string()).optional(),
+  })
+  .loose()
+
+const SubjectUpdateBodySchema = z
+  .object({
+    title: z.string().optional(),
+    departments: z.array(z.string()).optional(),
+    faculties: z.array(z.string()).optional(),
+  })
+  .loose()
 
 export const subjectsRouter = createTRPCRouter({
   list: publicProcedure.input(SubjectListReqQuerySchema).query(async ({ ctx, input }) => {

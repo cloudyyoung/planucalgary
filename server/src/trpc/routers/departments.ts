@@ -1,13 +1,6 @@
 import { TRPCError } from "@trpc/server"
-import {
-  DepartmentCreateBodySchema,
-  DepartmentDeleteParamsSchema,
-  DepartmentGetParamsSchema,
-  DepartmentListReqQuerySchema,
-  DepartmentUpdateBodySchema,
-  DepartmentUpdateParamsSchema,
-  getSortings,
-} from "../../contracts"
+import { z } from "zod"
+import { getSortings } from "../../contracts/sorting"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
@@ -19,6 +12,33 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
     })
   }
 }
+
+const DepartmentCodeParamsSchema = z.object({
+  code: z.string(),
+})
+
+const DepartmentListReqQuerySchema = z
+  .object({
+    name: z.string().optional(),
+    display_name: z.string().optional(),
+    code: z.string().optional(),
+    is_active: z.coerce.boolean().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const DepartmentCreateBodySchema = z
+  .object({
+    code: z.string(),
+    name: z.string(),
+    display_name: z.string(),
+    is_active: z.boolean().optional(),
+  })
+  .loose()
+
+const DepartmentUpdateBodySchema = z.object({}).loose()
 
 export const departmentsRouter = createTRPCRouter({
   list: publicProcedure.input(DepartmentListReqQuerySchema).query(async ({ ctx, input }) => {
@@ -49,7 +69,7 @@ export const departmentsRouter = createTRPCRouter({
     }
   }),
 
-  get: publicProcedure.input(DepartmentGetParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure.input(DepartmentCodeParamsSchema).query(async ({ ctx, input }) => {
     const department = await ctx.prisma.department.findUnique({
       where: { code: input.code },
     })
@@ -79,12 +99,15 @@ export const departmentsRouter = createTRPCRouter({
     }
 
     return ctx.prisma.department.create({
-      data: input,
+      data: {
+        ...input,
+        is_active: input.is_active ?? false,
+      },
     })
   }),
 
   update: protectedProcedure
-    .input(DepartmentUpdateBodySchema.merge(DepartmentUpdateParamsSchema))
+    .input(DepartmentUpdateBodySchema.merge(DepartmentCodeParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -96,7 +119,7 @@ export const departmentsRouter = createTRPCRouter({
       })
     }),
 
-  delete: protectedProcedure.input(DepartmentDeleteParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: protectedProcedure.input(DepartmentCodeParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.department.delete({

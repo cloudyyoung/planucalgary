@@ -1,11 +1,6 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import {
-  FacultyCreateBodySchema,
-  FacultyListReqQuerySchema,
-  FacultyUpdateBodySchema,
-  getSortings,
-} from "../../contracts"
+import { getSortings } from "../../contracts/sorting"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
@@ -21,6 +16,29 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
 const FacultyCodeParamsSchema = z.object({
   code: z.string(),
 })
+
+const FacultyListReqQuerySchema = z
+  .object({
+    name: z.string().optional(),
+    display_name: z.string().optional(),
+    code: z.string().optional(),
+    is_active: z.coerce.boolean().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const FacultyCreateBodySchema = z
+  .object({
+    code: z.string(),
+    name: z.string(),
+    display_name: z.string(),
+    is_active: z.boolean().optional(),
+  })
+  .loose()
+
+const FacultyUpdateBodySchema = z.object({}).loose()
 
 export const facultiesRouter = createTRPCRouter({
   list: publicProcedure.input(FacultyListReqQuerySchema).query(async ({ ctx, input }) => {
@@ -86,7 +104,10 @@ export const facultiesRouter = createTRPCRouter({
     }
 
     return ctx.prisma.faculty.create({
-      data: input,
+      data: {
+        ...input,
+        is_active: input.is_active ?? false,
+      },
     })
   }),
 

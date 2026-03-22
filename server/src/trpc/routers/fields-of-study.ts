@@ -1,13 +1,6 @@
 import { TRPCError } from "@trpc/server"
-import {
-  FieldsOfStudyCreateBodySchema,
-  FieldsOfStudyDeleteParamsSchema,
-  FieldsOfStudyGetParamsSchema,
-  FieldsOfStudyListReqQuerySchema,
-  FieldsOfStudyUpdateBodySchema,
-  FieldsOfStudyUpdateParamsSchema,
-  getSortings,
-} from "../../contracts"
+import { z } from "zod"
+import { getSortings } from "../../contracts/sorting"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
@@ -19,6 +12,30 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
     })
   }
 }
+
+const FieldsOfStudyIdParamsSchema = z.object({ id: z.string() })
+
+const FieldsOfStudyListReqQuerySchema = z
+  .object({
+    id: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    notes: z.string().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const FieldsOfStudyCreateBodySchema = z
+  .object({
+    name: z.string(),
+    description: z.string().nullable().optional(),
+    notes: z.string().nullable().optional(),
+  })
+  .loose()
+
+const FieldsOfStudyUpdateBodySchema = z.object({}).loose()
 
 export const fieldsOfStudyRouter = createTRPCRouter({
   list: publicProcedure.input(FieldsOfStudyListReqQuerySchema).query(async ({ ctx, input }) => {
@@ -55,7 +72,7 @@ export const fieldsOfStudyRouter = createTRPCRouter({
     }
   }),
 
-  get: publicProcedure.input(FieldsOfStudyGetParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure.input(FieldsOfStudyIdParamsSchema).query(async ({ ctx, input }) => {
     const fieldOfStudy = await ctx.prisma.fieldOfStudy.findUnique({
       include: { course_sets: true },
       where: { id: input.id },
@@ -93,7 +110,7 @@ export const fieldsOfStudyRouter = createTRPCRouter({
   }),
 
   update: protectedProcedure
-    .input(FieldsOfStudyUpdateBodySchema.merge(FieldsOfStudyUpdateParamsSchema))
+    .input(FieldsOfStudyUpdateBodySchema.merge(FieldsOfStudyIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -106,7 +123,7 @@ export const fieldsOfStudyRouter = createTRPCRouter({
       })
     }),
 
-  delete: protectedProcedure.input(FieldsOfStudyDeleteParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: protectedProcedure.input(FieldsOfStudyIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.fieldOfStudy.delete({

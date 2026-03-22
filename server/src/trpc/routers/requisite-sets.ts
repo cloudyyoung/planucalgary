@@ -1,13 +1,6 @@
 import { TRPCError } from "@trpc/server"
-import {
-  RequisiteSetCreateBodySchema,
-  RequisiteSetDeleteParamsSchema,
-  RequisiteSetGetParamsSchema,
-  RequisiteSetListReqQuerySchema,
-  RequisiteSetUpdateBodySchema,
-  RequisiteSetUpdateParamsSchema,
-  getSortings,
-} from "../../contracts"
+import { z } from "zod"
+import { getSortings } from "../../contracts/sorting"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
@@ -19,6 +12,31 @@ const ensureAdmin = (isAdmin: boolean | undefined) => {
     })
   }
 }
+
+const RequisiteSetIdParamsSchema = z.object({ id: z.string() })
+
+const RequisiteSetListReqQuerySchema = z
+  .object({
+    id: z.string().optional(),
+    csid: z.string().optional(),
+    requisite_set_group_id: z.string().optional(),
+    version: z.coerce.number().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    sorting: z.array(z.string()).optional(),
+    offset: z.coerce.number().int().min(0).optional(),
+    limit: z.coerce.number().int().min(0).max(5000).optional(),
+  })
+  .loose()
+
+const RequisiteSetCreateBodySchema = z
+  .object({
+    requisite_set_group_id: z.string(),
+    raw_json: z.any().optional(),
+  })
+  .loose()
+
+const RequisiteSetUpdateBodySchema = z.object({ raw_json: z.any().optional() }).loose()
 
 export const requisiteSetsRouter = createTRPCRouter({
   list: publicProcedure.input(RequisiteSetListReqQuerySchema).query(async ({ ctx, input }) => {
@@ -56,7 +74,7 @@ export const requisiteSetsRouter = createTRPCRouter({
     }
   }),
 
-  get: publicProcedure.input(RequisiteSetGetParamsSchema).query(async ({ ctx, input }) => {
+  get: publicProcedure.input(RequisiteSetIdParamsSchema).query(async ({ ctx, input }) => {
     const requisiteSet = await ctx.prisma.requisiteSet.findUnique({
       where: { id: input.id },
     })
@@ -89,12 +107,12 @@ export const requisiteSetsRouter = createTRPCRouter({
       data: {
         ...input,
         raw_json: input.raw_json as any,
-      },
+      } as any,
     })
   }),
 
   update: protectedProcedure
-    .input(RequisiteSetUpdateBodySchema.merge(RequisiteSetUpdateParamsSchema))
+    .input(RequisiteSetUpdateBodySchema.merge(RequisiteSetIdParamsSchema))
     .mutation(async ({ ctx, input }) => {
       ensureAdmin(ctx.account.is_admin)
 
@@ -109,7 +127,7 @@ export const requisiteSetsRouter = createTRPCRouter({
       })
     }),
 
-  delete: protectedProcedure.input(RequisiteSetDeleteParamsSchema).mutation(async ({ ctx, input }) => {
+  delete: protectedProcedure.input(RequisiteSetIdParamsSchema).mutation(async ({ ctx, input }) => {
     ensureAdmin(ctx.account.is_admin)
 
     await ctx.prisma.requisiteSet.delete({
