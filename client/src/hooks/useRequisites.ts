@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
-import { queryClient } from "@/api"
+import { queryClient } from "@/trpc"
 import type { inferRouterInputs } from "@trpc/server"
 import type { AppRouter } from "../../../server/src/trpc/router"
 import { trpcClient } from "@/trpc"
