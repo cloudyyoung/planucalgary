@@ -1,6 +1,5 @@
 import { createTRPCClient, httpBatchLink } from "@trpc/client"
 import { QueryClient } from "@tanstack/react-query"
-import { createTRPCContext } from "@trpc/tanstack-react-query"
 import type { AppRouter } from "../../server/src/trpc/router"
 
 const API_BASE_URL = "http://localhost:5150"
