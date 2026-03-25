@@ -13,13 +13,6 @@ import { requisitesRouter } from "./routers/requisites"
 import { subjectsRouter } from "./routers/subjects"
 
 export const router = createTRPCRouter({
-  health: publicProcedure.query(() => {
-    return {
-      status: "ok",
-      now: new Date().toISOString(),
-    }
-  }),
-
   accounts: accountsRouter,
   course_sets: courseSetsRouter,
   courses: coursesRouter,
