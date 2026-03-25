@@ -6,11 +6,11 @@ import JsonView from "react18-json-view";
 import AdvancedTable from "@/components/advanced-table";
 import { useCourseSets } from "@/hooks/useCourseSets";
 import type { inferRouterOutputs } from "@trpc/server";
-import type { AppRouter } from "../../../../server/src/trpc/router";
+import type { Router } from "../../../../server/src/trpc/router";
 
 const COURSE_SET_TYPE_OPTIONS = ["REQUIRED", "OPTIONAL", "GROUP"] as const
 
-type RouterOutput = inferRouterOutputs<AppRouter>
+type RouterOutput = inferRouterOutputs<Router>
 type CourseSetListItem = RouterOutput["courseSets"]["list"]["items"][number]
 
 

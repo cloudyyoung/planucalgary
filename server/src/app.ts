@@ -9,8 +9,8 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express"
 
 import { PORT } from "./config"
 import { closeWorkers } from "./queue"
-import { createTRPCContext } from "./trpc/context"
-import { appRouter } from "./trpc/router"
+import { createContext } from "./trpc/context"
+import { router } from "./trpc/router"
 
 const load = async (app: Express) => {
   process.on("uncaughtException", async (error) => {
@@ -32,8 +32,8 @@ const load = async (app: Express) => {
   app.use(
     "/trpc",
     createExpressMiddleware({
-      router: appRouter,
-      createContext: createTRPCContext,
+      router,
+      createContext,
     }),
   )
   app.get("/", (_req, res) => {

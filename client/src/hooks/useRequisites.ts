@@ -1,11 +1,11 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { queryClient } from "@/trpc"
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server"
-import type { AppRouter } from "../../../server/src/trpc/router"
+import type { Router } from "../../../server/src/trpc/router"
 import { trpcClient } from "@/trpc"
 
-type RouterInput = inferRouterInputs<AppRouter>
-type RouterOutput = inferRouterOutputs<AppRouter>
+type RouterInput = inferRouterInputs<Router>
+type RouterOutput = inferRouterOutputs<Router>
 export type RequisiteListOutput = RouterOutput["requisites"]["list"]
 export type RequisiteListItem = RequisiteListOutput["items"][number]
 type RequisiteListReqQuery = RouterInput["requisites"]["list"]

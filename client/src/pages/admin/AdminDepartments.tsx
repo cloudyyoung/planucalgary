@@ -2,13 +2,13 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import type { inferRouterOutputs } from "@trpc/server";
-import type { AppRouter } from "../../../../server/src/trpc/router";
+import type { Router } from "../../../../server/src/trpc/router";
 import { Check, X } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useDepartments } from "@/hooks/useDepartments";
 
-type RouterOutput = inferRouterOutputs<AppRouter>
+type RouterOutput = inferRouterOutputs<Router>
 type DepartmentListItem = RouterOutput["departments"]["list"]["items"][number]
 
 

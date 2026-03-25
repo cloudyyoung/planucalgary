@@ -12,7 +12,7 @@ import { requisiteSetsRouter } from "./routers/requisite-sets"
 import { requisitesRouter } from "./routers/requisites"
 import { subjectsRouter } from "./routers/subjects"
 
-export const appRouter = createTRPCRouter({
+export const router = createTRPCRouter({
   health: publicProcedure.query(() => {
     return {
       status: "ok",
@@ -34,4 +34,4 @@ export const appRouter = createTRPCRouter({
   subjects: subjectsRouter,
 })
 
-export type AppRouter = typeof appRouter
+export type Router = typeof router

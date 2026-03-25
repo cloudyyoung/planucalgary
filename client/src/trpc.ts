@@ -1,6 +1,6 @@
 import { createTRPCClient, httpBatchLink } from "@trpc/client"
 import { QueryClient } from "@tanstack/react-query"
-import type { AppRouter } from "../../server/src/trpc/router"
+import type { Router } from "../../server/src/trpc/router"
 
 const API_BASE_URL = "http://localhost:5150"
 const API_AUTHORIZATION =
@@ -8,7 +8,7 @@ const API_AUTHORIZATION =
 
 export const queryClient = new QueryClient()
 
-export const trpcClient = createTRPCClient<AppRouter>({
+export const trpcClient = createTRPCClient<Router>({
   links: [
     httpBatchLink({
       url: `${API_BASE_URL}/trpc`,
