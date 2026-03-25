@@ -28,10 +28,10 @@ export type RequisiteSetListOutput = {
     items: RequisiteSetListItem[]
 }
 
-export const useRequisiteSets = (props: RouterInput["requisiteSets"]["list"]) => {
+export const useRequisiteSets = (props: RouterInput["requisite_sets"]["list"]) => {
     const result = useQuery({
         queryKey: ["requisite-sets", props],
-        queryFn: async () => trpcClient.requisiteSets.list.query(props),
+        queryFn: async () => trpcClient.requisite_sets.list.query(props),
         placeholderData: keepPreviousData,
     })
 

@@ -5,12 +5,12 @@ import { trpcClient } from "@/trpc"
 
 type RouterInput = inferRouterInputs<AppRouter>
 type RouterOutput = inferRouterOutputs<AppRouter>
-type CourseSetListOutput = RouterOutput["courseSets"]["list"]
+type CourseSetListOutput = RouterOutput["course_sets"]["list"]
 
-export const useCourseSets = (props: RouterInput["courseSets"]["list"]) => {
+export const useCourseSets = (props: RouterInput["course_sets"]["list"]) => {
   const result = useQuery<CourseSetListOutput>({
     queryKey: ["course-sets", props],
-    queryFn: async () => trpcClient.courseSets.list.query(props),
+    queryFn: async () => trpcClient.course_sets.list.query(props),
     placeholderData: keepPreviousData,
   })
 

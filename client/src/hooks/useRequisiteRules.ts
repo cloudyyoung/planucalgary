@@ -55,10 +55,10 @@ export type RequisiteRuleListOutput = {
   items: RequisiteRuleListItem[]
 }
 
-export const useRequisiteRules = (props: RouterInput["requisiteRules"]["list"]) => {
+export const useRequisiteRules = (props: RouterInput["requisite_rules"]["list"]) => {
   const result = useQuery({
     queryKey: ["requisite-rules", props],
-    queryFn: async () => trpcClient.requisiteRules.list.query(props),
+    queryFn: async () => trpcClient.requisite_rules.list.query(props),
     placeholderData: keepPreviousData,
   });
 
