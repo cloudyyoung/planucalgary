@@ -5,12 +5,9 @@ import compression from "compression"
 import morgan from "morgan"
 import helmet from "helmet"
 import bodyParser from "body-parser"
-import { expressjwt as jwt } from "express-jwt"
 import { createExpressMiddleware } from "@trpc/server/adapters/express"
 
-import { PORT, JWT_SECRET_KEY } from "./config"
-import { auth, errors, pagination, prisma } from "./middlewares"
-import { emptyget } from "./middlewares/empty-get"
+import { PORT } from "./config"
 import { closeWorkers } from "./queue"
 import { createTRPCContext } from "./trpc/context"
 import { appRouter } from "./trpc/router"
@@ -32,7 +29,6 @@ const load = async (app: Express) => {
   app.use(morgan("dev"))
   app.use(helmet())
   app.use(compression())
-  app.use(prisma())
   app.use(
     "/trpc",
     createExpressMiddleware({
@@ -40,18 +36,9 @@ const load = async (app: Express) => {
       createContext: createTRPCContext,
     }),
   )
-  app.use(
-    jwt({ secret: JWT_SECRET_KEY!, algorithms: ["HS256"], issuer: "plan-ucalgary-api" }),
-    auth(),
-  )
-  app.use(emptyget())
-  app.use(pagination())
-
   app.get("/", (_req, res) => {
     return res.status(200).json({ message: "ok" }).end()
   })
-
-  app.use(errors())
 
   app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`)
