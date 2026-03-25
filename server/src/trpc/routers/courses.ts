@@ -24,8 +24,13 @@ export const coursesRouter = createTRPCRouter({
       const getSelectStatement = () => {
         const fields = [
           Prisma.sql`id`,
-          Prisma.sql`ts_rank(search_vector, plainto_tsquery('english', ${keywords})) AS rank`,
         ]
+
+        if (keywords) {
+          fields.push(Prisma.sql`ts_rank(search_vector, plainto_tsquery('english', ${keywords})) AS rank`)
+        } else {
+          fields.push(Prisma.sql`0 AS rank`)
+        }
 
         return Prisma.sql`select ${Prisma.join(fields, ", ")} from "catalog"."courses"`
       }
