@@ -1,8 +1,7 @@
+import { queryClient, trpcClient } from "@/trpc"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
-import { queryClient } from "@/trpc"
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server"
 import type { Router } from "../../../server/src/trpc/router"
-import { trpcClient } from "@/trpc"
 
 type RouterInput = inferRouterInputs<Router>
 type RouterOutput = inferRouterOutputs<Router>
@@ -13,8 +12,8 @@ type RequisiteUpdateReqBody = RouterInput["requisites"]["update"]
 type RequisitesSyncDestination = RouterInput["requisites"]["sync"]
 
 export const useRequisites = (props: RequisiteListReqQuery) => {
-  const result = useQuery({
-    queryKey: ['requisites', JSON.stringify(props)],
+  const result = useQuery<RequisiteListOutput>({
+    queryKey: ["requisites", JSON.stringify(props)],
     queryFn: async () => trpcClient.requisites.list.query(props),
     placeholderData: keepPreviousData,
   })
@@ -28,7 +27,7 @@ export const useRequisitesGenerateChoices = (props: RequisiteListReqQuery) => {
       return trpcClient.requisites.generateChoices.mutate({ id })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['requisites', JSON.stringify(props)] })
+      queryClient.invalidateQueries({ queryKey: ["requisites", JSON.stringify(props)] })
     }
   })
 
@@ -41,7 +40,7 @@ export const useRequisitesUpdate = (props: RequisiteListReqQuery) => {
       return trpcClient.requisites.update.mutate(data)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['requisites', JSON.stringify(props)] })
+      queryClient.invalidateQueries({ queryKey: ["requisites", JSON.stringify(props)] })
     },
   })
 
@@ -54,7 +53,7 @@ export const useRequisitesSync = () => {
       return trpcClient.requisites.sync.mutate(destination)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['requisites'] })
+      queryClient.invalidateQueries({ queryKey: ["requisites"] })
     },
   })
 
