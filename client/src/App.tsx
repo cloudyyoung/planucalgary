@@ -146,7 +146,7 @@ export const AppSidebar = () => {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location.pathname.startsWith(item.url, 1)} className='data-[active=true]:bg-green-600/10 data-[active=true]:text-green-800'>
+                  <SidebarMenuButton asChild isActive={location.pathname.startsWith(item.url, 1)} className='data-[active=true]:bg-primary/10 data-[active=true]:text-primary'>
                     <Link to={item.url}>
                       <span>{item.title}</span>
                     </Link>
@@ -162,7 +162,7 @@ export const AppSidebar = () => {
             <SidebarMenu>
               {adminMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location.pathname.startsWith(item.url, 1)} className='data-[active=true]:bg-green-600/10 data-[active=true]:text-green-800'>
+                  <SidebarMenuButton asChild isActive={location.pathname.startsWith(item.url, 1)} className='data-[active=true]:bg-primary/10 data-[active=true]:text-primary'>
                     <Link to={item.url}>
                       <span>{item.title}</span>
                     </Link>
