@@ -3,9 +3,13 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import { DateTime } from "luxon";
 import JsonView from "react18-json-view";
 
+import { RefreshCw } from "lucide-react";
+
 import AdvancedTable from "@/components/advanced-table";
 import { RequisiteRuleListItem, RequisiteRuleListOutput, useRequisiteRules } from "@/hooks/useRequisiteRules";
 import { Pill } from "@/components/ui/pill";
+import { StatefulButton } from "@/components/ui/stateful-button";
+import { trpcClient } from "@/trpc";
 
 
 export const AdminRequisiteRules = () => {
@@ -257,7 +261,14 @@ export const AdminRequisiteRules = () => {
     },
   });
 
+  const Header = (
+    <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "build-requisite-rules" })}>
+      <RefreshCw />
+      Crawl
+    </StatefulButton>
+  );
+
   return (
-    <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} />
+    <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} header={Header} />
   );
 };

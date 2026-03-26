@@ -3,10 +3,12 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import { DateTime } from "luxon"
 import type { inferRouterOutputs } from "@trpc/server";
 import type { Router } from "../../../../server/src/trpc/router";
-import { Check, X } from "lucide-react";
+import { Check, X, RefreshCw } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useDepartments } from "@/hooks/useDepartments";
+import { StatefulButton } from "@/components/ui/stateful-button";
+import { trpcClient } from "@/trpc";
 
 type RouterOutput = inferRouterOutputs<Router>
 type DepartmentListItem = RouterOutput["departments"]["list"]["items"][number]
@@ -114,7 +116,14 @@ export const AdminDepartments = () => {
         },
     })
 
+    const Header = (
+        <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "departments" })}>
+            <RefreshCw />
+            Crawl
+        </StatefulButton>
+    )
+
     return (
-        <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} />
+        <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} header={Header} />
     )
 }

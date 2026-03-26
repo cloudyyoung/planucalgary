@@ -2,8 +2,12 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 
+import { RefreshCw } from "lucide-react";
+
 import AdvancedTable from "@/components/advanced-table";
 import { SubjectListItem, SubjectListOutput, useSubjects } from "@/hooks/useSubjects";
+import { StatefulButton } from "@/components/ui/stateful-button";
+import { trpcClient } from "@/trpc";
 
 
 export const AdminSubjects = () => {
@@ -93,7 +97,14 @@ export const AdminSubjects = () => {
         },
     })
 
+    const Header = (
+        <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "subjects" })}>
+            <RefreshCw />
+            Crawl
+        </StatefulButton>
+    )
+
     return (
-        <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} />
+        <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} header={Header} />
     )
 }

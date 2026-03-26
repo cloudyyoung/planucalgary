@@ -2,9 +2,13 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 
+import { RefreshCw } from "lucide-react";
+
 import AdvancedTable from "@/components/advanced-table";
 import { useFieldsOfStudy } from "@/hooks/useFieldsOfStudy";
 import JsonView from "react18-json-view";
+import { StatefulButton } from "@/components/ui/stateful-button";
+import { trpcClient } from "@/trpc";
 
 type CourseSetItem = {
     id: number
@@ -131,7 +135,14 @@ export const AdminFieldsOfStudy = () => {
         },
     })
 
+    const Header = (
+        <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "sync-fields-of-study" })}>
+            <RefreshCw />
+            Crawl
+        </StatefulButton>
+    )
+
     return (
-        <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} />
+        <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} header={Header} />
     )
 }
