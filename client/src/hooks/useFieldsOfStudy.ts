@@ -7,6 +7,7 @@ type RouterInput = inferRouterInputs<Router>
 type RouterOutput = inferRouterOutputs<Router>
 type FieldsOfStudyListInput = RouterInput["fields_of_study"]["list"]
 type FieldsOfStudyListOutput = RouterOutput["fields_of_study"]["list"]
+export type FieldsOfStudyListItem = FieldsOfStudyListOutput["items"][number]
 
 export const useFieldsOfStudy = (props: FieldsOfStudyListInput) => {
   const result = useQuery<FieldsOfStudyListOutput>({

@@ -4,35 +4,10 @@ import { DateTime } from "luxon"
 import { Drill } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
-import { useFieldsOfStudy } from "@/hooks/useFieldsOfStudy";
+import { FieldsOfStudyListItem, useFieldsOfStudy } from "@/hooks/useFieldsOfStudy";
 import JsonView from "react18-json-view";
 import { StatefulButton } from "@/components/ui/stateful-button";
 import { trpcClient } from "@/trpc";
-
-type CourseSetItem = {
-    id: string
-    name: string
-    raw_json: unknown
-}
-
-type RequisiteRuleItem = {
-    id: string
-    referring_course_sets: CourseSetItem[]
-}
-
-type RequisiteSetItem = {
-    id: string
-    name: string
-    requisite_rules: RequisiteRuleItem[]
-}
-
-type FieldsOfStudyListItem = {
-    id: string
-    name: string
-    created_at: string
-    updated_at: string
-    requisite_set: RequisiteSetItem
-}
 
 
 export const AdminFieldsOfStudy = () => {
@@ -67,16 +42,63 @@ export const AdminFieldsOfStudy = () => {
             enableSorting: true,
         },
         {
+            id: "requisite_set_group_id",
+            accessorFn: (row) => row.requisite_set?.requisite_set_group_id,
+            header: "Requisite Set Group ID",
+            size: 250,
+            enableColumnFilter: false,
+            enableSorting: false,
+            cell: ({ cell }) => {
+                const group_id = cell.getValue<string>()
+                return <span className="font-mono">{group_id}</span>
+            },
+        },
+        {
+            id: "version",
+            accessorFn: (row) => row.requisite_set?.version,
+            header: "Version",
+            enableColumnFilter: false,
+            enableSorting: false,
+        },
+        {
+            id: "requisite_set_name",
+            accessorFn: (row) => row.requisite_set?.name,
+            header: "Requisite Set Name",
+            size: 500,
+            enableColumnFilter: false,
+            enableSorting: false,
+        },
+        {
+            id: "description",
+            accessorFn: (row) => row.requisite_set?.description,
+            header: "Description",
+            size: 500,
+            enableColumnFilter: false,
+            enableSorting: false,
+        },
+        {
+            id: "raw_json",
+            accessorFn: (row): unknown => (row as any).requisite_set?.raw_json,
+            header: "Raw JSON",
+            size: 600,
+            enableColumnFilter: false,
+            enableSorting: false,
+            cell: ({ cell }) => {
+                const raw_json = cell.getValue<unknown>()
+                return raw_json ? <JsonView src={raw_json} displaySize={false} displayArrayIndex={false} /> : null
+            },
+        },
+        {
             accessorKey: "requisite_set",
             header: "Course Sets",
             size: 600,
             enableColumnFilter: false,
             enableSorting: false,
             cell: ({ cell }) => {
-                const requisite_set = cell.getValue<RequisiteSetItem | null>()
-                const course_sets = requisite_set.requisite_rules.flatMap((r) => r.referring_course_sets)
+                const requisite_set = cell.getValue<any>()
+                const course_sets = requisite_set?.requisite_rules.flatMap((r: any) => r.referring_course_sets) ?? []
                 return <ul className="flex flex-col gap-3">
-                    {course_sets.map((cs) => (
+                    {course_sets.map((cs: any) => (
                         <li key={cs.id}>
                             <div>{cs.name}</div>
                             <JsonView src={cs.raw_json} displaySize={false} displayArrayIndex={false} />
