@@ -66,7 +66,7 @@ export const AdminFaculties = () => {
             enableSorting: true,
             cell: ({ cell }) => {
                 const isActive = cell.getValue<boolean>()
-                return <span>{isActive ? <Check className="text-success" /> : <X className="text-destructive" />}</span>
+                return <span>{isActive ? <Check className="text-emerald-600" /> : <X className="text-destructive" />}</span>
             },
         },
         {

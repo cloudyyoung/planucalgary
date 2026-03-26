@@ -2,13 +2,14 @@ import { useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JsonView from "react18-json-view";
 import { DateTime } from "luxon";
-import { Check, X } from "lucide-react";
+import { Check, X, RefreshCw } from "lucide-react";
 import { RequisiteRule } from "@prisma/browser";
-
 import { CourseListItem, useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
 import { Input } from "@/components/ui/input";
+import { StatefulButton } from "@/components/ui/stateful-button";
 import { RequisiteCard } from "@/components/requisite-card";
+import { trpcClient } from "@/trpc";
 
 export const columns: ColumnDef<CourseListItem>[] = [
   {
@@ -37,7 +38,7 @@ export const columns: ColumnDef<CourseListItem>[] = [
     size: 100,
     cell: ({ cell }) => {
       const isActive = cell.getValue<boolean>()
-      return <span>{isActive ? <Check className="text-success" /> : <X className="text-destructive" />}</span>
+      return <span>{isActive ? <Check className="text-emerald-600" /> : <X className="text-destructive" />}</span>
     },
   },
   {
@@ -154,6 +155,10 @@ export const AdminCourses = () => {
 
   const Header = <>
     <Input placeholder="Search courses..." className="max-w-sm bg-background" value={keywords} onChange={e => setKeywords(e.target.value)} />
+    <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "courses" })}>
+      <RefreshCw />
+      Crawl
+    </StatefulButton>
   </>
 
   return (

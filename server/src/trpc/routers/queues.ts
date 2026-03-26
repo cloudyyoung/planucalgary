@@ -1,9 +1,17 @@
 import { Job } from "bullmq"
+import { z } from "zod"
 
 import { createTRPCRouter, adminProcedure } from "../init"
 import { catalogQueue } from "../../queue"
 
 export const queuesRouter = createTRPCRouter({
+  enqueue: adminProcedure
+    .input(z.object({ job: z.string() }))
+    .mutation(async ({ input }) => {
+      const job = await catalogQueue.add(input.job, {})
+      return { id: job.id }
+    }),
+
   catalog: adminProcedure.query(async () => {
     const counts = await catalogQueue.getJobCounts()
     const jobs = await catalogQueue.getJobs()
