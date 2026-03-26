@@ -7,14 +7,13 @@ import { RefreshCw } from "lucide-react";
 import AdvancedTable from "@/components/advanced-table";
 import { useCourseSets } from "@/hooks/useCourseSets";
 import { StatefulButton } from "@/components/ui/stateful-button";
+import { Pill } from "@/components/ui/pill";
 import { trpcClient } from "@/trpc";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { Router } from "../../../../server/src/trpc/router";
 
-const COURSE_SET_TYPE_OPTIONS = ["REQUIRED", "OPTIONAL", "GROUP"] as const
-
 type RouterOutput = inferRouterOutputs<Router>
-type CourseSetListItem = RouterOutput["courseSets"]["list"]["items"][number]
+type CourseSetListItem = RouterOutput["course_sets"]["list"]["items"][number]
 
 
 export const AdminCourseSets = () => {
@@ -40,37 +39,36 @@ export const AdminCourseSets = () => {
       header: "ID",
       enableSorting: true,
       enableColumnFilter: true,
-    },
-    {
-      accessorKey: "csid",
-      header: "CSID",
       size: 200,
-      enableColumnFilter: true,
-      enableSorting: true,
       cell: ({ cell }) => {
         const csid = cell.getValue<string>()
         return <span className="font-mono">{csid}</span>
       },
     },
     {
-      accessorKey: "type",
-      header: "Course Set Type",
-      enableColumnFilter: true,
-      enableSorting: true,
-      meta: {
-        filterVariant: 'select',
-        filterOptions: COURSE_SET_TYPE_OPTIONS,
-      },
-    },
-    {
       accessorKey: "course_set_group_id",
       header: "Course Set Group ID",
-      size: 250,
+      size: 200,
       enableColumnFilter: true,
       enableSorting: true,
       cell: ({ cell }) => {
         const group_id = cell.getValue<string>()
         return <span className="font-mono">{group_id}</span>
+      },
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
+      enableColumnFilter: true,
+      enableSorting: true,
+      size: 80,
+      meta: {
+        filterVariant: 'select',
+        filterOptions: ["static", "dynamic"],
+      },
+      cell: ({ cell }) => {
+        const type = cell.getValue<string>()
+        return <Pill>{type}</Pill>
       },
     },
     {
@@ -88,12 +86,32 @@ export const AdminCourseSets = () => {
       enableSorting: true,
     },
     {
+      accessorKey: 'courses',
+      header: 'Courses',
+      size: 400,
+      cell: ({ cell }) => {
+        const courses = cell.getValue<{ id: string; code: string }[]>()
+        if (!courses?.length) return <span className="text-muted-foreground">—</span>
+        return <div className="flex flex-wrap gap-1">{courses.map(c => <Pill key={c.id}>{c.code}</Pill>)}</div>
+      },
+    },
+    {
+      accessorKey: 'course_list',
+      header: 'Course List',
+      size: 400,
+      cell: ({ cell }) => {
+        const list = cell.getValue<string[]>()
+        if (!list?.length) return <span className="text-muted-foreground">—</span>
+        return <span className="font-mono text-sm">{list.join(", ")}</span>
+      },
+    },
+    {
       accessorKey: 'raw_json',
       header: 'Raw JSON',
       size: 600,
       cell: ({ cell }) => {
         const raw_json = cell.getValue<any>()
-        return <JsonView src={raw_json} displaySize={false} displayArrayIndex={false} />
+        return <JsonView src={raw_json} displaySize={false} displayArrayIndex={false} collapsed />
       },
     },
     {

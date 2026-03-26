@@ -39,6 +39,12 @@ export const courseSetsRouter = createTRPCRouter({
           orderBy: getSortings(sorting),
           skip: offset,
           take: limit,
+          include: {
+            courses: {
+              select: { id: true, code: true },
+              orderBy: { code: "asc" },
+            },
+          },
         }),
         ctx.prisma.courseSet.count({
           where: whereConditions,
