@@ -34,6 +34,7 @@ export const requisiteSetsRouter = createTRPCRouter({
 
     const [items, total] = await Promise.all([
       ctx.prisma.requisiteSet.findMany({
+        include: { requisite_rules: true },
         where: whereConditions,
         orderBy: getSortings(sorting),
         skip: offset,

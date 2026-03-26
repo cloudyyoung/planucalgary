@@ -2,13 +2,14 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import JsonView from "react18-json-view";
-
 import { CloudSync } from "lucide-react";
+import { RequisiteRule } from "@prisma/client";
 
 import AdvancedTable from "@/components/advanced-table";
 import { RequisiteSetListItem, RequisiteSetListOutput, useRequisiteSets } from "@/hooks/useRequisiteSets";
 import { StatefulButton } from "@/components/ui/stateful-button";
 import { trpcClient } from "@/trpc";
+import { RequisiteCard } from "@/components/requisite-card";
 
 
 export const AdminRequisiteSets = () => {
@@ -78,12 +79,26 @@ export const AdminRequisiteSets = () => {
             enableSorting: true,
         },
         {
+            accessorKey: 'requisite_rules',
+            header: 'Rules',
+            size: 600,
+            cell: ({ cell }) => {
+                const rules = cell.getValue() as RequisiteRule[]
+                if (!rules?.length) return null
+                return (
+                    <ul className="flex flex-col gap-2">
+                        <RequisiteCard rules={rules} />
+                    </ul>
+                )
+            },
+        },
+        {
             accessorKey: 'raw_json',
             header: 'Raw JSON',
             size: 600,
             cell: ({ cell }) => {
                 const raw_json = cell.getValue<any>()
-                return <JsonView src={raw_json} displaySize={false} displayArrayIndex={false} />
+                return <JsonView src={raw_json} collapsed={1} displaySize={false} displayArrayIndex={false} />
             },
         },
         {
