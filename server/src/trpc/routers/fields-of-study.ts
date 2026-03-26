@@ -5,32 +5,38 @@ import { paginationInputSchema, resolvePagination } from "../pagination"
 
 import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
 
+const includeCourseSets = {
+  requisite_set: {
+    include: {
+      requisite_rules: {
+        include: { referring_course_sets: true },
+      },
+    },
+  },
+}
+
 export const fieldsOfStudyRouter = createTRPCRouter({
   list: publicProcedure
     .input(
       z.object({
         id: z.string().optional(),
         name: z.string().optional(),
-        description: z.string().optional(),
-        notes: z.string().optional(),
         sorting: z.array(z.string()).optional(),
       })
       .merge(paginationInputSchema)
     )
     .query(async ({ ctx, input }) => {
-    const { id, name, description, notes, sorting } = input
+    const { id, name, sorting } = input
     const { offset, limit } = resolvePagination(input)
 
     const whereConditions = {
       ...(id && { id: { contains: id } }),
       ...(name && { name: { contains: name } }),
-      ...(description && { description: { contains: description } }),
-      ...(notes && { notes: { contains: notes } }),
     }
 
     const [items, total] = await Promise.all([
       ctx.prisma.fieldOfStudy.findMany({
-        include: { course_sets: true },
+        include: includeCourseSets,
         where: whereConditions,
         orderBy: getSortings(sorting),
         skip: offset,
@@ -53,7 +59,7 @@ export const fieldsOfStudyRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
     const fieldOfStudy = await ctx.prisma.fieldOfStudy.findUnique({
-      include: { course_sets: true },
+      include: includeCourseSets,
       where: { id: input.id },
     })
 
@@ -68,16 +74,9 @@ export const fieldsOfStudyRouter = createTRPCRouter({
     }),
 
   create: adminProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        description: z.string().nullable().optional(),
-        notes: z.string().nullable().optional(),
-      })
-    )
+    .input(z.object({ name: z.string() }))
     .mutation(async ({ ctx, input }) => {
     const existing = await ctx.prisma.fieldOfStudy.findFirst({
-      include: { course_sets: true },
       where: { name: input.name },
     })
 
@@ -90,25 +89,17 @@ export const fieldsOfStudyRouter = createTRPCRouter({
 
     return ctx.prisma.fieldOfStudy.create({
       data: input,
-      include: { course_sets: true },
+      include: includeCourseSets,
     })
     }),
 
   update: adminProcedure
-    .input(
-      z
-        .object({
-          name: z.string().optional(),
-          description: z.string().nullable().optional(),
-          notes: z.string().nullable().optional(),
-        })
-        .merge(z.object({ id: z.string() }))
-    )
+    .input(z.object({ id: z.string(), name: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       const { id, ...updateData } = input
 
       return ctx.prisma.fieldOfStudy.update({
-        include: { course_sets: true },
+        include: includeCourseSets,
         where: { id },
         data: updateData,
       })

@@ -119,7 +119,6 @@ model CourseSet {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  fields_of_study FieldOfStudy[]
   requisite_rules RequisiteRule[]
   courses         Course[]
   requisite       Requisite[]
@@ -271,10 +270,9 @@ model FieldOfStudy {
   updated_at DateTime @default(now()) @updatedAt
 
   name        String  @unique
-  description String?
-  notes       String?
 
-  course_sets CourseSet[]
+  requisite_set_id String       @unique
+  requisite_set    RequisiteSet @relation(fields: [requisite_set_id], references: [id], onDelete: Cascade)
 
   @@map("fields_of_study")
   @@schema("catalog")
@@ -350,6 +348,7 @@ model RequisiteSet {
 
   requisites      Requisite[]
   requisite_rules RequisiteRule[]
+  field_of_study  FieldOfStudy?
 
   requisite_set_group_id String  @unique
   version                Int

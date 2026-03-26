@@ -10,19 +10,28 @@ import { StatefulButton } from "@/components/ui/stateful-button";
 import { trpcClient } from "@/trpc";
 
 type CourseSetItem = {
-    id: number
+    id: string
     name: string
     raw_json: unknown
 }
 
-type FieldsOfStudyListItem = {
-    id: number
+type RequisiteRuleItem = {
+    id: string
+    referring_course_sets: CourseSetItem[]
+}
+
+type RequisiteSetItem = {
+    id: string
     name: string
-    description: string | null
-    notes: string | null
+    requisite_rules: RequisiteRuleItem[]
+}
+
+type FieldsOfStudyListItem = {
+    id: string
+    name: string
     created_at: string
     updated_at: string
-    course_sets: CourseSetItem[]
+    requisite_set: RequisiteSetItem
 }
 
 
@@ -58,13 +67,14 @@ export const AdminFieldsOfStudy = () => {
             enableSorting: true,
         },
         {
-            accessorKey: "course_sets",
+            accessorKey: "requisite_set",
             header: "Course Sets",
             size: 600,
             enableColumnFilter: false,
             enableSorting: false,
             cell: ({ cell }) => {
-                const course_sets = cell.getValue<CourseSetItem[]>()
+                const requisite_set = cell.getValue<RequisiteSetItem | null>()
+                const course_sets = requisite_set.requisite_rules.flatMap((r) => r.referring_course_sets)
                 return <ul className="flex flex-col gap-3">
                     {course_sets.map((cs) => (
                         <li key={cs.id}>
@@ -74,20 +84,6 @@ export const AdminFieldsOfStudy = () => {
                     ))}
                 </ul>
             },
-        },
-        {
-            accessorKey: "description",
-            header: "Description",
-            size: 500,
-            enableColumnFilter: true,
-            enableSorting: true,
-        },
-        {
-            accessorKey: "notes",
-            header: "Notes",
-            size: 500,
-            enableColumnFilter: true,
-            enableSorting: true,
         },
         {
             accessorKey: 'updated_at',
