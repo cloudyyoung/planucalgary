@@ -3,7 +3,8 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import { DateTime } from "luxon"
 import type { inferRouterOutputs } from "@trpc/server";
 import type { Router } from "../../../../server/src/trpc/router";
-import { Check, X, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
+import { Pill, PillIndicator } from "@/components/ui/pill";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useDepartments } from "@/hooks/useDepartments";
@@ -68,7 +69,10 @@ export const AdminDepartments = () => {
             enableSorting: true,
             cell: ({ cell }) => {
                 const isActive = cell.getValue<boolean>()
-                return <span>{isActive ? <Check className="text-emerald-600" /> : <X className="text-destructive" />}</span>
+                return <Pill>
+                    <PillIndicator variant={isActive ? "success" : "error"} />
+                    {isActive ? "Active" : "Inactive"}
+                </Pill>
             },
         },
         {

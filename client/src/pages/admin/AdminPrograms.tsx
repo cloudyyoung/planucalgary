@@ -2,10 +2,11 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import JsonView from "react18-json-view";
-import { Check, X, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { usePrograms } from "@/hooks/usePrograms";
+import { Pill, PillIndicator } from "@/components/ui/pill";
 import { FacultyPills } from "@/components/faculty-pills";
 import { DepartmentPills } from "@/components/department-pills";
 import { StatefulButton } from "@/components/ui/stateful-button";
@@ -117,7 +118,10 @@ export const AdminPrograms = () => {
             enableColumnFilter: true,
             cell: ({ cell }) => {
                 const isActive = cell.getValue<boolean>()
-                return <span>{isActive ? <Check className="text-emerald-600" /> : <X className="text-destructive" />}</span>
+                return <Pill>
+                    <PillIndicator variant={isActive ? "success" : "error"} />
+                    {isActive ? "Active" : "Inactive"}
+                </Pill>
             },
             meta: {
                 filterVariant: "select",

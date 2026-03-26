@@ -2,13 +2,14 @@ import { useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JsonView from "react18-json-view";
 import { DateTime } from "luxon";
-import { Check, X, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { RequisiteRule } from "@prisma/browser";
 import { CourseListItem, useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
 import { Input } from "@/components/ui/input";
 import { StatefulButton } from "@/components/ui/stateful-button";
 import { RequisiteCard } from "@/components/requisite-card";
+import { Pill, PillIndicator } from "@/components/ui/pill";
 import { trpcClient } from "@/trpc";
 
 export const columns: ColumnDef<CourseListItem>[] = [
@@ -38,7 +39,10 @@ export const columns: ColumnDef<CourseListItem>[] = [
     size: 100,
     cell: ({ cell }) => {
       const isActive = cell.getValue<boolean>()
-      return <span>{isActive ? <Check className="text-emerald-600" /> : <X className="text-destructive" />}</span>
+      return <Pill>
+        <PillIndicator variant={isActive ? "success" : "error"} />
+        {isActive ? "Active" : "Inactive"}
+      </Pill>
     },
   },
   {
