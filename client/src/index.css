@@ -215,3 +215,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+.json-view {
+  color: #5f6d70;
+  --json-property: #f92672;
+  --json-index: #1fb7fd;
+  --json-number: #a6e22e;
+  --json-string: #fd971f;
+  --json-boolean: #ac81fe;
+  --json-null: #a6e22e;
+}
