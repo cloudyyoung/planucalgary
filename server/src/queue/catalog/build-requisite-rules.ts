@@ -36,10 +36,12 @@ async function buildRequisiteRule(rule: RequisiteRule, prisma: PrismaClient) {
 
     const rawJson = rule.raw_json as any as RequisiteRuleValue
     const values = rawJson.values
+    if (!values) return
+
     const flattenedValues: string[] = values.flatMap((v) => {
       if (typeof v === "string") {
         return [v]
-      } else if (typeof v === "object" && v.logic && Array.isArray(v.value)) {
+      } else if (typeof v === "object" && v !== null && Array.isArray(v.value)) {
         return v.value
       }
       return []

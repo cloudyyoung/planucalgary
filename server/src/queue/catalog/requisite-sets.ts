@@ -83,7 +83,7 @@ export async function processRequisite(requisiteData: RequisiteData, prisma: Pri
           restriction: rule.restriction,
           grade: rule.grade,
           grade_type: rule.gradeType,
-          raw_json: convertDictKeysCamelToSnake(rule.value),
+          raw_json: convertDictKeysCamelToSnake(rule.value as Record<string, any> | undefined),
         },
         update: {
           name: rule.name,
@@ -99,7 +99,7 @@ export async function processRequisite(requisiteData: RequisiteData, prisma: Pri
           restriction: rule.restriction,
           grade: rule.grade,
           grade_type: rule.gradeType,
-          raw_json: convertDictKeysCamelToSnake(rule.value),
+          raw_json: convertDictKeysCamelToSnake(rule.value as Record<string, any> | undefined),
         },
       })
     }) ?? [])
