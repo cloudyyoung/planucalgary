@@ -29,7 +29,7 @@ interface CDRequisite {
 /**
  * Sync fields of study from requisite sets
  */
-export async function syncFieldsOfStudy(job: Job) {
+export async function extractFieldsOfStudy(job: Job) {
   const adapter = new PrismaPg({ connectionString: DATABASE_URL })
   const prisma = new PrismaClient({ adapter })
 
