@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import JsonView from "react18-json-view";
-import { RefreshCw } from "lucide-react";
+import { CloudSync } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { usePrograms } from "@/hooks/usePrograms";
@@ -214,7 +214,7 @@ export const AdminPrograms = () => {
 
     const Header = (
         <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "programs" })}>
-            <RefreshCw />
+            <CloudSync />
             Crawl
         </StatefulButton>
     )

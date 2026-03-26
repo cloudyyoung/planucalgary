@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import JsonView from "react18-json-view";
-import { RefreshCw } from "lucide-react";
+import { CloudSync, Drill } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useCourseSets } from "@/hooks/useCourseSets";
@@ -161,11 +161,11 @@ export const AdminCourseSets = () => {
 
   const Header = <>
     <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "course-sets" })}>
-      <RefreshCw />
+      <CloudSync />
       Crawl
     </StatefulButton>
     <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "build-course-sets" })}>
-      <RefreshCw />
+      <Drill />
       Build
     </StatefulButton>
   </>

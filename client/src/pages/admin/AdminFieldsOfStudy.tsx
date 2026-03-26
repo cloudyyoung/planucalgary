@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 
-import { RefreshCw } from "lucide-react";
+import { CloudSync } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useFieldsOfStudy } from "@/hooks/useFieldsOfStudy";
@@ -137,7 +137,7 @@ export const AdminFieldsOfStudy = () => {
 
     const Header = (
         <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "sync-fields-of-study" })}>
-            <RefreshCw />
+            <CloudSync />
             Crawl
         </StatefulButton>
     )

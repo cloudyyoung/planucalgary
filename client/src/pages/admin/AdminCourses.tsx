@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import JsonView from "react18-json-view";
 import { DateTime } from "luxon";
-import { RefreshCw } from "lucide-react";
+import { CloudSync } from "lucide-react";
 import { RequisiteRule } from "@prisma/browser";
 import { CourseListItem, useCourses } from "@/hooks/useCourses"
 import AdvancedTable from "@/components/advanced-table";
@@ -160,7 +160,7 @@ export const AdminCourses = () => {
   const Header = <>
     <Input placeholder="Search courses..." className="max-w-sm bg-background" value={keywords} onChange={e => setKeywords(e.target.value)} />
     <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "courses" })}>
-      <RefreshCw />
+      <CloudSync />
       Crawl
     </StatefulButton>
   </>

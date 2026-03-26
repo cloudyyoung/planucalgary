@@ -3,7 +3,7 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import { DateTime } from "luxon"
 import type { inferRouterOutputs } from "@trpc/server";
 import type { Router } from "../../../../server/src/trpc/router";
-import { RefreshCw } from "lucide-react";
+import { CloudSync } from "lucide-react";
 import { Pill, PillIndicator } from "@/components/ui/pill";
 
 import AdvancedTable from "@/components/advanced-table";
@@ -122,7 +122,7 @@ export const AdminDepartments = () => {
 
     const Header = (
         <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "departments" })}>
-            <RefreshCw />
+            <CloudSync />
             Crawl
         </StatefulButton>
     )

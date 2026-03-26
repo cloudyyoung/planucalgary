@@ -3,7 +3,7 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import { DateTime } from "luxon"
 import JsonView from "react18-json-view";
 
-import { RefreshCw } from "lucide-react";
+import { CloudSync } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { RequisiteSetListItem, RequisiteSetListOutput, useRequisiteSets } from "@/hooks/useRequisiteSets";
@@ -133,7 +133,7 @@ export const AdminRequisiteSets = () => {
 
     const Header = (
         <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "requisite-sets" })}>
-            <RefreshCw />
+            <CloudSync />
             Crawl
         </StatefulButton>
     )
