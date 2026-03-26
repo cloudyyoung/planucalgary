@@ -399,12 +399,10 @@ export async function crawlCourses(job: Job) {
       const batch = coursesData.slice(i, i + BATCH_SIZE)
       const currentBatch = Math.floor(i / BATCH_SIZE) + 1
 
-      // Process batch in parallel within a transaction
-      const results = await prisma.$transaction((tx) => {
-        return Promise.allSettled(
-          batch.map(courseData => processCourse(courseData, tx as PrismaClient))
-        )
-      })
+      // Process batch in parallel, each course in its own atomic transaction
+      const results = await Promise.allSettled(
+        batch.map(courseData => prisma.$transaction((tx) => processCourse(courseData, tx as PrismaClient)))
+      )
 
       // Count successes and failures
       const succeeded = results.filter(r => r.status === 'fulfilled').length
