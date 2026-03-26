@@ -7,7 +7,6 @@ import { crawlPrograms } from "./catalog/programs";
 import { crawlRequisiteSets } from "./catalog/requisite-sets";
 import { crawlSubjects } from "./catalog/subjects";
 import { syncFieldsOfStudy } from "./catalog/sync-fields-of-study";
-import { syncRequisitesJsons } from "./catalog/sync-requisites-jsons";
 import { buildRequisiteRules } from "./catalog/build-requisite-rules";
 import { buildCourseSets } from "./catalog/build-course-sets";
 
@@ -26,8 +25,6 @@ export const cataloglWorker = new Worker(
             await crawlRequisiteSets(job)
         } else if (job.name === "subjects") {
             await crawlSubjects(job)
-        } else if (job.name === "sync-requisites-jsons") {
-            await syncRequisitesJsons(job)
         } else if (job.name === "sync-fields-of-study") {
             await syncFieldsOfStudy(job)
         } else if (job.name === "build-requisite-rules") {

@@ -141,34 +141,6 @@ model CourseSet {
   @@schema("catalog")
 }
 
-enum RequisiteType {
-  PREREQ
-  COREQ
-  ANTIREQ
-  COURSE_SET
-  REQUISITE_SET
-
-  @@schema("catalog")
-}
-
-model RequisiteJson {
-  id         String   @id @default(uuid())
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
-
-  requisite_type RequisiteType
-  text           String
-  departments    String[]
-  faculties      String[]
-
-  json_choices Json[]
-  json         Json?
-  raw_json     Json?
-
-  @@unique([requisite_type, text, departments, faculties], map: "requisite_components_unique")
-  @@map("requisites_jsons")
-  @@schema("catalog")
-}
 
 model Faculty {
   code       String   @id

@@ -28,7 +28,6 @@ import { queryClient } from './trpc'
 
 import { Courses } from '@/pages/courses/Courses'
 import { AdminCourses } from './pages/admin/AdminCourses'
-import { AdminRequisitesJsons } from './pages/admin/AdminRequisitesJsons'
 import { AdminCourseSets } from './pages/admin/AdminCourseSets'
 import { AdminSubjects } from './pages/admin/AdminSubjects'
 import { AdminDepartments } from './pages/admin/AdminDepartments'
@@ -55,7 +54,6 @@ const router = createBrowserRouter([
       { path: "admin/departments", element: <AdminDepartments /> },
       { path: "admin/faculties", element: <AdminFaculties /> },
       { path: "admin/programs", element: <AdminPrograms /> },
-      { path: "admin/requisites-jsons", element: <AdminRequisitesJsons /> },
       { path: "admin/queues/catalog", element: <AdminCatalogQueue /> },
     ],
   }
@@ -122,10 +120,6 @@ const adminMenuItems = [
   {
     title: "Programs",
     url: "admin/programs",
-  },
-  {
-    title: "Requisites Jsons",
-    url: "admin/requisites-jsons",
   },
   {
     title: "Catalog Queue",
