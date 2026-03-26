@@ -141,12 +141,16 @@ export const AdminCourseSets = () => {
     },
   })
 
-  const Header = (
+  const Header = <>
     <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "course-sets" })}>
       <RefreshCw />
       Crawl
     </StatefulButton>
-  )
+    <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "build-course-sets" })}>
+      <RefreshCw />
+      Build
+    </StatefulButton>
+  </>
 
   return (
     <AdvancedTable table={table} isLoading={isLoading} isFetching={isFetching} header={Header} />
