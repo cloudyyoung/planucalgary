@@ -3,7 +3,7 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import { DateTime } from "luxon";
 import JsonView from "react18-json-view";
 
-import { CloudSync } from "lucide-react";
+import { Drill } from "lucide-react";
 
 import AdvancedTable from "@/components/advanced-table";
 import { RequisiteRuleListItem, RequisiteRuleListOutput, useRequisiteRules } from "@/hooks/useRequisiteRules";
@@ -263,8 +263,8 @@ export const AdminRequisiteRules = () => {
 
   const Header = (
     <StatefulButton variant="outline" onClick={() => trpcClient.queues.enqueue.mutate({ job: "build-requisite-rules" })}>
-      <CloudSync />
-      Crawl
+      <Drill />
+      Build
     </StatefulButton>
   );
 
