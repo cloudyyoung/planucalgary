@@ -1,6 +1,6 @@
 import { Job } from "bullmq"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { RequisiteData, RequisiteSetData } from "./types"
+import { RequisiteData, RequisiteRuleData, RequisiteSetData } from "./types"
 import { PrismaClient } from "@/generated/prisma/client"
 import axios from "axios"
 import { DATABASE_URL } from "../../config"
@@ -30,80 +30,79 @@ function convertDictKeysCamelToSnake<T extends Record<string, any>>(d: T | undef
   return e
 }
 
-function convertListCamelToSnake(a: any[]): any[] {
+function convertListCamelToSnake(a: any[] | undefined): any[] | undefined {
+  if (!a) return undefined
+
   return a.map((i) =>
     i && typeof i === "object" && !Array.isArray(i) ? convertDictKeysCamelToSnake(i as Record<string, any>) : i
   )
 }
 
-function processRequisites(requisites: any[] | undefined): any[] {
-  if (!requisites) {
-    return []
-  }
-
-  return convertListCamelToSnake(requisites)
-}
-
 /**
  * Process a single requisite upsert
  */
-export async function processRequisite(requisiteData: RequisiteData, prisma: PrismaClient): Promise<void> {
-  await prisma.requisite.upsert({
+export async function processRequisite(requisiteData: RequisiteData, prisma: PrismaClient) {
+  const requisite = await prisma.requisite.upsert({
     where: { id: requisiteData.id },
     create: {
       id: requisiteData.id,
       name: requisiteData.name,
       type: requisiteData.type,
-      raw_rules: processRequisites(requisiteData.rules),
+      raw_rules: convertListCamelToSnake(requisiteData.rules),
     },
     update: {
       name: requisiteData.name,
       type: requisiteData.type,
-      raw_rules: processRequisites(requisiteData.rules),
+      raw_rules: convertListCamelToSnake(requisiteData.rules),
     },
   })
 
   await Promise.all(
-    (requisiteData.rules.flatMap((rule) => {
-      return prisma.requisiteRule.upsert({
-        where: { id: rule.id },
-        create: {
-          id: rule.id,
-          requisite_id: requisiteData.id,
-          name: rule.name,
-          description: rule.description,
-          notes: rule.notes,
-          condition: rule.condition,
-          min_courses: rule.minCourses,
-          max_courses: rule.maxCourses,
-          min_credits: rule.minCredits,
-          max_credits: rule.maxCredits,
-          credits: rule.credits,
-          number: rule.number,
-          restriction: rule.restriction,
-          grade: rule.grade,
-          grade_type: rule.gradeType,
-          raw_json: convertDictKeysCamelToSnake(rule.value as Record<string, any> | undefined),
-        },
-        update: {
-          name: rule.name,
-          description: rule.description,
-          notes: rule.notes,
-          condition: rule.condition,
-          min_courses: rule.minCourses,
-          max_courses: rule.maxCourses,
-          min_credits: rule.minCredits,
-          max_credits: rule.maxCredits,
-          credits: rule.credits,
-          number: rule.number,
-          restriction: rule.restriction,
-          grade: rule.grade,
-          grade_type: rule.gradeType,
-          raw_json: convertDictKeysCamelToSnake(rule.value as Record<string, any> | undefined),
-        },
-      })
-    }) ?? [])
+    (requisiteData.rules.flatMap((rule) => processRequisiteRule(rule, requisiteData.id, prisma)))
   )
+
+  return requisite
+}
+
+async function processRequisiteRule(ruleData: RequisiteRuleData, requisiteId: string, prisma: PrismaClient) {
+  const requisiteRule = await prisma.requisiteRule.upsert({
+    where: { id: ruleData.id },
+    create: {
+      id: ruleData.id,
+      requisite_id: requisiteId,
+      name: ruleData.name,
+      description: ruleData.description,
+      notes: ruleData.notes,
+      condition: ruleData.condition,
+      min_courses: ruleData.minCourses,
+      max_courses: ruleData.maxCourses,
+      min_credits: ruleData.minCredits,
+      max_credits: ruleData.maxCredits,
+      credits: ruleData.credits,
+      number: ruleData.number,
+      restriction: ruleData.restriction,
+      grade: ruleData.grade,
+      grade_type: ruleData.gradeType,
+      raw_json: convertDictKeysCamelToSnake(ruleData.value as Record<string, any> | undefined),
+    },
+    update: {
+      name: ruleData.name,
+      description: ruleData.description,
+      notes: ruleData.notes,
+      condition: ruleData.condition,
+      min_courses: ruleData.minCourses,
+      max_courses: ruleData.maxCourses,
+      min_credits: ruleData.minCredits,
+      max_credits: ruleData.maxCredits,
+      credits: ruleData.credits,
+      number: ruleData.number,
+      restriction: ruleData.restriction,
+      grade: ruleData.grade,
+      grade_type: ruleData.gradeType,
+      raw_json: convertDictKeysCamelToSnake(ruleData.value as Record<string, any> | undefined),
+    },
+  })
+  return requisiteRule
 }
 
 /**
@@ -112,7 +111,7 @@ export async function processRequisite(requisiteData: RequisiteData, prisma: Pri
 async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: PrismaClient): Promise<void> {
   const name = requisiteSetData.name.trim()
   const description = requisiteSetData.description || null
-  const rawJson = processRequisites(requisiteSetData.requisites)
+  const rawJson = convertListCamelToSnake(requisiteSetData.requisites)
 
   const createdAt = requisiteSetData.createdAt ? new Date(requisiteSetData.createdAt) : new Date()
   const lastEditedAt = requisiteSetData.lastEditedAt ? new Date(requisiteSetData.lastEditedAt) : new Date()
@@ -146,13 +145,13 @@ async function processRequisiteSet(requisiteSetData: RequisiteSetData, prisma: P
     return
   }
 
-  await Promise.all(requisiteSetData.requisites.map((req) => processRequisite(req, prisma)))
+  const requisites = await Promise.all(requisiteSetData.requisites.map((rule) => processRequisite(rule, prisma)))
 
   await prisma.requisiteSet.update({
     where: { id: data.id },
     data: {
       requisites: {
-        set: requisiteSetData.requisites.map((r) => ({ id: r.id })) || [],
+        set: requisites.map((r) => ({ id: r.id })),
       },
     },
   })
