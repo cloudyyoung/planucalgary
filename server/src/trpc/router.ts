@@ -9,6 +9,7 @@ import { programsRouter } from "./routers/programs"
 import { queuesRouter } from "./routers/queues"
 import { requisiteRulesRouter } from "./routers/requisite-rules"
 import { requisiteSetsRouter } from "./routers/requisite-sets"
+import { requisitesRouter } from "./routers/requisites"
 import { subjectsRouter } from "./routers/subjects"
 
 export const router = createTRPCRouter({
@@ -22,6 +23,7 @@ export const router = createTRPCRouter({
   queues: queuesRouter,
   requisite_rules: requisiteRulesRouter,
   requisite_sets: requisiteSetsRouter,
+  requisites: requisitesRouter,
   subjects: subjectsRouter,
 })
 
