@@ -3,10 +3,10 @@ import { z } from "zod"
 import { getSortings } from "../sorting"
 import { paginationInputSchema, resolvePagination } from "../pagination"
 
-import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
+import { createTRPCRouter, adminProcedure } from "../init"
 
 export const requisitesRouter = createTRPCRouter({
-  list: publicProcedure
+  list: adminProcedure
     .input(
       z.object({
         id: z.string().optional(),
@@ -15,7 +15,7 @@ export const requisitesRouter = createTRPCRouter({
         notes: z.string().optional(),
         sorting: z.array(z.string()).optional(),
       })
-      .merge(paginationInputSchema)
+        .merge(paginationInputSchema)
     )
     .query(async ({ ctx, input }) => {
       const { id, type, name, notes, sorting } = input
@@ -36,11 +36,6 @@ export const requisitesRouter = createTRPCRouter({
           take: limit,
           include: {
             rules: true,
-            prereq_courses: { select: { id: true, code: true, name: true } },
-            coreq_courses: { select: { id: true, code: true, name: true } },
-            antireq_courses: { select: { id: true, code: true, name: true } },
-            programs: { select: { id: true, code: true, name: true } },
-            requisite_sets: { select: { id: true, name: true } },
           },
         }),
         ctx.prisma.requisite.count({
@@ -56,18 +51,13 @@ export const requisitesRouter = createTRPCRouter({
       }
     }),
 
-  get: publicProcedure
+  get: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const requisite = await ctx.prisma.requisite.findUnique({
         where: { id: input.id },
         include: {
           rules: true,
-          prereq_courses: true,
-          coreq_courses: true,
-          antireq_courses: true,
-          programs: true,
-          requisite_sets: true,
         },
       })
 

@@ -3,10 +3,10 @@ import { z } from "zod"
 import { getSortings } from "../sorting"
 import { paginationInputSchema, resolvePagination } from "../pagination"
 
-import { createTRPCRouter, adminProcedure, publicProcedure } from "../init"
+import { createTRPCRouter, adminProcedure } from "../init"
 
 export const requisiteSetsRouter = createTRPCRouter({
-  list: publicProcedure
+  list: adminProcedure
     .input(
       z.object({
         id: z.string().optional(),
@@ -59,7 +59,7 @@ export const requisiteSetsRouter = createTRPCRouter({
       }
     }),
 
-  get: publicProcedure
+  get: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const requisiteSet = await ctx.prisma.requisiteSet.findUnique({
