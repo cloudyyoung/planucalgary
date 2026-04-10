@@ -35,7 +35,14 @@ export const requisitesRouter = createTRPCRouter({
           skip: offset,
           take: limit,
           include: {
-            rules: true,
+            rules: {
+              include: {
+                referring_course_sets: true,
+                referring_programs: true,
+                referring_courses: true,
+                referring_requisite_sets: true,
+              }
+            },
           },
         }),
         ctx.prisma.requisite.count({

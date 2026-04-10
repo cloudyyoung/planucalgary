@@ -100,12 +100,12 @@ const adminMenuItems = [
     url: "admin/requisites",
   },
   {
-    title: "Requisite Sets",
-    url: "admin/requisite-sets",
-  },
-  {
     title: "Requisite Rules",
     url: "admin/requisite-rules",
+  },
+  {
+    title: "Requisite Sets",
+    url: "admin/requisite-sets",
   },
   {
     title: "Fields of Study",
