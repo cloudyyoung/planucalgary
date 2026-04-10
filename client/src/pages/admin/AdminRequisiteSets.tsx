@@ -79,15 +79,21 @@ export const AdminRequisiteSets = () => {
             enableSorting: true,
         },
         {
-            accessorKey: 'requisite_rules',
-            header: 'Rules',
+            accessorKey: 'requisites',
+            header: 'Requisites',
             size: 600,
             cell: ({ cell }) => {
-                const rules = cell.getValue() as RequisiteRule[]
-                if (!rules?.length) return null
+                const requisites = cell.getValue<any[]>()
+                if (!requisites?.length) return null
                 return (
                     <ul className="flex flex-col gap-2">
-                        <RequisiteCard rules={rules} />
+                        {
+                            requisites.map((requisite) => (
+                                <li key={requisite.id}>
+                                    <RequisiteCard rules={requisite.rules} />
+                                </li>
+                            ))
+                        }
                     </ul>
                 )
             },
