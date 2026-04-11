@@ -140,7 +140,6 @@ model CourseSet {
   @@schema("catalog")
 }
 
-
 model Faculty {
   code       String   @id
   created_at DateTime @default(now())
@@ -219,10 +218,10 @@ model Program {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  departments     Department[]
-  faculties       Faculty[]
-  requisites      Requisite[]
-  requisite_rules RequisiteRule[]
+  departments              Department[]
+  faculties                Faculty[]
+  requisites               Requisite[]
+  referred_requisite_rules RequisiteRule[]
 
   program_group_id String @unique
 
@@ -269,7 +268,7 @@ model FieldOfStudy {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  name        String  @unique
+  name String @unique
 
   requisite_set_id String       @unique
   requisite_set    RequisiteSet @relation(fields: [requisite_set_id], references: [id], onDelete: Cascade)
@@ -284,12 +283,13 @@ model Requisite {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  prereq_courses  Course[]       @relation("course_prereq")
-  coreq_courses   Course[]       @relation("course_coreq")
-  antireq_courses Course[]       @relation("course_antireq")
-  programs        Program[]
-  course_sets     CourseSet[]
-  requisite_sets  RequisiteSet[]
+  prereq_courses  Course[] @relation("course_prereq")
+  coreq_courses   Course[] @relation("course_coreq")
+  antireq_courses Course[] @relation("course_antireq")
+
+  referred_programs       Program[]
+  referred_course_sets    CourseSet[]
+  referred_requisite_sets RequisiteSet[]
 
   type  String
   name  String
