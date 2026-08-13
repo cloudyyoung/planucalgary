@@ -12,9 +12,11 @@ export const DepartmentPills = ({ departments }: { departments: (Department | st
             </Pill>
           )
         }
+
+        const hasFullDepartmentName = department.display_name && department.display_name !== department.name
         return (
           <Pill key={department.code}>
-            <PillStatus>{department.code}</PillStatus>
+            {hasFullDepartmentName && <PillStatus>{department.code}</PillStatus>}
             <span>{department.display_name}</span>
           </Pill>
         )

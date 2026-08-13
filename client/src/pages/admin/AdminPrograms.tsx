@@ -143,7 +143,7 @@ export const AdminPrograms = () => {
         {
             accessorKey: 'departments',
             header: 'Departments',
-            size: 200,
+            size: 400,
             cell: ({ cell }) => {
                 const departments = cell.getValue<DepartmentItem[]>()
                 return <DepartmentPills departments={departments} />
