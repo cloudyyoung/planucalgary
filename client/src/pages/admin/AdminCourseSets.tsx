@@ -3,11 +3,12 @@ import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, Pa
 import { DateTime } from "luxon"
 import JsonView from "react18-json-view";
 import { CloudSync, Drill } from "lucide-react";
+import _ from "lodash";
 
 import AdvancedTable from "@/components/advanced-table";
 import { useCourseSets } from "@/hooks/useCourseSets";
 import { StatefulButton } from "@/components/ui/stateful-button";
-import { Pill } from "@/components/ui/pill";
+import { Pill, PillIndicator } from "@/components/ui/pill";
 import { trpcClient } from "@/trpc";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { Router } from "../../../../server/src/trpc/router";
@@ -61,14 +62,22 @@ export const AdminCourseSets = () => {
       header: "Type",
       enableColumnFilter: true,
       enableSorting: true,
-      size: 80,
+      size: 110,
       meta: {
         filterVariant: 'select',
-        filterOptions: ["static", "dynamic"],
+        filterOptions: [
+          { label: "Static", value: "static" },
+          { label: "Dynamic", value: "dynamic" },
+        ],
       },
       cell: ({ cell }) => {
         const type = cell.getValue<string>()
-        return <Pill>{type}</Pill>
+        const isStatic = type === "static"
+        const isDynamic = type === "dynamic"
+        return <Pill>
+          <PillIndicator variant={isStatic ? "success" : isDynamic ? "info" : "error"} />
+          {_.capitalize(type)}
+        </Pill>
       },
     },
     {

@@ -15,10 +15,10 @@ export const RequisiteCard = ({ rules }: { rules?: RequisiteRule[] }) => {
       {rules?.map(rule => (
         <Item variant="outline" size="sm" key={rule.id} className="p-2">
           <ItemContent>
-            <ItemTitle>
-              {rule.name ?? "Unnamed Rule"}
-              <Badge variant="secondary" className="text-gray-400 flex justify-center items-center">{rule.id}</Badge>
-            </ItemTitle>
+            <ItemDescription>
+              <Badge variant="secondary" className="text-gray-400">{rule.id}</Badge>
+            </ItemDescription>
+            <ItemTitle>{rule.name ?? "Unnamed Rule"}</ItemTitle>
             {rule.description && <ItemDescription>{rule.description}</ItemDescription>}
             <ItemDescription>{getValue(rule)}</ItemDescription>
           </ItemContent>
