@@ -18,7 +18,7 @@ type BaseRequisiteRule = Prisma.RequisiteRuleGetPayload<{
   };
 }>;
 
-type RequisiteRuleWithRelations = BaseRequisiteRule & {
+export type RequisiteRuleWithRelations = BaseRequisiteRule & {
   sub_rules: RequisiteRuleWithRelations[];
 };
 
@@ -50,8 +50,6 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
     value = rule.credits
   } else if (condition === "minimumGrade" || condition === "averageGrade") {
     value = `${rule.grade} (${rule.grade_type})`
-  } else if (condition === "freeformText") {
-    value = rule.notes
   }
 
   if (rule.referring_courses) {
@@ -114,6 +112,7 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
         {rule.description && <ItemDescription>{rule.description}</ItemDescription>}
         <ItemDescription>
           {condition}: {value}
+          {rule.notes}
           {referringCourses}
           {referringPrograms}
           {referringCourseSets}

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/browser"
+import { Prisma, Requisite } from "@prisma/browser"
 import {
   Item,
   ItemContent,
@@ -6,22 +6,13 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { Badge } from "@/components/ui/badge"
-import { RequisiteRuleCard } from "@/components/requisite-rule-card"
+import { RequisiteRuleCard, RequisiteRuleWithRelations } from "@/components/requisite-rule-card"
 
-type RequisiteWithRules = Prisma.RequisiteGetPayload<{
-  include: {
-    rules: {
-      include: {
-        referring_courses: true
-        referring_programs: true
-        referring_course_sets: true
-        referring_requisite_sets: true
-      }
-    }
-  }
-}>
+type RequisiteWithRelations = Requisite & {
+  rules: RequisiteRuleWithRelations[]
+}
 
-export const RequisiteCard = ({ requisite }: { requisite: RequisiteWithRules }) => {
+export const RequisiteCard = ({ requisite }: { requisite: RequisiteWithRelations }) => {
   return (
     <Item variant="outline" size="sm" className="p-2.5">
       <ItemContent>
