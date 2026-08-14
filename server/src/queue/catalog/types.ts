@@ -25,6 +25,7 @@ export type RequisiteRuleData = {
   grade?: string | null
   gradeType?: string | null
   value?: unknown
+  subRules?: RequisiteRuleData[]
 }
 
 export type RequisiteData = {

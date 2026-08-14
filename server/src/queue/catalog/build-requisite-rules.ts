@@ -24,28 +24,42 @@ export async function buildRequisiteRules(job: Job) {
   await prisma.$disconnect()
 }
 
+function flattenRuleValues(rawJson: RequisiteRuleValue | null | undefined): string[] {
+  if (!rawJson?.values) return []
+
+  return rawJson.values.flatMap((v) => {
+    if (typeof v === "string") {
+      return [v]
+    } else if (typeof v === "object" && v !== null && Array.isArray(v.value)) {
+      return v.value
+    }
+    return []
+  })
+}
+
+async function collectFlattenedValues(rule: { id: string, raw_json: unknown }, prisma: PrismaClient): Promise<string[]> {
+  const values = flattenRuleValues(rule.raw_json as any as RequisiteRuleValue)
+
+  const subRules = await prisma.requisiteRule.findMany({
+    where: { parent_rule_id: rule.id },
+    select: { id: true, raw_json: true },
+  })
+
+  for (const subRule of subRules) {
+    values.push(...(await collectFlattenedValues(subRule, prisma)))
+  }
+
+  return values
+}
+
 async function buildRequisiteRule(rule: RequisiteRule, prisma: PrismaClient) {
-  if (!rule.raw_json) return
-
   try {
-    const condition = rule.condition
-
-    if (condition === "freeformText") {
+    if (rule.condition === "freeformText") {
       return
     }
 
-    const rawJson = rule.raw_json as any as RequisiteRuleValue
-    const values = rawJson.values
-    if (!values) return
-
-    const flattenedValues: string[] = values.flatMap((v) => {
-      if (typeof v === "string") {
-        return [v]
-      } else if (typeof v === "object" && v !== null && Array.isArray(v.value)) {
-        return v.value
-      }
-      return []
-    })
+    const flattenedValues = await collectFlattenedValues(rule, prisma)
+    if (flattenedValues.length === 0) return
 
     const [courses, programs, courseSets, requisiteSets] = await Promise.all([
       prisma.course.findMany({ where: { course_group_id: { in: flattenedValues } }, select: { id: true } }),

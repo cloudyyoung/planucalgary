@@ -64,12 +64,18 @@ export async function processRequisite(requisiteData: RequisiteData, prisma: Pri
   return requisite
 }
 
-async function processRequisiteRule(ruleData: RequisiteRuleData, requisiteId: string, prisma: PrismaClient) {
+async function processRequisiteRule(
+  ruleData: RequisiteRuleData,
+  requisiteId: string,
+  prisma: PrismaClient,
+  parentRuleId?: string
+) {
   const requisiteRule = await prisma.requisiteRule.upsert({
     where: { id: ruleData.id },
     create: {
       id: ruleData.id,
       requisite_id: requisiteId,
+      parent_rule_id: parentRuleId,
       name: ruleData.name,
       description: ruleData.description,
       notes: ruleData.notes,
@@ -86,6 +92,7 @@ async function processRequisiteRule(ruleData: RequisiteRuleData, requisiteId: st
       raw_json: convertDictKeysCamelToSnake(ruleData.value as Record<string, any> | undefined),
     },
     update: {
+      parent_rule_id: parentRuleId,
       name: ruleData.name,
       description: ruleData.description,
       notes: ruleData.notes,
@@ -102,6 +109,13 @@ async function processRequisiteRule(ruleData: RequisiteRuleData, requisiteId: st
       raw_json: convertDictKeysCamelToSnake(ruleData.value as Record<string, any> | undefined),
     },
   })
+
+  if (ruleData.subRules?.length) {
+    await Promise.all(
+      ruleData.subRules.map((subRule) => processRequisiteRule(subRule, requisiteId, prisma, ruleData.id))
+    )
+  }
+
   return requisiteRule
 }
 
