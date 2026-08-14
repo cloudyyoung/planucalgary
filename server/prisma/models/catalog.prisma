@@ -350,7 +350,7 @@ model RequisiteSet {
   requisite_rules RequisiteRule[]
   field_of_study  FieldOfStudy?
 
-  requisite_set_group_id String  @unique
+  requisite_set_group_id String
   version                Int
   name                   String
   description            String?
