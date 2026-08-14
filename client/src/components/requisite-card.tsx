@@ -1,8 +1,23 @@
-import { Prisma, Requisite } from "@prisma/browser"
-import { RequisiteRuleCard } from "./requisite-rule-card"
+import { Prisma } from "@prisma/browser"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item"
+import { RequisiteRuleCard } from "@/components/requisite-rule-card"
 
 type RequisiteWithRules = Prisma.RequisiteGetPayload<{
-  include: { rules: true }
+  include: {
+    rules: {
+      include: {
+        referring_courses: true
+        referring_programs: true
+        referring_course_sets: true
+        referring_requisite_sets: true
+      }
+    }
+  }
 }>
 
 export const RequisiteCard = ({ requisite }: { requisite: RequisiteWithRules }) => {

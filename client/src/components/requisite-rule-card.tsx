@@ -1,4 +1,4 @@
-import { Course, CourseSet, Program, RequisiteRule, RequisiteSet } from "@prisma/browser"
+import { Prisma } from "@prisma/browser"
 import {
   Item,
   ItemContent,
@@ -9,8 +9,17 @@ import { Badge } from "@/components/ui/badge"
 import { Pill } from "@/components/ui/pill"
 import { CourseSetCard } from "@/components/course-set-card"
 
+type RequisiteRuleWithReferences = Prisma.RequisiteRuleGetPayload<{
+  include: {
+    referring_courses: true
+    referring_programs: true
+    referring_course_sets: true
+    referring_requisite_sets: true
+  }
+}>
+
 export interface RequisiteRuleCardProps {
-  rule: RequisiteRule & { referring_courses?: Course[], referring_programs?: Program[], referring_course_sets?: CourseSet[], referring_requisite_sets?: RequisiteSet[] }
+  rule: RequisiteRuleWithReferences
 }
 
 export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {

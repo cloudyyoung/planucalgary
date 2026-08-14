@@ -1,5 +1,5 @@
 import { Department } from "@prisma/client"
-import { Pill, PillStatus } from "./ui/pill"
+import { Pill, PillStatus } from "@/components/ui/pill"
 
 export const DepartmentPills = ({ departments }: { departments: (Department | string)[] }) => {
   return (
