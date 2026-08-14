@@ -92,7 +92,7 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
   }
 
   return (
-    <Item variant="outline" size="sm" key={rule.id} className="p-2">
+    <Item variant="outline" size="sm" className="p-2">
       <ItemContent>
         <ItemDescription>
           <Badge variant="secondary" className="text-gray-400">Requisite rule: {rule.id}</Badge>
