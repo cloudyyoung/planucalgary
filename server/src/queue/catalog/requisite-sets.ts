@@ -84,7 +84,7 @@ async function processRequisiteRule(
       id: ruleData.id,
       requisite_id: requisiteId,
       parent_rule_id: parentRuleId,
-      name: ruleData.name.trim(),
+      name: ruleData.name?.trim(),
       description: removeParagraphTags(ruleData.description),
       notes: removeParagraphTags(ruleData.notes),
       condition: ruleData.condition,
@@ -101,7 +101,7 @@ async function processRequisiteRule(
     },
     update: {
       parent_rule_id: parentRuleId,
-      name: ruleData.name.trim(),
+      name: ruleData.name?.trim(),
       description: removeParagraphTags(ruleData.description),
       notes: removeParagraphTags(ruleData.notes),
       condition: ruleData.condition,
