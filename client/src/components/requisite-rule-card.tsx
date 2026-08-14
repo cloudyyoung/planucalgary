@@ -9,17 +9,21 @@ import { Badge } from "@/components/ui/badge"
 import { Pill } from "@/components/ui/pill"
 import { CourseSetCard } from "@/components/course-set-card"
 
-type RequisiteRuleWithReferences = Prisma.RequisiteRuleGetPayload<{
+type BaseRequisiteRule = Prisma.RequisiteRuleGetPayload<{
   include: {
-    referring_courses: true
-    referring_programs: true
-    referring_course_sets: true
-    referring_requisite_sets: true
-  }
-}>
+    referring_courses: true;
+    referring_programs: true;
+    referring_course_sets: true;
+    referring_requisite_sets: true;
+  };
+}>;
+
+type RequisiteRuleWithRelations = BaseRequisiteRule & {
+  sub_rules: RequisiteRuleWithRelations[];
+};
 
 export interface RequisiteRuleCardProps {
-  rule: RequisiteRuleWithReferences
+  rule: RequisiteRuleWithRelations
 }
 
 export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
@@ -30,6 +34,7 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
   let referringPrograms = null
   let referringCourseSets = null
   let referringRequisiteSets = null
+  let sub_rules = null
 
   if (condition === "completeVariableCoursesAndVariableCredits") {
     const range_courses = [rule.min_courses, rule.max_courses]
@@ -89,6 +94,16 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
     )
   }
 
+  if (rule.sub_rules) {
+    sub_rules = (
+      <div className="flex flex-col gap-1 justify-center">
+        {rule.sub_rules.map(sr => (
+          <RequisiteRuleCard key={sr.id} rule={sr} />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <Item variant="outline" size="sm" className="p-2">
       <ItemContent>
@@ -103,6 +118,7 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
           {referringPrograms}
           {referringCourseSets}
           {referringRequisiteSets}
+          {sub_rules}
         </ItemDescription>
       </ItemContent>
     </Item>

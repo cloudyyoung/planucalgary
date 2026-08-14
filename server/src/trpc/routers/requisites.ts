@@ -41,6 +41,15 @@ export const requisitesRouter = createTRPCRouter({
                 referring_programs: true,
                 referring_courses: true,
                 referring_requisite_sets: true,
+                subrules: {
+                  include: {
+                    referring_courses: true,
+                    referring_programs: true,
+                    referring_course_sets: true,
+                    referring_requisite_sets: true,
+                    subrules: true,
+                  }
+                }
               }
             },
           },
