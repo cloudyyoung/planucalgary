@@ -100,7 +100,7 @@ export const AdminCourseSets = () => {
       size: 400,
       cell: ({ cell }) => {
         const courses = cell.getValue<{ id: string; code: string }[]>()
-        if (!courses?.length) return <span className="text-muted-foreground">—</span>
+        if (!courses?.length) return <span className="text-muted-foreground">None</span>
         return <div className="flex flex-wrap gap-1">{courses.map(c => <Pill key={c.id}>{c.code}</Pill>)}</div>
       },
     },
@@ -110,7 +110,7 @@ export const AdminCourseSets = () => {
       size: 400,
       cell: ({ cell }) => {
         const list = cell.getValue<string[]>()
-        if (!list?.length) return <span className="text-muted-foreground">—</span>
+        if (!list?.length) return <span className="text-muted-foreground">None</span>
         return <span className="font-mono text-sm">{list.join(", ")}</span>
       },
     },

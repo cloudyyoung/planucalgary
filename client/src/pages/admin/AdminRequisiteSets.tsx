@@ -84,6 +84,7 @@ export const AdminRequisiteSets = () => {
             size: 600,
             cell: ({ cell }) => {
                 const requisites = cell.getValue<any[]>()
+                if (!requisites || !requisites.length) return <span className="text-muted-foreground">None</span>
                 return (
                     <ul className="flex flex-col gap-2">
                         {

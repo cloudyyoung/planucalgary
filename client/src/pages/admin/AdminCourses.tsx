@@ -54,10 +54,10 @@ export const columns: ColumnDef<CourseListItem>[] = [
     accessorKey: "prereq_requisite",
     header: "Prerequisites",
     size: 500,
-    cell: ({ cell }) => {
-      const requisite = cell.getValue<any>()
-      const rules = requisite?.rules as RequisiteRule[]
-      return <RequisiteCard rules={rules} />
+    cell: ({ cell, row }) => {
+      const requisite = cell.getValue<any | null>()
+      if (!requisite) return <span className="text-muted-foreground">None</span>
+      return <RequisiteCard requisite={requisite} />
     },
   },
   {
@@ -70,9 +70,9 @@ export const columns: ColumnDef<CourseListItem>[] = [
     header: "Antirequisites",
     size: 500,
     cell: ({ cell }) => {
-      const requisite = cell.getValue<any>()
-      const rules = requisite?.rules as RequisiteRule[]
-      return <RequisiteCard rules={rules} />
+      const requisite = cell.getValue<any | null>()
+      if (!requisite) return <span className="text-muted-foreground">None</span>
+      return <RequisiteCard requisite={requisite} />
     },
   },
   {
@@ -85,9 +85,9 @@ export const columns: ColumnDef<CourseListItem>[] = [
     header: "Corequisites",
     size: 500,
     cell: ({ cell }) => {
-      const requisite = cell.getValue<any>()
-      const rules = requisite?.rules as RequisiteRule[]
-      return <RequisiteCard rules={rules} />
+      const requisite = cell.getValue<any | null>()
+      if (!requisite) return <span className="text-muted-foreground">None</span>
+      return <RequisiteCard requisite={requisite} />
     },
   },
   {
