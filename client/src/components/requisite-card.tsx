@@ -1,10 +1,15 @@
-import { RequisiteRule } from "@prisma/browser"
+import { Prisma, Requisite } from "@prisma/browser"
 import { RequisiteRuleCard } from "./requisite-rule-card"
 
-export const RequisiteCard = ({ rules }: { rules?: RequisiteRule[] }) => {
+type RequisiteWithRules = Prisma.RequisiteGetPayload<{
+  include: { rules: true }
+}>
+
+export const RequisiteCard = ({ requisite }: { requisite: RequisiteWithRules }) => {
   return (
     <div className="flex flex-col gap-2 w-full">
-      {rules?.map(rule => (
+      {requisite.name}
+      {requisite.rules.map(rule => (
         <RequisiteRuleCard rule={rule} />
       ))}
     </div>

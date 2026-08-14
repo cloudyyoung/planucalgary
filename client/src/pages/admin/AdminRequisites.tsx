@@ -8,6 +8,7 @@ import { RequisiteListItem, RequisiteListOutput, useRequisites } from "@/hooks/u
 import { Pill } from "@/components/ui/pill"
 import { RequisiteCard } from "@/components/requisite-card"
 import { RequisiteRule } from "@prisma/client"
+import { RequisiteRuleCard } from "@/components/requisite-rule-card"
 
 export const AdminRequisites = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -64,7 +65,13 @@ export const AdminRequisites = () => {
         if (!rules?.length) return null
         return (
           <ul className="flex flex-col gap-2">
-            <RequisiteCard rules={rules} />
+            {
+              rules.map(rule => (
+                <li key={rule.id}>
+                  <RequisiteRuleCard rule={rule} />
+                </li>
+              ))
+            }
           </ul>
         )
       },

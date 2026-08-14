@@ -90,7 +90,7 @@ export const AdminRequisiteSets = () => {
                         {
                             requisites.map((requisite) => (
                                 <li key={requisite.id}>
-                                    <RequisiteCard rules={requisite.rules} />
+                                    <RequisiteCard requisite={requisite} />
                                 </li>
                             ))
                         }
