@@ -10,6 +10,7 @@ import { RequisiteRuleListItem, RequisiteRuleListOutput, useRequisiteRules } fro
 import { Pill } from "@/components/ui/pill";
 import { StatefulButton } from "@/components/ui/stateful-button";
 import { trpcClient } from "@/trpc";
+import { RequisiteRuleCard, RequisiteRuleCardProps } from "@/components/requisite-rule-card";
 
 
 export const AdminRequisiteRules = () => {
@@ -57,6 +58,15 @@ export const AdminRequisiteRules = () => {
       cell: ({ cell }) => {
         const parentRuleId = cell.getValue<string | null>();
         return parentRuleId ? <span className="font-mono">{parentRuleId}</span> : null;
+      },
+    },
+    {
+      id: "card",
+      header: "Card",
+      size: 600,
+      cell: ({ row }) => {
+        const rule = row.original as unknown as RequisiteRuleCardProps["rule"];
+        return <RequisiteRuleCard rule={rule} />;
       },
     },
     {

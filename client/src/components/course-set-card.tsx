@@ -11,11 +11,12 @@ export const CourseSetCard = ({ courseSet }: { courseSet: CourseSet }) => {
   return (
     <Item variant="outline" size="sm" className="p-2">
       <ItemContent>
+        <ItemDescription>
+          <Badge variant="secondary" className="text-gray-400">Course set: {courseSet.id}</Badge>
+        </ItemDescription>
         <ItemTitle>
           {courseSet.name}
-          <Badge variant="secondary" className="text-gray-400 flex justify-center items-center">{courseSet.id}</Badge>
         </ItemTitle>
-        <ItemDescription></ItemDescription>
       </ItemContent>
     </Item>
   )
