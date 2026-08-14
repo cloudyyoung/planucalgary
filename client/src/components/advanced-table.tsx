@@ -43,7 +43,7 @@ const TableHeaderCell = <T,>({ header }: TableHeaderCellProps<T>) => {
         maxWidth: header.getSize(),
       }}
       className={cn(
-        "h-10 px-2 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "h-10 px-2 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-0.5",
       )}
     >
       {header.isPlaceholder ? null : (
@@ -221,7 +221,7 @@ const TableBodyRow = ({ row, virtualRow, rowVirtualizer }: TableBodyRowProps) =>
         <td
           key={cell.id}
           className={cn(
-            "flex items-center p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-wrap break-words",
+            "flex items-center p-2 align-middle [&:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-0.5 text-wrap wrap-break-words",
           )}
           style={{
             width: cell.column.getSize(),
