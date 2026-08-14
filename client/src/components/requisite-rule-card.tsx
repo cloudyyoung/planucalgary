@@ -54,7 +54,7 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
 
   if (rule.referring_courses) {
     referringCourses = (
-      <div className="flex flex-row gap-1 items-center">
+      <div className="flex flex-wrap gap-1 items-center">
         {rule.referring_courses.map(c => (
           <Pill key={c.id} variant="secondary">{c.code}</Pill>
         ))}
@@ -64,7 +64,7 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
 
   if (rule.referring_programs) {
     referringPrograms = (
-      <div className="flex flex-row gap-1 items-center">
+      <div className="flex flex-wrap gap-1 items-center">
         {rule.referring_programs.map(p => (
           <Pill key={p.id} variant="secondary">{p.code}</Pill>
         ))}
@@ -84,7 +84,7 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
 
   if (rule.referring_requisite_sets) {
     referringRequisiteSets = (
-      <div className="flex flex-col gap-1 justify-center">
+      <div className="flex flex-wrap gap-1 justify-center">
         {rule.referring_requisite_sets.map(rs => (
           <Pill key={rs.id} variant="secondary">{rs.name}</Pill>
         ))}
@@ -112,11 +112,17 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
         {rule.description && <ItemDescription>{rule.description}</ItemDescription>}
         <ItemDescription>
           {condition}: {value}
-          {rule.notes}
+        </ItemDescription>
+        <ItemDescription>
           {referringCourses}
           {referringPrograms}
           {referringCourseSets}
           {referringRequisiteSets}
+        </ItemDescription>
+        <ItemDescription>
+          {rule.notes}
+        </ItemDescription>
+        <ItemDescription>
           {sub_rules}
         </ItemDescription>
       </ItemContent>

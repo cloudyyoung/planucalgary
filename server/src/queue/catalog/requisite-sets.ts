@@ -38,6 +38,12 @@ function convertListCamelToSnake(a: any[] | undefined): any[] | undefined {
   )
 }
 
+export function removeParagraphTags(str: string | null | undefined): string | null | undefined {
+  if (!str) return str
+
+  return str.replace(/<\/?p>/g, "")
+}
+
 /**
  * Process a single requisite upsert
  */
@@ -48,13 +54,13 @@ export async function processRequisite(requisiteData: RequisiteData, prisma: Pri
       id: requisiteData.id,
       name: requisiteData.name,
       type: requisiteData.type,
-      notes: requisiteData.notes,
+      notes: removeParagraphTags(requisiteData.notes),
       raw_rules: convertListCamelToSnake(requisiteData.rules),
     },
     update: {
       name: requisiteData.name,
       type: requisiteData.type,
-      notes: requisiteData.notes,
+      notes: removeParagraphTags(requisiteData.notes),
       raw_rules: convertListCamelToSnake(requisiteData.rules),
     },
   })
@@ -79,8 +85,8 @@ async function processRequisiteRule(
       requisite_id: requisiteId,
       parent_rule_id: parentRuleId,
       name: ruleData.name,
-      description: ruleData.description,
-      notes: ruleData.notes,
+      description: removeParagraphTags(ruleData.description),
+      notes: removeParagraphTags(ruleData.notes),
       condition: ruleData.condition,
       min_courses: ruleData.minCourses,
       max_courses: ruleData.maxCourses,
@@ -96,8 +102,8 @@ async function processRequisiteRule(
     update: {
       parent_rule_id: parentRuleId,
       name: ruleData.name,
-      description: ruleData.description,
-      notes: ruleData.notes,
+      description: removeParagraphTags(ruleData.description),
+      notes: removeParagraphTags(ruleData.notes),
       condition: ruleData.condition,
       min_courses: ruleData.minCourses,
       max_courses: ruleData.maxCourses,
@@ -180,63 +186,66 @@ export async function crawlRequisiteSets(job: Job) {
   const adapter = new PrismaPg({ connectionString: DATABASE_URL })
   const prisma = new PrismaClient({ adapter })
 
-  // This endpoint does not support limit and skip
-  const url = "https://app.coursedog.com/api/v1/ucalgary_peoplesoft/requisite-sets"
-  const response = await axios.get<RequisiteSetData[]>(url, {
-    headers: {
-      Origin: "https://calendar.ucalgary.ca",
-    },
-    params: {},
-    timeout: 60000,
-  })
-
-  const requisiteSetsData = response.data
-
-  await job.updateProgress(10)
-
-  // Process requisite sets in parallel batches
-  const BATCH_SIZE = 50
-  const totalBatches = Math.ceil(requisiteSetsData.length / BATCH_SIZE)
-  let totalSucceeded = 0
-  let totalFailed = 0
-
-  for (let i = 0; i < requisiteSetsData.length; i += BATCH_SIZE) {
-    const batch = requisiteSetsData.slice(i, i + BATCH_SIZE)
-    const currentBatch = Math.floor(i / BATCH_SIZE) + 1
-
-    // Process batch in parallel, each requisite set in its own atomic transaction
-    const results = await Promise.allSettled(
-      batch.map(requisiteSetData =>
-        prisma.$transaction((tx) => processRequisiteSet(requisiteSetData, tx as PrismaClient))
-      )
-    )
-
-    // Count successes and failures
-    const succeeded = results.filter((r) => r.status === "fulfilled").length
-    const failed = results.filter((r) => r.status === "rejected").length
-
-    totalSucceeded += succeeded
-    totalFailed += failed
-
-    // Log any failures
-    results.forEach((result, idx) => {
-      if (result.status === "rejected") {
-        const csid = batch[idx]?._id || "unknown"
-        console.error(`Failed to process requisite set ${csid}:`, result.reason)
-      }
+  try {
+    // This endpoint does not support limit and skip
+    const url = "https://app.coursedog.com/api/v1/ucalgary_peoplesoft/requisite-sets"
+    const response = await axios.get<RequisiteSetData[]>(url, {
+      headers: {
+        Origin: "https://calendar.ucalgary.ca",
+      },
+      params: {},
+      timeout: 60000,
     })
 
-    // Update progress (10% to 100%)
-    const progress = 10 + (currentBatch / totalBatches) * 90
-    await job.updateProgress(progress)
-  }
+    const requisiteSetsData = response.data
 
-  await job.updateProgress(100)
-  await prisma.$disconnect()
+    await job.updateProgress(10)
 
-  return {
-    total: totalSucceeded + totalFailed,
-    totalSucceeded,
-    totalFailed,
+    // Process requisite sets in parallel batches
+    const BATCH_SIZE = 50
+    const totalBatches = Math.ceil(requisiteSetsData.length / BATCH_SIZE)
+    let totalSucceeded = 0
+    let totalFailed = 0
+
+    for (let i = 0; i < requisiteSetsData.length; i += BATCH_SIZE) {
+      const batch = requisiteSetsData.slice(i, i + BATCH_SIZE)
+      const currentBatch = Math.floor(i / BATCH_SIZE) + 1
+
+      // Process batch in parallel, each requisite set in its own atomic transaction
+      const results = await Promise.allSettled(
+        batch.map(requisiteSetData =>
+          prisma.$transaction((tx) => processRequisiteSet(requisiteSetData, tx as PrismaClient))
+        )
+      )
+
+      // Count successes and failures
+      const succeeded = results.filter((r) => r.status === "fulfilled").length
+      const failed = results.filter((r) => r.status === "rejected").length
+
+      totalSucceeded += succeeded
+      totalFailed += failed
+
+      // Log any failures
+      results.forEach((result, idx) => {
+        if (result.status === "rejected") {
+          const csid = batch[idx]?._id || "unknown"
+          console.error(`Failed to process requisite set ${csid}:`, result.reason)
+        }
+      })
+
+      // Update progress (10% to 100%)
+      const progress = 10 + (currentBatch / totalBatches) * 90
+      await job.updateProgress(progress)
+    }
+
+    await job.updateProgress(100)
+
+    return {
+      total: totalSucceeded + totalFailed,
+      totalSucceeded,
+      totalFailed,
+    }
+  } finally {
+    await prisma.$disconnect()
   }
 }
