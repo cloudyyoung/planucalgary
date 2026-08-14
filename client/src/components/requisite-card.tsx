@@ -1,4 +1,5 @@
-import { Prisma, Requisite } from "@prisma/browser"
+import { Requisite } from "@prisma/browser"
+import _ from "lodash"
 import {
   Item,
   ItemContent,
@@ -13,13 +14,15 @@ type RequisiteWithRelations = Requisite & {
 }
 
 export const RequisiteCard = ({ requisite }: { requisite: RequisiteWithRelations }) => {
+  const hasName = !_.isEmpty(requisite.name)
+
   return (
     <Item variant="outline" size="sm" className="p-2.5">
       <ItemContent>
         <ItemDescription>
           <Badge variant="secondary" className="text-gray-400">Requisite: {requisite.id}</Badge>
         </ItemDescription>
-        <ItemTitle>{requisite.name}</ItemTitle>
+        <ItemTitle>{hasName ? requisite.name : "Unnamed Requisite"}</ItemTitle>
         <ItemDescription>{requisite.type}</ItemDescription>
         <ItemDescription>{requisite.notes}</ItemDescription>
         {requisite.rules.map(rule => (

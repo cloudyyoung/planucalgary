@@ -23,7 +23,7 @@ model Course {
   updated_at DateTime @default(now()) @updatedAt
 
   course_id       String
-  course_group_id String @unique
+  course_group_id String
 
   code          String
   course_number String
@@ -123,7 +123,7 @@ model CourseSet {
   courses         Course[]
   requisite       Requisite[]
 
-  course_set_group_id String   @unique
+  course_set_group_id String
   type                String
   name                String
   description         String?
@@ -223,7 +223,7 @@ model Program {
   requisites               Requisite[]
   referred_requisite_rules RequisiteRule[]
 
-  program_group_id String @unique
+  program_group_id String
 
   code         String  @unique
   name         String

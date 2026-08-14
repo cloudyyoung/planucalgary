@@ -8,6 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Pill } from "@/components/ui/pill"
 import { CourseSetCard } from "@/components/course-set-card"
+import _ from "lodash"
 
 type BaseRequisiteRule = Prisma.RequisiteRuleGetPayload<{
   include: {
@@ -29,6 +30,8 @@ export interface RequisiteRuleCardProps {
 export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
   const rule = props.rule
   const condition = rule.condition
+  const hasName = !_.isEmpty(rule.name)
+
   let value = null
   let referringCourses = null
   let referringPrograms = null
@@ -108,7 +111,7 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
         <ItemDescription>
           <Badge variant="secondary" className="text-gray-400">Requisite rule: {rule.id}</Badge>
         </ItemDescription>
-        <ItemTitle>{rule.name ?? "Unnamed Rule"}</ItemTitle>
+        <ItemTitle>{hasName ? rule.name : "Unnamed Rule"}</ItemTitle>
         {rule.description && <ItemDescription>{rule.description}</ItemDescription>}
         <ItemDescription>
           {condition}: {value}
