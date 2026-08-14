@@ -48,11 +48,13 @@ export async function processRequisite(requisiteData: RequisiteData, prisma: Pri
       id: requisiteData.id,
       name: requisiteData.name,
       type: requisiteData.type,
+      notes: requisiteData.notes,
       raw_rules: convertListCamelToSnake(requisiteData.rules),
     },
     update: {
       name: requisiteData.name,
       type: requisiteData.type,
+      notes: requisiteData.notes,
       raw_rules: convertListCamelToSnake(requisiteData.rules),
     },
   })

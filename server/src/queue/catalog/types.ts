@@ -32,7 +32,9 @@ export type RequisiteData = {
   id: string
   name: string
   type: string
+  notes?: string
   rules: RequisiteRuleData[]
+  showInCatalog: boolean
 }
 
 export type RequisiteSetData = {
