@@ -31,10 +31,6 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
   let referringCourseSets = null
   let referringRequisiteSets = null
 
-  if (condition === "freeformText") {
-    return condition
-  }
-
   if (condition === "completeVariableCoursesAndVariableCredits") {
     const range_courses = [rule.min_courses, rule.max_courses]
     const range_credits = [rule.min_credits, rule.max_credits]
@@ -49,6 +45,8 @@ export const RequisiteRuleCard = (props: RequisiteRuleCardProps) => {
     value = rule.credits
   } else if (condition === "minimumGrade" || condition === "averageGrade") {
     value = `${rule.grade} (${rule.grade_type})`
+  } else if (condition === "freeformText") {
+    value = rule.notes
   }
 
   if (rule.referring_courses) {
