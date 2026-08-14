@@ -2,9 +2,10 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import { DateTime } from "luxon"
 import JsonView from "react18-json-view"
+
 import AdvancedTable from "@/components/advanced-table"
 import { RequisiteListItem, RequisiteListOutput, useRequisites } from "@/hooks/useRequisites"
-import { RequisiteCard } from "@/components/requisite-card"
+import { RequisiteRuleCard } from "@/components/requisite-rule-card"
 
 export const AdminRequisites = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -53,11 +54,22 @@ export const AdminRequisites = () => {
       enableSorting: true,
     },
     {
-      id: "card",
-      header: "Card",
+      accessorKey: "rules",
+      header: "Rules",
       size: 600,
-      cell: ({ row }) => {
-        return <RequisiteCard requisite={row.original} />
+      cell: ({ cell }) => {
+        const rules = cell.getValue<any[]>()
+        return (
+          <ul className="flex flex-col gap-2">
+            {
+              rules.map(rule => (
+                <li key={rule.id}>
+                  <RequisiteRuleCard rule={rule} />
+                </li>
+              ))
+            }
+          </ul>
+        )
       },
     },
     {

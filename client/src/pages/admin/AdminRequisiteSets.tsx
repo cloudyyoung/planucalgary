@@ -84,7 +84,6 @@ export const AdminRequisiteSets = () => {
             size: 600,
             cell: ({ cell }) => {
                 const requisites = cell.getValue<any[]>()
-                if (!requisites?.length) return null
                 return (
                     <ul className="flex flex-col gap-2">
                         {
