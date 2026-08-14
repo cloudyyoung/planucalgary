@@ -37,7 +37,23 @@ export const requisiteSetsRouter = createTRPCRouter({
           include: {
             requisites: {
               include: {
-                rules: true,
+                rules: {
+                  include: {
+                    referring_courses: true,
+                    referring_programs: true,
+                    referring_course_sets: true,
+                    referring_requisite_sets: true,
+                    sub_rules: {
+                      include: {
+                        referring_courses: true,
+                        referring_programs: true,
+                        referring_course_sets: true,
+                        referring_requisite_sets: true,
+                        sub_rules: true,
+                      }
+                    }
+                  }
+                },
               },
             }
           },

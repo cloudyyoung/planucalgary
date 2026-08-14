@@ -204,11 +204,12 @@ export async function crawlRequisiteSets(job: Job) {
     const batch = requisiteSetsData.slice(i, i + BATCH_SIZE)
     const currentBatch = Math.floor(i / BATCH_SIZE) + 1
 
-    const results = await prisma.$transaction((tx) => {
-      return Promise.allSettled(
-        batch.map(requisiteSetData => processRequisiteSet(requisiteSetData, tx as PrismaClient))
+    // Process batch in parallel, each requisite set in its own atomic transaction
+    const results = await Promise.allSettled(
+      batch.map(requisiteSetData =>
+        prisma.$transaction((tx) => processRequisiteSet(requisiteSetData, tx as PrismaClient))
       )
-    })
+    )
 
     // Count successes and failures
     const succeeded = results.filter((r) => r.status === "fulfilled").length
